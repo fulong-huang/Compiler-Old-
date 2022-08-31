@@ -31,34 +31,46 @@ void InitInstruction(){
     InstTail = InstHead;
 }
 
-struct INST* PrintInstBlock(struct InstBlock* instBlock){
+void PrintInstBlock(struct InstBlock* instBlock){
     struct InstBlock *n1, *n2;
     if(instBlock->name[0] == 'I'){
-        addLabel("======= "+ instBlock->name +" ========");
+        addLabel(instBlock->name);
         PrintInst((INST*) instBlock->head);
         n1 = (InstBlock*) instBlock->next;
         n2 = (InstBlock*) instBlock->next2;
-        addLabel("======= "+ n1->name +" ========");
+        addLabel(n1->name);
         PrintInst(n1->head);
-        addLabel("======= "+ n2->name +" ========");
+        addLabel(n2->name);
         PrintInst(n2->head);
+
         n1 = (InstBlock*) n1->next;
-        addLabel("======= "+ n1->name +" ========");
+        addLabel(n1->name);
         PrintInst(n1->head);
-        return n1->next;
+    }
+    else if(instBlock->name[0] == 'W'){
+        addLabel(instBlock->name);
+        PrintInst((INST*) instBlock->head);
+
+        n1 = (InstBlock*) instBlock->next;
+        n2 = (InstBlock*) instBlock->next2;
+        
+        addLabel(n1->name);
+        PrintInst(n1->head);
+
+        addLabel(n2->name);
+        PrintInst(n2->head);
     }
     else{
-
+        addLabel("============== UNKNOWN LABEL NAME ==============" + instBlock->name);
     }
-    return NULL;
 }
 
 void PrintInst(struct INST* currInst){
     struct Instruction* inst;
     while(currInst != NULL){
         if(currInst->TYPE == BLOCK){
-            currInst = PrintInstBlock((InstBlock*) currInst);
-            continue;
+            PrintInstBlock((InstBlock*) currInst);
+            break;
         }
         inst = (Instruction*) currInst;
         if(inst->InstNum == -1){

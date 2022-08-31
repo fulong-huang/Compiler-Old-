@@ -15,7 +15,7 @@ std::string ident();
 // number() reads digits, return inst number of this digit.
 int number();
 // varRef() reads name, return (instNum, value) of this ref.
-std::pair<int, int> varRef();
+std::pair<int, int> varRef(std::string ident);
 std::pair<std::string, int> factor();
 std::pair<std::string, int> term();
 std::pair<std::string, int> expression();

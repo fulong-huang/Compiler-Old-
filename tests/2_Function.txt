@@ -5,7 +5,8 @@ void function thisfunc(fistx, firsty); var a,b,s,d;{
         let b <- 3;
         let s <- b+y;
         return;
-    fi
+    fi;
+    let y <- 23 + 5;
 };
 {
     let b <- 2;

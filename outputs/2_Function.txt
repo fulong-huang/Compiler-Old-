@@ -1,17 +1,13 @@
 	---------- Printing Instructions ----------
 
 MAIN: 
-======= IF_0 ========: 
 IF_0: 
-	4	CMP 4 2 3 
-	5	BNE 4 (ELSE_0)-1 
-======= THEN_0 ========: 
+	3	CMP 3 2 3 
+	4	BNE 3 (ELSE_0)-1 
 THEN_0: 
-	7	BEQ 0 (FI_0)-1 
-======= ELSE_0 ========: 
+	5	BEQ -0 (JOIN_IF_0)-1 
 ELSE_0: 
-======= FI_0 ========: 
-FI_0: 
+JOIN_IF_0: 
 	
 
 ------------------ Values Start Here ------------------
@@ -20,4 +16,4 @@ FI_0:
 
 	s, 582
 	b, 2
-	y, 579
+	y, 28

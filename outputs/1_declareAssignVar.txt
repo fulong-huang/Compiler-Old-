@@ -1,17 +1,13 @@
 	---------- Printing Instructions ----------
 
 MAIN: 
-======= IF_3 ========: 
-IF_3: 
-	4	CMP 4 2 0 
-	5	BGE 4 (ELSE_3)-1 
-======= THEN_3 ========: 
-THEN_3: 
-	7	BEQ 0 (FI_3)-1 
-======= ELSE_3 ========: 
-ELSE_3: 
-======= FI_3 ========: 
-FI_3: 
+IF_0: 
+	3	CMP 3 2 0 
+	4	BGE 3 (ELSE_0)-1 
+THEN_0: 
+	5	BEQ -0 (JOIN_IF_0)-1 
+ELSE_0: 
+JOIN_IF_0: 
 	
 
 ------------------ Values Start Here ------------------

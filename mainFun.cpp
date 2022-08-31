@@ -31,8 +31,12 @@ int main()
                 // next();
                 openWriteFile(std::string(thisPath) +'/' + std::string(ent->d_name));
                 try{
+                    // *** INIT STUFFS ***
                     InitInstruction();
                     InitVT();
+                    InitHelp();
+
+                    // --- PROGRAM START ---
                     computation();
                 }
                 catch(const std::exception &e){

@@ -2,32 +2,25 @@
 
 MAIN: 
 WHILE_0: 
-	4	CMP 4 0 100 
-	5	BGE 4 (OD_0)-1 
+	3	CMP 3 0 100 
+	4	BGE 3 (JOIN_WHILE_0)-1 
 DO_0: 
-======= IF_1 ========: 
+IF_0: 
+	5	CMP 5 0 0 
+	6	BGE 5 (ELSE_0)-1 
+THEN_0: 
 IF_1: 
-	8	CMP 8 0 0 
-	9	BGE 8 (ELSE_1)-1 
-======= THEN_1 ========: 
+	7	CMP 7 0 0 
+	8	BGE 7 (ELSE_1)-1 
 THEN_1: 
-======= IF_2 ========: 
-IF_2: 
-	12	CMP 12 0 0 
-	13	BGE 12 (ELSE_2)-1 
-======= THEN_2 ========: 
-THEN_2: 
-	15	BEQ 0 (FI_2)-1 
-======= ELSE_2 ========: 
-ELSE_2: 
-======= FI_2 ========: 
-FI_2: 
-	18	BEQ 0 (FI_1)-1 
-======= ELSE_1 ========: 
+	9	BEQ -0 (JOIN_IF_1)-1 
 ELSE_1: 
-======= FI_1 ========: 
-FI_1: 
-OD_0: 
+JOIN_IF_1: 
+	10	BEQ -0 (JOIN_IF_0)-1 
+ELSE_0: 
+JOIN_IF_0: 
+	11	BEQ -0 (WHILE_0)-1 
+JOIN_WHILE_0: 
 	
 
 ------------------ Values Start Here ------------------

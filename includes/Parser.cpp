@@ -78,9 +78,9 @@ int number(){
     return val;
 }
 
-std::pair<int, int> varRef(){ // return <name, inst number> of var
+std::pair<int, int> varRef(std::string ident){ // return <name, inst number> of var
     std::cout << "VARREF" << std::endl;
-    return getVT(ident());
+    return getVT(ident);
     // find inst num using ident();
 }
 
@@ -109,10 +109,15 @@ std::pair<std::string, int> factor(){ // return result as pair<name, int>
             funcCall();     // ------------- change result -------------
         }
         else{                   // varRef
-            std::pair<int, int> val = varRef();
+            std::string idt = ident();
+            std::pair<int, int> val = varRef(idt);
             if(val.first == -1){
                 result.first = "";
                 result.second = val.second;
+            }
+            else if(val.first == -2){
+                result.first = idt;
+                result.second = -2;
             }
             else{
                 result.first = "-";
@@ -406,6 +411,11 @@ void relation(std::string target){
     std::pair<std::string, int> lhs = expression();
     Ops op = relOp();
     std::pair<std::string, int> rhs = expression();
+
+    bool constLHS = (lhs.first == "");
+    bool constRHS = (rhs.first == "");
+    
+
     struct Instruction* inst = newInstruction();
     inst->op = CMP;
     inst->a = newOp("", currInstNum);
@@ -518,13 +528,6 @@ void ifStatement(){
     addInst( (INST*) ifBlock);
     InstTail = ifBlock->head;
 
-    // Indicate If statement started
-    struct Instruction* inst = newInstruction();
-    inst->op = LABEL;
-    inst->a = newOp(labels[0], 0);
-    inst->InstNum = currInstNum++;
-    addInst((INST*) inst);
-    // Get relation
     nextChar();
     relation(labels[2]); 
     nextChar();
@@ -536,28 +539,21 @@ void ifStatement(){
     skipNext(4); // eat "then"
     
     // Jump into then block
-    addInst( (INST*) thenBlock);
     InstTail = thenBlock->head;
-
-    inst = newInstruction();
-    inst->op = LABEL;
-    inst->a = newOp(labels[1], 0);
-    inst->InstNum = currInstNum++;
-    addInst((INST*) inst);
 
     statSequence();
     nextChar();
 
-    // Branch to FI block after if
-    inst = newInstruction();
+    // Else statement start here. (else)
+
+    // If statement need to skip it
+    struct Instruction* inst = newInstruction();
     inst->op = BEQ;
-    inst->a = newOp("", 0);
-    inst->b = newOp(labels[3], -1);
+    inst->a = newOp("-", 0);
+    inst->b = newOp(fiBlock->name, -1);
     inst->InstNum = currInstNum++;
     addInst((INST*) inst);
 
-
-    // Else statement start here. (else)
 
     if(nextIs("else")){
         // eat "else"
@@ -567,14 +563,8 @@ void ifStatement(){
     nextChar();
 
     // Jump into else block
-    addInst( (INST*) elseBlock);
     InstTail = elseBlock->head;
 
-    inst = newInstruction();
-    inst->op = LABEL;
-    inst->a = newOp(labels[2], 0);
-    inst->InstNum = currInstNum++;
-    addInst((INST*) inst);
 
     // End of If statement. (fi;)
 
@@ -584,14 +574,8 @@ void ifStatement(){
     skipNext(2); 
     
     // Jump into fi block
-    addInst( (INST*) fiBlock);
     InstTail = fiBlock->head;
 
-    inst = newInstruction();
-    inst->op = LABEL;
-    inst->a = newOp(labels[3], 0);
-    inst->InstNum = currInstNum++;
-    addInst((INST*) inst);
 }
 
 
@@ -607,12 +591,20 @@ start new instruction for block inside while,
 void whileStatement(){
     std::cout << "WHILE" << std::endl;
     std::string* labels = getWhile();
-    // nextChar();
-    struct Instruction* inst = newInstruction();
-    inst->op = LABEL;
-    inst->a = newOp(labels[0], 0);
-    inst->InstNum = currInstNum++;
-    addInst((INST*) inst);
+
+    // Init instruction blocks;
+    struct InstBlock* whileBlock = newInstBlock(labels[0]);
+    struct InstBlock* doBlock = newInstBlock(labels[1]);
+    struct InstBlock* odBlock = newInstBlock(labels[2]);
+
+    whileBlock->next = (INST*) doBlock;
+    whileBlock->next2 = (INST*) odBlock;
+    doBlock->next = (INST*) whileBlock;
+
+
+    // Jump into while block
+    addInst( (INST*) whileBlock);
+    InstTail = whileBlock->head;
 
     relation(labels[2]);
     nextChar();
@@ -621,24 +613,29 @@ void whileStatement(){
         throw std::invalid_argument("whileStatement expecting \"do\" after relation");
     }
     skipNext(2);
-    inst = newInstruction();
-    inst->op = LABEL;
-    inst->a = newOp(labels[1], 0);
-    inst->InstNum = currInstNum++;
-    addInst((INST*) inst);
     // Do start
+
+    // Jump into do block
+    InstTail = doBlock->head;
+
     statSequence();
     nextChar();
     if(!nextIs("od")){
         throw std::invalid_argument("whileStatement expecting \"od\" to end the loop");
     }
-    inst = newInstruction();
-    inst->op = LABEL;
-    inst->a = newOp(labels[2], 0);
+    skipNext(2); 
+
+    // *********** DO BLOCK END ***************
+    // jump back to while block
+    struct Instruction* inst = newInstruction();
+    inst->op = BEQ;
+    inst->a = newOp("-", 0);
+    inst->b = newOp(whileBlock->name, -1);
     inst->InstNum = currInstNum++;
     addInst((INST*) inst);
-    skipNext(2); 
-    // End of while loop must jump to top
+
+    // Jump into od block
+    InstTail = odBlock->head;
 
 }
 

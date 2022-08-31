@@ -11,8 +11,13 @@ void insertVT(std::string ident, int inst){
 std::pair<int, int> getVT(std::string ident){
     std::pair<int, int> result;
     std::unordered_map<std::string, int>::const_iterator v = ValueTable.find(ident);
+    std::unordered_map<std::string, int>::const_iterator v2 = ConstVal.find(ident);
     if(v != ValueTable.end()){
         result.first = ValueTable[ident];
+    }
+    else if(v2 == ConstVal.end()){
+        // Value not exist, return -2;
+        result.first = -2;
     }
     else{
         result.first = -1;
