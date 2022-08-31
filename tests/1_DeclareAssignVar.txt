@@ -1,0 +1,15 @@
+main
+var x, y, z,a,b,c;
+{
+    let x <- 2;
+    let y <- 2;
+    let z <- x;
+    let a <- x+1;
+    let b <- z+1;
+    let c <- x+z;
+    
+    if x < 0
+    then
+        let b <- b + 1;
+    fi;
+}.

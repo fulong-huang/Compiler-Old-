@@ -1,0 +1,14 @@
+main
+void function thisfunc(fistx, firsty); var a,b,s,d;{
+    let y <- 123+456;
+    if 2==3 then
+        let b <- 3;
+        let s <- b+y;
+        return;
+    fi
+};
+{
+    let b <- 2;
+    call thisfunc(2+3*2, 8/2, 3+5);
+    
+}.
