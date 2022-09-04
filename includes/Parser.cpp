@@ -106,7 +106,8 @@ std::pair<std::string, int> factor(){ // return result as pair<name, int>
     else if(isChar()){
         if(nextIs("call")){     // function Call
             skipNext(4);       // must eat call before funCall();
-            funcCall();     // ------------- change result -------------
+            int fNum = funcCall();     // ------------- change result -------------
+            result.first = fNum;
         }
         else{                   // varRef
             std::string idt = ident();
@@ -117,7 +118,17 @@ std::pair<std::string, int> factor(){ // return result as pair<name, int>
             }
             else if(val.first == -2){
                 result.first = idt;
-                result.second = -2;
+                result.second = 0;
+                addLabelInst(" --- Use of UNKNOWN variable: " +
+                    idt + " --- "
+                );
+            }
+            else if(val.first == -3){
+                result.first = idt;
+                result.second = 0;
+                addLabelInst(" --- Use of UNINITIALIZED variable: "
+                    + idt + " --- "
+                );
             }
             else{
                 result.first = "-";
@@ -402,15 +413,15 @@ void relation(std::string target){
     bool constRHS = (rhs.first == "");
     
 
-    struct Instruction* inst = newInstruction();
+    struct Instruction* inst;
     bool neg = false;
     if(lhs.first == ""){
         // if two constant: (1 > 2)
         if(rhs.first == ""){
-            inst->op = LABEL;
-            inst->InstNum = 100;
-            inst->a = newOp("___Comparing two constant", -1);
-            addInst((INST*) inst);
+            addLabelInst((" <Comparing two constant> "
+                + std::to_string(lhs.second) + ", " + 
+                std::to_string(rhs.second)
+            ));
             inst = newInstruction();
             inst->op = BRA;
             inst->a = newOp(target, -1);
@@ -460,13 +471,6 @@ void relation(std::string target){
         }
         // else: (exp: 2 < a)
         else{ 
-            inst->op = NEG;
-            inst->a = newOp(lhs.first, lhs.second);
-            inst->InstNum = currInstNum++;
-            addInst((INST*) inst);
-
-            inst = newInstruction();
-
             std::pair<std::string, int> s = lhs;
             lhs = rhs;
             rhs = s;
@@ -476,36 +480,40 @@ void relation(std::string target){
     }
 
     if(rhs.first == ""){
+        inst = newInstruction();
         inst->op = CMPI;
         inst->a = newOp(lhs.first, lhs.second);
         inst->b = newOp(rhs.first, rhs.second);
         inst->InstNum = currInstNum++;
         addInst((INST*) inst);
 
+        if(neg){
+            inst = newInstruction();
+            inst->op = NEG;
+            inst->a = newOp("-", currInstNum-1);
+            inst->InstNum = currInstNum++;
+            addInst((INST*) inst);
+        }
+
+        inst = newInstruction();
         switch(op){
             case EQ: // branch when not equal
-                if(neg) inst->op = BEQ;
-                else inst->op = BNE;
+                inst->op = BNE;
                 break;
             case NE:
-                if(neg) inst->op = BNE;
-                else inst->op = BEQ;
+                inst->op = BEQ;
                 break;
             case GT:
-                if(neg) inst->op = BGT;
-                else inst->op = BLE;
+                inst->op = BLE;
                 break;
             case GE:
-                if(neg) inst->op = BGE;
-                else inst->op = BLT;
+                inst->op = BLT;
                 break;
             case LT:
-                if(neg) inst->op = BLT;
-                else inst->op = BGE;
+                inst->op = BGE;
                 break;
             case LE:
-                if(neg) inst->op = BLE;
-                else inst->op = BGT;
+                inst->op = BGT;
                 break;
             default:
                 throw std::invalid_argument("Unknow relOp\n");
@@ -570,7 +578,7 @@ void assignment(){
     std::pair<std::string, int> val = expression();
     if(val.first == ""){ 
         insertCV(name, val.second);
-        
+        // ======== update instruction if needed ========= 
     }
     else{
         put("*** ASSIGN INST NUMBER " +
@@ -581,10 +589,20 @@ void assignment(){
     }
 }
 
-void funcCall(){
+int funcCall(){
     std::cout << "FUNCALL" << std::endl;
     nextChar();
-    ident();
+    std::string funcName = ident();
+    
+    // **************************************************
+    struct Instruction* inst = newInstruction();
+    int instNum = currInstNum;
+    inst->InstNum = currInstNum++;
+    inst->a = newOp(funcName, -1);
+    inst->op = BRA;
+    addInst((INST*) inst);
+    // **************************************************
+
     nextChar();
     if(CURR != '('){
         throw std::invalid_argument("FuncCall expecting \"(\" after ident");
@@ -604,6 +622,7 @@ void funcCall(){
         }
     }
     next();
+    return instNum;
 }
 
 void ifStatement(){
@@ -628,8 +647,8 @@ void ifStatement(){
     struct INST* savedJoin = JoinBlock;
     JoinBlock = (INST*) fiBlock;
     // State If statement started;
-    int saveStatementType = statementType;
-    statementType = 1;
+    bool sInMain = InMain;
+    InMain = false;
 
     // Jump into if block
     addInst( (INST*) ifBlock);
@@ -681,7 +700,7 @@ void ifStatement(){
     
     // Jump into fi block
     InstTail = fiBlock->head;
-
+    InMain = sInMain;
 }
 
 

@@ -21,7 +21,9 @@ std::unordered_map<std::string, int> ValueTable;
 //  var z; z = x+y;                    ConstVal = {[x:5], [y:3], [z:8]}             0 instruction created
 std::unordered_map<std::string, int> ConstVal; // store instNum of constant;
 
-std::unordered_map<std::string, int> subValueTable; // value table for [if] and [while] statement 
+std::unordered_map<std::string, int> SubValueTable; // value table for [if] and [while] statement 
+
+std::unordered_map<std::string, int> SubConstVal;   // value table for [if] and [while] statement 
 
 
 void InitVT();

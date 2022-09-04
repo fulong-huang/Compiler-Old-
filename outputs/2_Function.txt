@@ -2,19 +2,20 @@
 
 MAIN: 
 IF_0: 
-___Comparing two constant: 
+ <Comparing two constant> 2, 3: 
 	2	bra ELSE_0
 THEN_0: 
 	3	bra JOIN_IF_0
 ELSE_0: 
 JOIN_IF_0: 
+	4	bra thisfunc
 	
 
 ------------------ Values Start Here ------------------
-	0, d
+	-3, d
+	-3, s
 	
 
 
-	s, 582
 	b, 2
 	y, 28

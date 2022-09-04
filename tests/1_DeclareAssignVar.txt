@@ -5,8 +5,9 @@ var x, y, z,a,b,c;
     let y <- 2;
     let z <- x;
     let a <- x+1;
-    let b <- z+1;
-    let c <- x+z;
+
+    let a <- c;
+    let a <- g;
     
     if x < 0
     then

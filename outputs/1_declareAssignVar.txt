@@ -1,22 +1,29 @@
+	*** ASSIGN INST NUMBER 0 TO a ***
+	*** ASSIGN INST NUMBER 0 TO a ***
+	*** ASSIGN INST NUMBER 3 TO b ***
 	---------- Printing Instructions ----------
 
 MAIN: 
+ --- Use of UNINITIALIZED variable: c --- : 
+ --- Use of UNKNOWN variable: g --- : 
 IF_0: 
-___Comparing two constant: 
+ <Comparing two constant> 2, 0: 
 	2	bra ELSE_0
 THEN_0: 
-	3	bra JOIN_IF_0
+ --- Use of UNINITIALIZED variable: b --- : 
+	3	addi b(0)  #1 
+	4	bra JOIN_IF_0
 ELSE_0: 
 JOIN_IF_0: 
 	
 
 ------------------ Values Start Here ------------------
+	-3, b
+	-3, c
+	0, a
 	
 
 
-	c, 4
-	x, 2
-	b, 4
-	a, 3
 	z, 2
 	y, 2
+	x, 2

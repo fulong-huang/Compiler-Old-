@@ -22,7 +22,13 @@ std::pair<std::string, int> expression();
 void relation(std::string target);
 
 void assignment();
-void funcCall();
+
+
+// ****************************************
+int funcCall();
+// ****************************************
+
+
 void ifStatement();
 void whileStatement();
 void returnStatement();

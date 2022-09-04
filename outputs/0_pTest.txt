@@ -1,32 +1,50 @@
+	*** ASSIGN INST NUMBER 0 TO a ***
+	*** ASSIGN INST NUMBER 0 TO b ***
+	*** ASSIGN INST NUMBER 0 TO c ***
+	*** ASSIGN INST NUMBER 0 TO prof ***
+	*** ASSIGN INST NUMBER 10 TO b ***
+	*** ASSIGN INST NUMBER 13 TO c ***
+	*** ASSIGN INST NUMBER 16 TO a ***
 	---------- Printing Instructions ----------
 
 MAIN: 
+	2	bra InputNum
+	3	bra InputNum
+	4	bra InputNum
+	5	bra InputNum
 WHILE_0: 
-___Comparing two constant: 
+	6	cmpi (0)  #100 
+	7	bge (6)  (JOIN_WHILE_0)
 DO_0: 
 IF_0: 
-___Comparing two constant: 
-	2	bra ELSE_0
+	8	cmpi (0)  #0 
+	9	bge (8)  (ELSE_0)
 THEN_0: 
+	10	addi (0)  #1 
 IF_1: 
-___Comparing two constant: 
-	3	bra ELSE_1
+	11	cmpi (0)  #0 
+	12	bge (11)  (ELSE_1)
 THEN_1: 
-	4	bra JOIN_IF_1
+	13	addi (0)  #1 
+	14	bra JOIN_IF_1
 ELSE_1: 
 JOIN_IF_1: 
-	5	bra JOIN_IF_0
+	15	bra JOIN_IF_0
 ELSE_0: 
 JOIN_IF_0: 
-	6	bra WHILE_0
+	16	addi (0)  #1 
+	17	bra WHILE_0
 JOIN_WHILE_0: 
+	18	bra OutputNum
+	19	bra OutputNum
+	20	bra OutputNum
 	
 
 ------------------ Values Start Here ------------------
+	0, prof
+	0, c
+	0, b
+	16, a
 	
 
 
-	prof, 0
-	c, 1
-	b, 1
-	a, 1

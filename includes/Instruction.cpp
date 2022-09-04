@@ -25,8 +25,17 @@ void addInst(struct INST* inst){
     InstTail = inst;
 }
 
+void addLabelInst(std::string labl){
+    struct Instruction* inst = newInstruction();
+    inst->op = LABEL;
+    inst->InstNum = 100;
+    inst->a = newOp(labl, -1);
+    addInst((INST*) inst);
+}
+
 void InitInstruction(){
     currInstNum = 2;
+    InMain = true;
     InstHead = (INST*) newInstBlock("MAIN");
     InstTail = ((InstBlock*) InstHead)->head;
 }
@@ -99,10 +108,10 @@ void PrintInst(struct INST* currInst){
         
         if(inst->b != NULL){
             if(inst->b->name != ""){
-                cmd += "(" + inst->b->name + ")";
+                cmd += " (" + inst->b->name + ")";
             }
             else{
-                cmd += "#" + std::to_string(inst->b->instNum) + " ";
+                cmd += " #" + std::to_string(inst->b->instNum) + " ";
             }
         }
         put(cmd);
