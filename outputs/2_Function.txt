@@ -2,15 +2,16 @@
 
 MAIN: 
 IF_0: 
-	3	CMP 3 2 3 
-	4	BNE 3 (ELSE_0)-1 
+	2	CMP 2 2 3 
+	3	BNE 2 (ELSE_0)-1 
 THEN_0: 
-	5	BEQ -0 (JOIN_IF_0)-1 
+	4	BEQ -0 (JOIN_IF_0)-1 
 ELSE_0: 
 JOIN_IF_0: 
 	
 
 ------------------ Values Start Here ------------------
+	0, d
 	
 
 

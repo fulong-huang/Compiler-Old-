@@ -2,24 +2,24 @@
 
 MAIN: 
 WHILE_0: 
-	3	CMP 3 0 100 
-	4	BGE 3 (JOIN_WHILE_0)-1 
+	2	CMP 2 0 100 
+	3	BGE 2 (JOIN_WHILE_0)-1 
 DO_0: 
 IF_0: 
-	5	CMP 5 0 0 
-	6	BGE 5 (ELSE_0)-1 
+	4	CMP 4 0 0 
+	5	BGE 4 (ELSE_0)-1 
 THEN_0: 
 IF_1: 
-	7	CMP 7 0 0 
-	8	BGE 7 (ELSE_1)-1 
+	6	CMP 6 0 0 
+	7	BGE 6 (ELSE_1)-1 
 THEN_1: 
-	9	BEQ -0 (JOIN_IF_1)-1 
+	8	BEQ -0 (JOIN_IF_1)-1 
 ELSE_1: 
 JOIN_IF_1: 
-	10	BEQ -0 (JOIN_IF_0)-1 
+	9	BEQ -0 (JOIN_IF_0)-1 
 ELSE_0: 
 JOIN_IF_0: 
-	11	BEQ -0 (WHILE_0)-1 
+	10	BEQ -0 (WHILE_0)-1 
 JOIN_WHILE_0: 
 	
 
@@ -28,6 +28,6 @@ JOIN_WHILE_0:
 
 
 	prof, 0
-	b, 1
 	c, 1
+	b, 1
 	a, 1

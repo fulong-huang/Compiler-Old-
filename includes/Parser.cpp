@@ -524,6 +524,14 @@ void ifStatement(){
     thenBlock->next = (INST*) fiBlock; 
     elseBlock->next = (INST*) fiBlock; 
 
+    // Save JoinBlock (from outer block)
+    //  Replace JoinBlock with current joinBlock (fiBlock).
+    struct INST* savedJoin = JoinBlock;
+    JoinBlock = (INST*) fiBlock;
+    // State If statement started;
+    int saveStatementType = statementType;
+    statementType = 1;
+
     // Jump into if block
     addInst( (INST*) ifBlock);
     InstTail = ifBlock->head;
@@ -701,7 +709,7 @@ void varDecl(){
     nextChar();
     while(CURR == ','){
         next();
-        ident();
+        declareVar(ident());
         nextChar();
     }
     nextChar();
@@ -783,12 +791,6 @@ void computation(){
         throw std::invalid_argument("Computation expecting \"main\" at the top of the file");
     }
     
-    struct Instruction* inst = newInstruction();
-    inst->op = LABEL;
-    inst->a = newOp("MAIN", 0);
-    inst->InstNum = currInstNum++;
-    addInst((INST*) inst);
-
     nextChar();
     while(CURR != '{'){
         if(nextIs("var")){

@@ -3,6 +3,9 @@
 int currInstNum;
 struct INST *InstHead, *InstTail;
 
+int statementType = 0; // 0: main,  1: if,     2: while
+struct INST *JoinBlock;
+
 void InitInstruction();
 
 struct Instruction* newInstruction();

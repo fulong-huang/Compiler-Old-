@@ -1,0 +1,26 @@
+letter = "a"|"b"|...|"z"|"A"|"B"..."Z".
+digit = "0"|"1"|...|"9".
+relOp = "=="|"!="|"<"|"<="|">"|">=".
+
+ident = letter {letter | digit}
+number = digit {digit}.
+varRef = ident.
+factor = varRef | number | "(" expression ")" | funcCall.
+term = factor {("*"|"/") factor}.
+expression = term {("+"|"-") term}.
+relation = expression relOp expression.
+
+assignment = "let" iden "<-" expression.
+funcCall = "call" ident ["(" [expression {"," expression}]")"].
+ifStatement = "if" relation "then" statSequence ["else" statSequence] "fi".
+whileStatement = "while" relation "do" StatSequence "od".
+returnStatement = "return" [expression].
+
+statement = assignment | funcCall | ifStatement | whileStatement | returnStatement.
+statSequence = statement {";" statement} [";"].
+
+varDecl = "var" indent {"," ident} ";".
+funcDecl = ["void"] "function" ident formalParam ";" funcBody ";".
+formalParam = "("[ident {";" ident}]")".
+funcBody = {varDecl} "{" [statSequence] "}"
+computation = "main" {varDecl} {funcDecl} "{"statSequence"}".

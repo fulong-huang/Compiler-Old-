@@ -1,5 +1,11 @@
 #include "ValueTable.h"
 
+
+void declareVar(std::string ident){
+    insertVT(ident, 0);
+}
+
+
 void insertVT(std::string ident, int inst){
     ValueTable[ident] = inst;
     std::unordered_map<std::string, int>::const_iterator result = ConstVal.find(ident);

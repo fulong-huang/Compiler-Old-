@@ -27,8 +27,8 @@ void addInst(struct INST* inst){
 
 void InitInstruction(){
     currInstNum = 2;
-    InstHead = (INST*) newInstruction();
-    InstTail = InstHead;
+    InstHead = (INST*) newInstBlock("MAIN");
+    InstTail = ((InstBlock*) InstHead)->head;
 }
 
 void PrintInstBlock(struct InstBlock* instBlock){
@@ -59,6 +59,10 @@ void PrintInstBlock(struct InstBlock* instBlock){
 
         addLabel(n2->name);
         PrintInst(n2->head);
+    }
+    else if(instBlock->name[0] == 'M'){ // Main block, only ran once
+        addLabel(instBlock->name);
+        PrintInst((INST*) instBlock->head);
     }
     else{
         addLabel("============== UNKNOWN LABEL NAME ==============" + instBlock->name);
