@@ -3,15 +3,18 @@
 #include <iostream>
 
 static const std::string opText[] = {
-    "ADD","SUB","MUL","DIV","MOD","CMP","OR","AND","BIC","XOR","LSH","ASH","CHK",
+    // [0] for ADD
+    "add","sub","mul","div","mod","cmp","or","and","bic","xor","lsh","ash","chk",
     // [13] for ADDI
-    "ADDI","SUBI","MULI","DIVI","MODI","CMPI","ORI","ANDI","BICI","XORI","LSHI","ASHI","CHKI", 
-    "LDW","LDX","POP","STW","STX","PSH",
+    "addi","subi","muli","divi","modi","cmpi","ori","andi","bici","xori","lshi","ashi","chki",
+    "ldw","ldx","pop","stw","stx","psh",
     // [32] FOR BEQ
-    "BEQ","BNE","BLT","BGE","BLE","BGT","BSR","JSR","RET","RDD","WRD","WRH","WRL",
-
-    "IFLOOP", "WHILELOOP"
+    "beq","bne","blt","bge","ble","bgt","bsr","jsr","ret","rdd","wrd","wrh","wrl", 
+    "bra", "neg",
+    
+    "ifloop", "whileloop", 
     };
+
 
 enum InstType{
     // Single instruction
@@ -81,6 +84,8 @@ enum Mnemonic{
     WRH,
     WRL,
 
+    BRA,
+    NEG,
     LABEL
     // IFLOOP,
     // WHILELOOP
@@ -117,7 +122,6 @@ struct Instruction
     Mnemonic op;
     Opr* a;
     Opr* b;
-    Opr* c;
 };
 
 // Block of instruction

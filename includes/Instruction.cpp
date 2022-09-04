@@ -71,6 +71,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
 
 void PrintInst(struct INST* currInst){
     struct Instruction* inst;
+    int n;
     while(currInst != NULL){
         if(currInst->TYPE == BLOCK){
             PrintInstBlock((InstBlock*) currInst);
@@ -87,20 +88,22 @@ void PrintInst(struct INST* currInst){
             continue;
         }
         std::string cmd = std::to_string(inst->InstNum) + "\t" + 
-                        opText[inst->op] + " " + 
-                        inst->a->name+std::to_string(inst->a->instNum) + " ";
+                        opText[inst->op] + " ";
+        if(inst->a->name != "-"){
+            cmd += inst->a->name;
+        }
+        n = inst->a->instNum;
+        if(n != -1){
+            cmd += "(" + std::to_string(inst->a->instNum) + ") ";
+        }
         
         if(inst->b != NULL){
             if(inst->b->name != ""){
                 cmd += "(" + inst->b->name + ")";
             }
-            cmd += std::to_string(inst->b->instNum) + " ";
-        }
-        if(inst->c != NULL){
-            if(inst->c->name != ""){
-                cmd += "(" + inst->c->name + ")";
+            else{
+                cmd += "#" + std::to_string(inst->b->instNum) + " ";
             }
-            cmd += std::to_string(inst->c->instNum) + " ";
         }
         put(cmd);
 

@@ -2,24 +2,23 @@
 
 MAIN: 
 WHILE_0: 
-	2	CMP 2 0 100 
-	3	BGE 2 (JOIN_WHILE_0)-1 
+___Comparing two constant: 
 DO_0: 
 IF_0: 
-	4	CMP 4 0 0 
-	5	BGE 4 (ELSE_0)-1 
+___Comparing two constant: 
+	2	bra ELSE_0
 THEN_0: 
 IF_1: 
-	6	CMP 6 0 0 
-	7	BGE 6 (ELSE_1)-1 
+___Comparing two constant: 
+	3	bra ELSE_1
 THEN_1: 
-	8	BEQ -0 (JOIN_IF_1)-1 
+	4	bra JOIN_IF_1
 ELSE_1: 
 JOIN_IF_1: 
-	9	BEQ -0 (JOIN_IF_0)-1 
+	5	bra JOIN_IF_0
 ELSE_0: 
 JOIN_IF_0: 
-	10	BEQ -0 (WHILE_0)-1 
+	6	bra WHILE_0
 JOIN_WHILE_0: 
 	
 

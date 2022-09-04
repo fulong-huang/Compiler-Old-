@@ -2,10 +2,10 @@
 
 MAIN: 
 IF_0: 
-	2	CMP 2 2 3 
-	3	BNE 2 (ELSE_0)-1 
+___Comparing two constant: 
+	2	bra ELSE_0
 THEN_0: 
-	4	BEQ -0 (JOIN_IF_0)-1 
+	3	bra JOIN_IF_0
 ELSE_0: 
 JOIN_IF_0: 
 	

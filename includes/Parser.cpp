@@ -155,9 +155,8 @@ std::pair<std::string, int> term(){
                 }
                 inst->InstNum = currInstNum;
                 inst->op = MULI;
-                inst->a = newOp("", currInstNum);
-                inst->b = newOp(rhs.first, rhs.second);
-                inst->c = newOp(lhs.first, lhs.second);
+                inst->a = newOp(rhs.first, rhs.second);
+                inst->b = newOp(lhs.first, lhs.second);
                 addInst((INST*) inst);
                 lhs.first = "-";
                 lhs.second = currInstNum++;
@@ -169,9 +168,8 @@ std::pair<std::string, int> term(){
             else if(constRHS){
                 inst->InstNum = currInstNum;
                 inst->op = MULI;
-                inst->a = newOp("", currInstNum);
-                inst->b = newOp(lhs.first, lhs.second);
-                inst->c = newOp(rhs.first, rhs.second);
+                inst->a = newOp(lhs.first, lhs.second);
+                inst->b = newOp(rhs.first, rhs.second);
 
                 addInst((INST*) inst);
                 lhs.first = "-";
@@ -184,9 +182,8 @@ std::pair<std::string, int> term(){
             else{
                 inst->InstNum = currInstNum;
                 inst->op = MUL;
-                inst->a = newOp("", currInstNum);
-                inst->b = newOp(lhs.first, lhs.second);
-                inst->c = newOp(rhs.first, rhs.second);
+                inst->a = newOp(lhs.first, lhs.second);
+                inst->b = newOp(rhs.first, rhs.second);
 
                 addInst((INST*) inst);
                 lhs.first = "-";
@@ -210,20 +207,18 @@ std::pair<std::string, int> term(){
                 //  (lhs)/(rhs) ==       (1/(rhs))   *   (lhs)
 
                 //   1 / (rhs):
-                inst->InstNum = currInstNum;
+                inst->InstNum = currInstNum++;
                 inst->op = DIV;
-                inst->a = newOp("", currInstNum++);
-                inst->b = newOp("-", 1);
-                inst->c = newOp(rhs.first, rhs.second);
+                inst->a = newOp("-", 1);
+                inst->b = newOp(rhs.first, rhs.second);
                 addInst((INST*) inst);
 
                 //  result * (lhs)
                 inst = newInstruction();
                 inst->InstNum = currInstNum;
                 inst->op = MULI;
-                inst->a = newOp("", currInstNum);
-                inst->b = newOp("-", currInstNum-1);
-                inst->c = newOp("", lhs.second);
+                inst->a = newOp("-", currInstNum-1);
+                inst->b = newOp("", lhs.second);
                 addInst((INST*) inst);
 
                 lhs.first = "-";
@@ -236,9 +231,8 @@ std::pair<std::string, int> term(){
             else if(constRHS){
                 inst->InstNum = currInstNum;
                 inst->op = DIVI;
-                inst->a = newOp("", currInstNum);
-                inst->b = newOp(lhs.first, lhs.second);
-                inst->c = newOp(rhs.first, rhs.second);
+                inst->a = newOp(lhs.first, lhs.second);
+                inst->b = newOp(rhs.first, rhs.second);
 
                 addInst((INST*) inst);
                 lhs.first = "-";
@@ -251,9 +245,8 @@ std::pair<std::string, int> term(){
             else{
                 inst->InstNum = currInstNum;
                 inst->op = MUL;
-                inst->a = newOp("", currInstNum);
-                inst->b = newOp(lhs.first, lhs.second);
-                inst->c = newOp(rhs.first, rhs.second);
+                inst->a = newOp(lhs.first, lhs.second);
+                inst->b = newOp(rhs.first, rhs.second);
 
                 addInst((INST*) inst);
                 lhs.first = "-";
@@ -294,9 +287,8 @@ std::pair<std::string, int> expression(){
                 }
                 inst->InstNum = currInstNum;
                 inst->op = ADDI;
-                inst->a = newOp("", currInstNum);
-                inst->b = newOp(rhs.first, rhs.second);
-                inst->c = newOp(lhs.first, lhs.second);
+                inst->a = newOp(rhs.first, rhs.second);
+                inst->b = newOp(lhs.first, lhs.second);
                 addInst((INST*) inst);
                 lhs.first = "-";
                 lhs.second = currInstNum++;
@@ -308,9 +300,8 @@ std::pair<std::string, int> expression(){
             else if(constRHS){
                 inst->InstNum = currInstNum;
                 inst->op = ADDI;
-                inst->a = newOp("", currInstNum);
-                inst->b = newOp(lhs.first, lhs.second);
-                inst->c = newOp(rhs.first, rhs.second);
+                inst->a = newOp(lhs.first, lhs.second);
+                inst->b = newOp(rhs.first, rhs.second);
                 addInst((INST*) inst);
                 lhs.first = "-";
                 lhs.second = currInstNum++;
@@ -322,9 +313,8 @@ std::pair<std::string, int> expression(){
             else{
                 inst->InstNum = currInstNum;
                 inst->op = ADD;
-                inst->a = newOp("", currInstNum);
-                inst->b = newOp(rhs.first, rhs.second);
-                inst->c = newOp(lhs.first, lhs.second);
+                inst->a = newOp(rhs.first, rhs.second);
+                inst->b = newOp(lhs.first, lhs.second);
                 addInst((INST*) inst);
                 lhs.first = "-";
                 lhs.second = currInstNum++;
@@ -347,20 +337,18 @@ std::pair<std::string, int> expression(){
                 //  (lhs)-(rhs) =    (0 - (rhs)) + lhs
 
                 //   0 - (rhs):
-                inst->InstNum = currInstNum;
+                inst->InstNum = currInstNum++;
                 inst->op = SUB;
-                inst->a = newOp("", currInstNum++);
-                inst->b = newOp("-", 0);
-                inst->c = newOp(rhs.first, rhs.second);
+                inst->a = newOp("-", 0);
+                inst->b = newOp(rhs.first, rhs.second);
                 addInst((INST*) inst);
 
                 //  result + (lhs)
                 inst = newInstruction();
                 inst->InstNum = currInstNum;
                 inst->op = ADDI;
-                inst->a = newOp("", currInstNum);
-                inst->b = newOp("-", currInstNum-1);
-                inst->c = newOp("", lhs.second);
+                inst->a = newOp("-", currInstNum-1);
+                inst->b = newOp("", lhs.second);
                 addInst((INST*) inst);
 
                 lhs.first = "-";
@@ -373,9 +361,8 @@ std::pair<std::string, int> expression(){
             else if(constRHS){
                 inst->InstNum = currInstNum;
                 inst->op = SUBI;
-                inst->a = newOp("", currInstNum);
-                inst->b = newOp(lhs.first, lhs.second);
-                inst->c = newOp(rhs.first, rhs.second);
+                inst->a = newOp(lhs.first, lhs.second);
+                inst->b = newOp(rhs.first, rhs.second);
                 addInst((INST*) inst);
                 lhs.first = "-";
                 lhs.second = currInstNum++;
@@ -387,9 +374,8 @@ std::pair<std::string, int> expression(){
             else{
                 inst->InstNum = currInstNum;
                 inst->op = SUB;
-                inst->a = newOp("", currInstNum);
-                inst->b = newOp(rhs.first, rhs.second);
-                inst->c = newOp(lhs.first, lhs.second);
+                inst->a = newOp(rhs.first, rhs.second);
+                inst->b = newOp(lhs.first, lhs.second);
                 addInst((INST*) inst);
                 lhs.first = "-";
                 lhs.second = currInstNum++;
@@ -417,10 +403,123 @@ void relation(std::string target){
     
 
     struct Instruction* inst = newInstruction();
+    bool neg = false;
+    if(lhs.first == ""){
+        // if two constant: (1 > 2)
+        if(rhs.first == ""){
+            inst->op = LABEL;
+            inst->InstNum = 100;
+            inst->a = newOp("___Comparing two constant", -1);
+            addInst((INST*) inst);
+            inst = newInstruction();
+            inst->op = BRA;
+            inst->a = newOp(target, -1);
+            int diff = lhs.second - rhs.second;
+            switch(op){
+                case EQ: // branch when not equal
+                    if(diff != 0){
+                        inst->InstNum = currInstNum++;
+                        addInst((INST*) inst);
+                    }
+                    break;
+                case NE:
+                    if(diff == 0){
+                        inst->InstNum = currInstNum++;
+                        addInst((INST*) inst);
+                    }
+                    break;
+                case GT:
+                    if(diff <= 0){
+                        inst->InstNum = currInstNum++;
+                        addInst((INST*) inst);
+                    }
+                    break;
+                case GE:
+                    if(diff < 0){
+                        inst->InstNum = currInstNum++;
+                        addInst((INST*) inst);
+                    }
+                    break;
+                case LT:
+                    if(diff >= 0){
+                        inst->InstNum = currInstNum++;
+                        addInst((INST*) inst);
+                    }
+                    break;
+                case LE:
+                    if(diff > 0){
+                        inst->InstNum = currInstNum++;
+                        addInst((INST*) inst);
+                    }
+                    break;
+                default:
+                    throw std::invalid_argument("Unknow relOp\n");
+                
+            }
+            return;
+        }
+        // else: (exp: 2 < a)
+        else{ 
+            inst->op = NEG;
+            inst->a = newOp(lhs.first, lhs.second);
+            inst->InstNum = currInstNum++;
+            addInst((INST*) inst);
+
+            inst = newInstruction();
+
+            std::pair<std::string, int> s = lhs;
+            lhs = rhs;
+            rhs = s;
+
+            neg = true;
+        }
+    }
+
+    if(rhs.first == ""){
+        inst->op = CMPI;
+        inst->a = newOp(lhs.first, lhs.second);
+        inst->b = newOp(rhs.first, rhs.second);
+        inst->InstNum = currInstNum++;
+        addInst((INST*) inst);
+
+        switch(op){
+            case EQ: // branch when not equal
+                if(neg) inst->op = BEQ;
+                else inst->op = BNE;
+                break;
+            case NE:
+                if(neg) inst->op = BNE;
+                else inst->op = BEQ;
+                break;
+            case GT:
+                if(neg) inst->op = BGT;
+                else inst->op = BLE;
+                break;
+            case GE:
+                if(neg) inst->op = BGE;
+                else inst->op = BLT;
+                break;
+            case LT:
+                if(neg) inst->op = BLT;
+                else inst->op = BGE;
+                break;
+            case LE:
+                if(neg) inst->op = BLE;
+                else inst->op = BGT;
+                break;
+            default:
+                throw std::invalid_argument("Unknow relOp\n");
+        }
+        inst->a = newOp("", currInstNum-1);
+        inst->b = newOp(target, -1);
+        inst->InstNum = currInstNum++;
+        addInst((INST*) inst);
+        return;
+    }
+
     inst->op = CMP;
-    inst->a = newOp("", currInstNum);
-    inst->b = newOp(lhs.first, lhs.second);
-    inst->c = newOp(rhs.first, rhs.second);
+    inst->a = newOp(lhs.first, lhs.second);
+    inst->b = newOp(rhs.first, rhs.second);
     inst->InstNum = currInstNum++;
     addInst((INST*) inst);
     inst = newInstruction();
@@ -556,9 +655,8 @@ void ifStatement(){
 
     // If statement need to skip it
     struct Instruction* inst = newInstruction();
-    inst->op = BEQ;
-    inst->a = newOp("-", 0);
-    inst->b = newOp(fiBlock->name, -1);
+    inst->op = BRA;
+    inst->a = newOp(fiBlock->name, -1);
     inst->InstNum = currInstNum++;
     addInst((INST*) inst);
 
@@ -636,9 +734,8 @@ void whileStatement(){
     // *********** DO BLOCK END ***************
     // jump back to while block
     struct Instruction* inst = newInstruction();
-    inst->op = BEQ;
-    inst->a = newOp("-", 0);
-    inst->b = newOp(whileBlock->name, -1);
+    inst->op = BRA;
+    inst->a = newOp(whileBlock->name, -1);
     inst->InstNum = currInstNum++;
     addInst((INST*) inst);
 
