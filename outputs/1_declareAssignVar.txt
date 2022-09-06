@@ -1,26 +1,30 @@
-	*** ASSIGN INST NUMBER 0 TO a ***
-	*** ASSIGN INST NUMBER 0 TO a ***
-	*** ASSIGN INST NUMBER 3 TO b ***
 	---------- Printing Instructions ----------
 
 MAIN: 
- --- Use of UNINITIALIZED variable: c --- : 
- --- Use of UNKNOWN variable: g --- : 
+		<Use of UNINITIALIZED variable: c>
+		<Let a <- 0>
+		<Use of UNKNOWN variable: g>
+		<Let a <- 0>
 IF_0: 
- <Comparing two constant> 2, 0: 
+		<Comparing two constant2, 0>
 	2	bra ELSE_0
 THEN_0: 
- --- Use of UNINITIALIZED variable: b --- : 
+		<Use of UNINITIALIZED variable: b>
 	3	addi b(0)  #1 
+		<Let b <- 3>
 	4	bra JOIN_IF_0
 ELSE_0: 
 JOIN_IF_0: 
+	5	phi b(3)  (b)
+END_IF_0: 
+		<Let b <- 5>
 	
 
 ------------------ Values Start Here ------------------
-	-3, b
+	Value Table size: 1
 	-3, c
 	0, a
+	5, b
 	
 
 

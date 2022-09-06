@@ -1,50 +1,66 @@
-	*** ASSIGN INST NUMBER 0 TO a ***
-	*** ASSIGN INST NUMBER 0 TO b ***
-	*** ASSIGN INST NUMBER 0 TO c ***
-	*** ASSIGN INST NUMBER 0 TO prof ***
-	*** ASSIGN INST NUMBER 10 TO b ***
-	*** ASSIGN INST NUMBER 13 TO c ***
-	*** ASSIGN INST NUMBER 16 TO a ***
 	---------- Printing Instructions ----------
 
 MAIN: 
 	2	bra InputNum
+		<Let a <- 2>
 	3	bra InputNum
+		<Let b <- 3>
 	4	bra InputNum
+		<Let c <- 4>
 	5	bra InputNum
+		<Let prof <- 5>
 WHILE_0: 
-	6	cmpi (0)  #100 
+	6	cmpi a(2)  #100 
 	7	bge (6)  (JOIN_WHILE_0)
 DO_0: 
 IF_0: 
-	8	cmpi (0)  #0 
+	8	cmpi b(3)  #0 
 	9	bge (8)  (ELSE_0)
 THEN_0: 
-	10	addi (0)  #1 
+	10	addi b(3)  #1 
+		<Let b <- 10>
 IF_1: 
-	11	cmpi (0)  #0 
+	11	cmpi c(4)  #0 
 	12	bge (11)  (ELSE_1)
 THEN_1: 
-	13	addi (0)  #1 
+	13	addi c(4)  #1 
+		<Let c <- 13>
 	14	bra JOIN_IF_1
 ELSE_1: 
 JOIN_IF_1: 
-	15	bra JOIN_IF_0
+	15	phi c(13)  c(4)
+END_IF_1: 
+		<Let c <- 15>
+	16	bra JOIN_IF_0
 ELSE_0: 
 JOIN_IF_0: 
-	16	addi (0)  #1 
-	17	bra WHILE_0
+	17	phi c(15)  c(4)
+	18	phi b(10)  b(3)
+END_IF_0: 
+		<Let c <- 17>
+		<Let b <- 18>
+	19	addi a(2)  #1 
+		<Let a <- 19>
+	20	bra WHILE_0
 JOIN_WHILE_0: 
-	18	bra OutputNum
-	19	bra OutputNum
-	20	bra OutputNum
+	21	phi b(18) 
+	22	phi a(19) 
+	23	phi c(17) 
+END_WHILE_0: 
+		<Let b <- 21>
+		<Let a <- 22>
+		<Let c <- 23>
+	24	bra OutputNum
+	25	bra OutputNum
+	26	bra OutputNum
 	
 
 ------------------ Values Start Here ------------------
-	0, prof
-	0, c
-	0, b
-	16, a
+	Value Table size: 1
+	5, prof
+	21, b
+	22, a
+	23, c
 	
 
 

@@ -54,7 +54,8 @@ int main()
                 PrintInst(InstHead);
                 
                 put("\n\n------------------ Values Start Here ------------------");
-                std::vector<std::pair<std::string, int> > vt(ValueTable.begin(), ValueTable.end());
+                put("Value Table size: " + std::to_string(ValueTable.size()));
+                std::vector<std::pair<std::string, int> > vt(ValueTable[0].begin(), ValueTable[0].end());
                 std::sort(vt.begin(), vt.end(), VTcmp);
 
                 for(std::pair<std::string, int> i : vt){
@@ -66,7 +67,7 @@ int main()
                 // std::vector<std::pair<int, int> > ct(ConstTable.begin(), ConstTable.end());
                 // std::sort(ct.begin(), ct.end(), CTcmp);
 
-                for(std::pair<std::string, int> i : ConstVal){
+                for(std::pair<std::string, int> i : ConstVal[0]){
                     put(i.first + ", " + std::to_string(i.second));
                 }
                 closeWriteFile();

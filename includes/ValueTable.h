@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <unordered_map>
 #include "Instruction.cpp" 
 
@@ -13,17 +14,14 @@
 //  var x, y; (inst 25) x = Call func(); (inst 26) y = Call func();
 // x and y will be stored in ValueTable, ValueTable = {[x:25], [y:26]}
 //  var z; z = x+y;                      ValueTable = {[x:25], [y:26], [z:27]}      1 instruction created
-std::unordered_map<std::string, int> ValueTable;
+std::vector<std::unordered_map<std::string, int> > ValueTable;
 
 // ConstVal:        <ident, storedValue>
 //  var x, y; x = 5; y = 3;
 // x and y will be stored in ConstVal, ConstVal = {[x:5], [y:3]}
 //  var z; z = x+y;                    ConstVal = {[x:5], [y:3], [z:8]}             0 instruction created
-std::unordered_map<std::string, int> ConstVal; // store instNum of constant;
+std::vector<std::unordered_map<std::string, int> > ConstVal; // store instNum of constant;
 
-std::unordered_map<std::string, int> SubValueTable; // value table for [if] and [while] statement 
-
-std::unordered_map<std::string, int> SubConstVal;   // value table for [if] and [while] statement 
 
 
 void InitVT();
@@ -36,3 +34,7 @@ std::pair<int, int> getVT(std::string ident);
 void insertCV(std::string ident, int inst);
 // std::pair<bool, int> getCV(std::string ident);
 
+
+void InsertVTLayer();
+void RemoveVTLayer();
+void ClearLastLayer();

@@ -2,18 +2,26 @@
 
 MAIN: 
 IF_0: 
- <Comparing two constant> 2, 3: 
+		<Comparing two constant2, 3>
 	2	bra ELSE_0
 THEN_0: 
-	3	bra JOIN_IF_0
+		<Use of UNINITIALIZED variable: b>
+	3	addi b(0)  #579 
+		<Let s <- 3>
+	4	bra JOIN_IF_0
 ELSE_0: 
 JOIN_IF_0: 
-	4	bra thisfunc
+	5	phi s(3)  (s)
+END_IF_0: 
+		<Let s <- 5>
+	6	bra thisfunc
 	
 
 ------------------ Values Start Here ------------------
+	Value Table size: 1
+	-3, a
 	-3, d
-	-3, s
+	5, s
 	
 
 

@@ -107,11 +107,13 @@ std::pair<std::string, int> factor(){ // return result as pair<name, int>
         if(nextIs("call")){     // function Call
             skipNext(4);       // must eat call before funCall();
             int fNum = funcCall();     // ------------- change result -------------
-            result.first = fNum;
+            result.first = "FunCall";
+            result.second = fNum;
         }
         else{                   // varRef
             std::string idt = ident();
             std::pair<int, int> val = varRef(idt);
+            
             if(val.first == -1){
                 result.first = "";
                 result.second = val.second;
@@ -119,19 +121,15 @@ std::pair<std::string, int> factor(){ // return result as pair<name, int>
             else if(val.first == -2){
                 result.first = idt;
                 result.second = 0;
-                addLabelInst(" --- Use of UNKNOWN variable: " +
-                    idt + " --- "
-                );
+                addCommentInst("Use of UNKNOWN variable: " + idt);
             }
             else if(val.first == -3){
                 result.first = idt;
                 result.second = 0;
-                addLabelInst(" --- Use of UNINITIALIZED variable: "
-                    + idt + " --- "
-                );
+                addCommentInst("Use of UNINITIALIZED variable: " + idt);
             }
             else{
-                result.first = "-";
+                result.first = idt;
                 result.second = val.first;
             }
         }
@@ -324,8 +322,8 @@ std::pair<std::string, int> expression(){
             else{
                 inst->InstNum = currInstNum;
                 inst->op = ADD;
-                inst->a = newOp(rhs.first, rhs.second);
-                inst->b = newOp(lhs.first, lhs.second);
+                inst->a = newOp(lhs.first, lhs.second);
+                inst->b = newOp(rhs.first, rhs.second);
                 addInst((INST*) inst);
                 lhs.first = "-";
                 lhs.second = currInstNum++;
@@ -349,9 +347,8 @@ std::pair<std::string, int> expression(){
 
                 //   0 - (rhs):
                 inst->InstNum = currInstNum++;
-                inst->op = SUB;
-                inst->a = newOp("-", 0);
-                inst->b = newOp(rhs.first, rhs.second);
+                inst->op = NEG;
+                inst->a = newOp(rhs.first, rhs.second);
                 addInst((INST*) inst);
 
                 //  result + (lhs)
@@ -418,7 +415,7 @@ void relation(std::string target){
     if(lhs.first == ""){
         // if two constant: (1 > 2)
         if(rhs.first == ""){
-            addLabelInst((" <Comparing two constant> "
+            addCommentInst(("Comparing two constant"
                 + std::to_string(lhs.second) + ", " + 
                 std::to_string(rhs.second)
             ));
@@ -581,9 +578,9 @@ void assignment(){
         // ======== update instruction if needed ========= 
     }
     else{
-        put("*** ASSIGN INST NUMBER " +
-            std::to_string(val.second) + " TO "
-            + name + " ***");
+        addCommentInst("Let " + name + " <- " + 
+            std::to_string(val.second)
+        );
         
         insertVT(name, val.second);
     }
@@ -635,22 +632,25 @@ void ifStatement(){
     struct InstBlock* thenBlock = newInstBlock(labels[1]);
     struct InstBlock* elseBlock = newInstBlock(labels[2]);
     struct InstBlock* fiBlock = newInstBlock(labels[3]);
+    struct InstBlock* endBlock = newInstBlock(labels[4]);
 
     // Connect instruction Blocks;
     ifBlock->next = (INST*) thenBlock; 
     ifBlock->next2 = (INST*) elseBlock;
     thenBlock->next = (INST*) fiBlock; 
     elseBlock->next = (INST*) fiBlock; 
+    fiBlock->next = (INST*) endBlock;
+
+    // Pointers to join block
+    struct Instruction* joinHead = (Instruction*) fiBlock->head;
+    struct Instruction* joinTail = joinHead;
 
     // Save JoinBlock (from outer block)
     //  Replace JoinBlock with current joinBlock (fiBlock).
     struct INST* savedJoin = JoinBlock;
     JoinBlock = (INST*) fiBlock;
-    // State If statement started;
-    bool sInMain = InMain;
-    InMain = false;
 
-    // Jump into if block
+    // Jump into if block <Check condition>
     addInst( (INST*) ifBlock);
     InstTail = ifBlock->head;
 
@@ -667,6 +667,9 @@ void ifStatement(){
     // Jump into then block
     InstTail = thenBlock->head;
 
+    // ******************* Sub Value Table *******************
+    InsertVTLayer();
+
     statSequence();
     nextChar();
 
@@ -679,6 +682,17 @@ void ifStatement(){
     inst->InstNum = currInstNum++;
     addInst((INST*) inst);
 
+    // ******************* Sub Value Table *******************
+    // ******************* Insert PHI FUnction *******************
+    for(std::pair<std::string, int> i : ValueTable[ValueTable.size()-1]){
+        joinTail = addPhiInst(joinTail, newOp(i.first, i.second), NULL);
+    }
+
+    // *************************************************************
+    // ******************* Constant Table Needed *******************
+    // *************************************************************
+    
+    ClearLastLayer();
 
     if(nextIs("else")){
         // eat "else"
@@ -693,14 +707,49 @@ void ifStatement(){
 
     // End of If statement. (fi;)
 
+
+    // ******************* Sub Value Table *******************
+    // ******************* Update Phi Function *******************
+    struct Instruction* phiInst = (Instruction*) joinHead->next;
+    int idx = ValueTable.size()-1;
+    std::string idt;
+    while(phiInst != NULL){
+        idt = phiInst->a->name;
+        if(ValueTable[idx].find(idt) == ValueTable[idx].end()){
+            phiInst->b = newOp(idt, getVT(idt).first);
+        }
+        else{
+            phiInst->b = newOp(idt, ValueTable[idx][idt]);
+        }
+        phiInst->InstNum = currInstNum++;
+        phiInst = (Instruction*) phiInst->next;
+    }
+
+    for(std::pair<std::string, int> i : ValueTable[ValueTable.size()-1]){
+        joinTail = addPhiInst(joinTail, NULL, newOp(i.first, i.second));
+    }
+
     if(!nextIs("fi")){
         throw std::invalid_argument("IfStatement expecting \"fi\" to end if");
     }
-    skipNext(2); 
+    skipNext(2);
+    
     
     // Jump into fi block
-    InstTail = fiBlock->head;
-    InMain = sInMain;
+    InstTail = (INST*) endBlock->head;
+    // ******************* Sub Value Table *******************
+    RemoveVTLayer();
+
+    // ========== update current layer after removeal =============
+    phiInst = (Instruction*) joinHead->next;
+    while(phiInst != NULL){
+        idt = phiInst->a->name;
+        insertVT(idt, phiInst->InstNum);
+        addCommentInst("Let " + idt + " <- " + 
+            std::to_string(phiInst->InstNum)
+        );
+        phiInst = (Instruction*) phiInst->next;
+    }
 }
 
 
@@ -721,13 +770,17 @@ void whileStatement(){
     struct InstBlock* whileBlock = newInstBlock(labels[0]);
     struct InstBlock* doBlock = newInstBlock(labels[1]);
     struct InstBlock* odBlock = newInstBlock(labels[2]);
+    struct InstBlock* endBlock = newInstBlock(labels[3]);
 
     whileBlock->next = (INST*) doBlock;
     whileBlock->next2 = (INST*) odBlock;
     doBlock->next = (INST*) whileBlock;
+    odBlock->next = (INST*) endBlock;
 
+    struct Instruction* joinHead = (Instruction*) odBlock->head;
+    struct Instruction* joinTail = joinHead;
 
-    // Jump into while block
+    // Jump into while block  <Check condition>
     addInst( (INST*) whileBlock);
     InstTail = whileBlock->head;
 
@@ -739,6 +792,8 @@ void whileStatement(){
     }
     skipNext(2);
     // Do start
+    // ******************* Sub Value Table *******************
+    InsertVTLayer();
 
     // Jump into do block
     InstTail = doBlock->head;
@@ -759,7 +814,26 @@ void whileStatement(){
     addInst((INST*) inst);
 
     // Jump into od block
-    InstTail = odBlock->head;
+    InstTail = endBlock->head;
+    // ******************* Sub Value Table *******************
+    // ******************* Insert PHI FUnction *******************
+    for(std::pair<std::string, int> i : ValueTable[ValueTable.size()-1]){
+        joinTail = addPhiInst(joinTail, newOp(i.first, i.second), newOp(i.first, getVT(i.first).first));
+        
+    }
+    RemoveVTLayer();
+    struct Instruction* phiInst = (Instruction*) joinHead->next;
+    std::string idt;
+    while(phiInst != NULL){
+        idt = phiInst->a->name;
+        phiInst->InstNum = currInstNum++;
+        insertVT(idt, phiInst->InstNum);
+        addCommentInst("Let " + idt + " <- " + 
+            std::to_string(phiInst->InstNum)
+        );
+
+        phiInst = (Instruction*) phiInst->next;
+    }
 
 }
 
@@ -820,8 +894,8 @@ void statSequence(){
 
 void varDecl(){ 
     std::cout << "VARDECL" << std::endl;
-    nextChar(); // unnecessary
-    ident();
+    nextChar(); // unnecessary since ident() have it in first line.
+    declareVar(ident());
     nextChar();
     while(CURR == ','){
         next();

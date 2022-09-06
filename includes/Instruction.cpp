@@ -25,11 +25,28 @@ void addInst(struct INST* inst){
     InstTail = inst;
 }
 
+struct Instruction* addPhiInst(struct Instruction* inst, struct Opr* a, struct Opr* b){
+    struct Instruction* instruction = newInstruction();
+    instruction->op = PHI;
+    instruction->a = a;
+    instruction->InstNum = 102;
+    inst->next = (INST*) instruction;
+    return instruction;
+}
+
 void addLabelInst(std::string labl){
     struct Instruction* inst = newInstruction();
     inst->op = LABEL;
     inst->InstNum = 100;
     inst->a = newOp(labl, -1);
+    addInst((INST*) inst);
+}
+
+void addCommentInst(std::string comt){
+    struct Instruction* inst = newInstruction();
+    inst->op = COMMENT;
+    inst->InstNum = 101;
+    inst->a = newOp(comt, -1);
     addInst((INST*) inst);
 }
 
@@ -52,6 +69,12 @@ void PrintInstBlock(struct InstBlock* instBlock){
         addLabel(n2->name);
         PrintInst(n2->head);
 
+        // Join block
+        n1 = (InstBlock*) n1->next;
+        addLabel(n1->name);
+        PrintInst(n1->head);
+
+        // returned to upper level
         n1 = (InstBlock*) n1->next;
         addLabel(n1->name);
         PrintInst(n1->head);
@@ -66,6 +89,10 @@ void PrintInstBlock(struct InstBlock* instBlock){
         addLabel(n1->name);
         PrintInst(n1->head);
 
+        addLabel(n2->name);
+        PrintInst(n2->head);
+
+        n2 = (InstBlock*) n2->next;
         addLabel(n2->name);
         PrintInst(n2->head);
     }
@@ -96,6 +123,11 @@ void PrintInst(struct INST* currInst){
             currInst = currInst->next;
             continue;
         }
+        if(inst->op == COMMENT){
+            put("\t<" + inst->a->name + ">");
+            currInst = currInst->next;
+            continue;
+        }
         std::string cmd = std::to_string(inst->InstNum) + "\t" + 
                         opText[inst->op] + " ";
         if(inst->a->name != "-"){
@@ -108,7 +140,11 @@ void PrintInst(struct INST* currInst){
         
         if(inst->b != NULL){
             if(inst->b->name != ""){
-                cmd += " (" + inst->b->name + ")";
+                if(inst->b->instNum < 0)
+                    cmd += " (" + inst->b->name + ")";
+                else
+                    cmd += " " + inst->b->name + "(" + 
+                        std::to_string(inst->b->instNum) + ")";
             }
             else{
                 cmd += " #" + std::to_string(inst->b->instNum) + " ";

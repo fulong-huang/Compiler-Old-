@@ -7,108 +7,65 @@ void declareVar(std::string ident){
 
 
 void insertVT(std::string ident, int inst){
-    if(InMain){
-        std::unordered_map<std::string, int>::const_iterator cv = ConstVal.find(ident);
-        ValueTable[ident] = inst;
-        if(cv != ConstVal.end()){
-            ConstVal.erase(ident);
-        }
-    }
-    else{
-        std::unordered_map<std::string, int>::const_iterator scv = SubConstVal.find(ident);
-        std::unordered_map<std::string, int>::const_iterator svt = SubValueTable.find(ident);
-        if(svt != SubValueTable.end()){
-            // value exist in sub value table
-            if(SubValueTable[ident] == inst){
-                // if instruction number does not change
-                return;
-            }
-        }
-        SubValueTable[ident] = inst;
-        if(scv != SubConstVal.end()){
-            SubConstVal.erase(ident);
-        }
+    int idx = ValueTable.size()-1; // both table must have same depth;
+    std::cout << "---"<<std::endl;
+    ValueTable[idx][ident] = inst;
+    std::cout << "++++"<<std::endl;
+    if(ConstVal[idx].find(ident) != ConstVal[idx].end()){
+        ConstVal[idx].erase(ident);
     }
 }
 
 std::pair<int, int> getVT(std::string ident){
     std::pair<int, int> result;
-    std::unordered_map<std::string, int>::const_iterator vt = ValueTable.find(ident);
-    std::unordered_map<std::string, int>::const_iterator svt = SubValueTable.find(ident);
-    std::unordered_map<std::string, int>::const_iterator cv = ConstVal.find(ident);
-    std::unordered_map<std::string, int>::const_iterator scv = SubConstVal.find(ident);
-    
-    if(InMain){
-        if(vt != ValueTable.end()){
-            result.first = ValueTable[ident];
-        }
-        else if(cv != ConstVal.end()){
-            result.first = -1;
-            result.second = ConstVal[ident];
-        }
-        else{
-            // Value not exist, return -2;
-            result.first = -2;
+    int lastIdx = ValueTable.size()-1;
+    for(int i = lastIdx; i >= 0; i--){
+        if(ValueTable[i].find(ident) != ValueTable[i].end()){
+            result.first = ValueTable[i][ident];
+            return result;
         }
     }
-    else{
-        if(svt != SubValueTable.end()){
-            result.first = SubValueTable[ident];
-        }
-        else if(scv != SubConstVal.end()){
+    for(int i = lastIdx; i >= 0; i--){
+        if(ConstVal[i].find(ident) != ConstVal[i].end()){
             result.first = -1;
-            result.second = SubConstVal[ident];
-        }
-        else if(vt != ValueTable.end()){
-            result.first = ValueTable[ident];
-        }
-        else if(cv != ConstVal.end()){
-            result.first = -1;
-            result.second = ConstVal[ident];
-        }
-        else{
-            // Value not exist, return -2;
-            result.first = -2;
+            result.second = ConstVal[i][ident];
+            return result;
         }
     }
+    // value not exist
+    result.first = -2;
     return result;
 }
 
 
 void insertCV(std::string ident, int inst){
-    std::unordered_map<std::string, int>::const_iterator vt = ValueTable.find(ident);
-    if(InMain){
-        ConstVal[ident] = inst;
-        if(vt != ValueTable.end()){
-            ValueTable.erase(ident);
-        }
-    }
-    else{ 
-        // If two constant merge:
-        //  Store both number,
-        //  Phi function on the new instruction number
-        std::unordered_map<std::string, int>::const_iterator svt = SubValueTable.find(ident);
-        std::unordered_map<std::string, int>::const_iterator scv = SubConstVal.find(ident);
-        if(scv != SubConstVal.end()){
-            // if constant already exist
-            if(SubConstVal[ident] == inst){
-                // if it will be replaced as same number, then skip
-                return;
-            }
-        }
-        SubConstVal[ident] = inst;
-        if(svt != SubValueTable.end()){
-            SubValueTable.erase(ident);
-        }
+    int idx = ValueTable.size()-1; // both table must have same depth;
+    ConstVal[idx][ident] = inst;
+    if(ValueTable[idx].find(ident) != ValueTable[idx].end()){
+        ValueTable[idx].erase(ident);
     }
 }
 
-
+void InsertVTLayer(){
+    ValueTable.push_back(std::unordered_map<std::string, int>());
+    ConstVal.push_back(std::unordered_map<std::string, int>());
+}
+void RemoveVTLayer(){
+    // int idx = ValueTable.size()-1;
+    // ValueTable.erase(ValueTable.begin()+idx);
+    // ConstVal.erase(ConstVal.begin()+idx);
+    ValueTable.pop_back();
+    ConstVal.pop_back();
+}
+void ClearLastLayer(){
+    int idx = ValueTable.size()-1;
+    ValueTable[idx].clear();
+    ConstVal[idx].clear();
+}
 
 void InitVT(){
     ValueTable.clear();
     ConstVal.clear();
-    SubValueTable.clear();
-    SubConstVal.clear();
+    InsertVTLayer();
     currInstNum = 2;
 }
