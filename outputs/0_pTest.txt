@@ -9,6 +9,10 @@ MAIN:
 		<Let c <- 4>
 	5	bra InputNum
 		<Let prof <- 5>
+JOIN_WHILE_0: 
+	21	phi b(18)  b(18)
+	22	phi a(19)  a(19)
+	23	phi c(17)  c(17)
 WHILE_0: 
 	6	cmpi a(2)  #100 
 	7	bge (6)  (JOIN_WHILE_0)
@@ -42,10 +46,6 @@ END_IF_0:
 	19	addi a(2)  #1 
 		<Let a <- 19>
 	20	bra WHILE_0
-JOIN_WHILE_0: 
-	21	phi b(18) 
-	22	phi a(19) 
-	23	phi c(17) 
 END_WHILE_0: 
 		<Let b <- 21>
 		<Let a <- 22>

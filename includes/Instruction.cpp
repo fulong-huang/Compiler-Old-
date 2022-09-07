@@ -29,6 +29,7 @@ struct Instruction* addPhiInst(struct Instruction* inst, struct Opr* a, struct O
     struct Instruction* instruction = newInstruction();
     instruction->op = PHI;
     instruction->a = a;
+    instruction->b = b;
     instruction->InstNum = 102;
     inst->next = (INST*) instruction;
     return instruction;
@@ -62,6 +63,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
     if(instBlock->name[0] == 'I'){
         addLabel(instBlock->name);
         PrintInst((INST*) instBlock->head);
+
         n1 = (InstBlock*) instBlock->next;
         n2 = (InstBlock*) instBlock->next2;
         addLabel(n1->name);
@@ -79,22 +81,25 @@ void PrintInstBlock(struct InstBlock* instBlock){
         addLabel(n1->name);
         PrintInst(n1->head);
     }
-    else if(instBlock->name[0] == 'W'){
+    else if(instBlock->name[0] == 'J'){ // Join while
         addLabel(instBlock->name);
+        // print join block
         PrintInst((INST*) instBlock->head);
 
+        // print while block
         n1 = (InstBlock*) instBlock->next;
-        n2 = (InstBlock*) instBlock->next2;
-        
         addLabel(n1->name);
         PrintInst(n1->head);
 
+        n2 = (InstBlock*) n1->next2;
+        n1 = (InstBlock*) n1->next;
+        // print do block
+        addLabel(n1->name);
+        PrintInst(n1->head);
+        // print end block 
         addLabel(n2->name);
         PrintInst(n2->head);
 
-        n2 = (InstBlock*) n2->next;
-        addLabel(n2->name);
-        PrintInst(n2->head);
     }
     else if(instBlock->name[0] == 'M'){ // Main block, only ran once
         addLabel(instBlock->name);

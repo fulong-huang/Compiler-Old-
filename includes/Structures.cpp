@@ -10,7 +10,7 @@ static const std::string opText[] = {
     "ldw","ldx","pop","stw","stx","psh",
     // [32] FOR BEQ
     "beq","bne","blt","bge","ble","bgt","bsr","jsr","ret","rdd","wrd","wrh","wrl", 
-    "bra", "neg", "phi",
+    "bra", "neg", "phi", "storeConst",
     
     "ifloop", "whileloop", 
     };
@@ -88,6 +88,7 @@ enum Mnemonic{
     NEG,
 
     PHI,
+    STORECONST,
 
 
     LABEL,

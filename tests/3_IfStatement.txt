@@ -1,0 +1,47 @@
+main
+var a, b, c, d, e, f, g, h, i, j, k, l;
+{
+    let a <- call InputNum();
+	let b <- call InputNum();
+	let c <- call InputNum();
+	let d <- call InputNum();
+	let e <- call InputNum();
+	let f <- call InputNum();
+
+	let g <- 5;
+	let h <- 6;
+	let i <- 7;
+	let j <- 8;
+	let k <- 9;
+	let l <- 10;
+
+	if 1 < 2
+	then
+		let f <- 5;
+		let f <- call InputNum();
+		if a < b
+		then
+			let g <- h*2;
+			let g <- e*h;
+			let k <- f+2;
+		else
+			if c >= i
+			then
+				let e <- f*2;
+				let e <- g+k;
+			else
+				let b <- call InputNum();
+			fi;
+		fi;
+	else
+		let a <- f + b;
+		let b <- e * 2;
+	fi;
+
+	call OutputNum(a);
+	call OutputNum(b);
+	call OutputNum(c);
+}.
+
+
+

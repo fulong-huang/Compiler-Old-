@@ -415,7 +415,7 @@ void relation(std::string target){
     if(lhs.first == ""){
         // if two constant: (1 > 2)
         if(rhs.first == ""){
-            addCommentInst(("Comparing two constant"
+            addCommentInst(("Comparing two constant: "
                 + std::to_string(lhs.second) + ", " + 
                 std::to_string(rhs.second)
             ));
@@ -521,7 +521,7 @@ void relation(std::string target){
         addInst((INST*) inst);
         return;
     }
-
+    inst = newInstruction();
     inst->op = CMP;
     inst->a = newOp(lhs.first, lhs.second);
     inst->b = newOp(rhs.first, rhs.second);
@@ -682,18 +682,36 @@ void ifStatement(){
     inst->InstNum = currInstNum++;
     addInst((INST*) inst);
 
-    // ******************* Sub Value Table *******************
     // ******************* Insert PHI FUnction *******************
+    // ******************* Sub Value Table *******************
     for(std::pair<std::string, int> i : ValueTable[ValueTable.size()-1]){
         joinTail = addPhiInst(joinTail, newOp(i.first, i.second), NULL);
     }
+    // ******************* Sub Const Val *******************
+    for(std::pair<std::string, int> i: ConstVal[ConstVal.size()-1]){
+        // If value stores a constant,
+        //  Store it into instruction
+        //  Update Value table with newest instruction
+        //  Add PHI function with previously stored value
 
-    // *************************************************************
-    // ******************* Constant Table Needed *******************
-    // *************************************************************
+        inst = newInstruction();
+        inst->op = STORECONST;
+        inst->InstNum = currInstNum;
+        inst->a = newOp(i.first, i.second);
+        joinTail->next = (INST*) inst;
+        joinTail = inst;
+
+        insertVT(i.first, currInstNum);
+
+        joinTail = addPhiInst(joinTail, newOp(i.first, currInstNum++), NULL);
+    }
+
+
     
     ClearLastLayer();
 
+    // Jump into else block
+    InstTail = elseBlock->head;
     if(nextIs("else")){
         // eat "else"
         skipNext(4);
@@ -701,33 +719,105 @@ void ifStatement(){
     }
     nextChar();
 
-    // Jump into else block
-    InstTail = elseBlock->head;
 
 
-    // End of If statement. (fi;)
-
-
-    // ******************* Sub Value Table *******************
     // ******************* Update Phi Function *******************
     struct Instruction* phiInst = (Instruction*) joinHead->next;
     int idx = ValueTable.size()-1;
-    std::string idt;
-    while(phiInst != NULL){
-        idt = phiInst->a->name;
-        if(ValueTable[idx].find(idt) == ValueTable[idx].end()){
-            phiInst->b = newOp(idt, getVT(idt).first);
+    std::string idnt;
+    std::pair<int, int> getVTSave;
+    while(phiInst != NULL){     // Fill out existing Instruction
+        if(phiInst->op != PHI){
+            phiInst = (Instruction*)  phiInst->next;
+            continue;
+        }
+        idnt = phiInst->a->name;
+        if(ValueTable[idx].find(idnt) != ValueTable[idx].end()){
+            phiInst->b = newOp(idnt, ValueTable[idx][idnt]);
+            ValueTable[idx].erase(idnt);
+        }
+        else if(ConstVal[idx].find(idnt) != ConstVal[idx].end()){
+            inst = newInstruction();
+            inst->op = STORECONST;
+            inst->InstNum = currInstNum;
+            inst->a = newOp(idnt, ConstVal[idx][idnt]);
+            inst->next = (INST*) joinHead->next;
+            joinHead->next = (INST*) inst;
+            phiInst->b = newOp(idnt, currInstNum++);
+            ConstVal[idx].erase(idnt);
         }
         else{
-            phiInst->b = newOp(idt, ValueTable[idx][idt]);
+            getVTSave = getVT(idnt);
+            if(getVTSave.first >= 0){ // if it's instruction
+                phiInst->b = newOp(idnt, getVT(idnt).first);
+            }
+            else{ // if it's constant
+                inst = newInstruction();
+                inst->op = STORECONST;
+                inst->InstNum = currInstNum;
+                inst->a = newOp(idnt, getVTSave.second);
+                inst->next = (INST*) joinHead->next;
+                joinHead->next = (INST*) inst;
+                phiInst->b = newOp(idnt, currInstNum++);
+                
+            }
         }
         phiInst->InstNum = currInstNum++;
         phiInst = (Instruction*) phiInst->next;
     }
-
+    // ******************* Sub Value Table *******************
     for(std::pair<std::string, int> i : ValueTable[ValueTable.size()-1]){
-        joinTail = addPhiInst(joinTail, NULL, newOp(i.first, i.second));
+        getVTSave = getPrevVT(i.first);
+        if(getVTSave.first >= 0){
+            joinTail = addPhiInst(joinTail, newOp(i.first, i.second), newOp(i.first, getVTSave.first));
+        }
+        else{
+            inst = newInstruction();
+            inst->op = STORECONST;
+            inst->InstNum = currInstNum;
+            inst->a = newOp(idnt, getVTSave.second);
+            joinTail->next = (INST*) inst;
+            joinTail = inst;
+
+            joinTail = addPhiInst(joinTail, newOp(i.first, i.second), newOp(i.first, currInstNum++));
+            
+        }
+        joinTail->InstNum = currInstNum++;
     }
+    // ******************* Sub Const Val *******************
+    for(std::pair<std::string, int> i: ConstVal[ConstVal.size()-1]){
+        // If value stores a constant,
+        //  Store it into instruction
+        //  Update Value table with newest instruction
+
+        inst = newInstruction();
+        inst->op = STORECONST;
+        inst->InstNum = currInstNum;
+        inst->a = newOp(i.first, i.second);
+        joinTail->next = (INST*) inst;
+        joinTail = inst;
+
+        insertVT(i.first, currInstNum);
+        joinTail = addPhiInst(joinTail, newOp(i.first, currInstNum++), NULL);
+
+        getVTSave = getPrevVT(i.first);
+        if(getVTSave.first >= 0){
+            joinTail->b = newOp(i.first, getVTSave.first);
+        }
+        else{
+            inst = newInstruction();
+            inst->op = STORECONST;
+            inst->InstNum = currInstNum;
+            inst->a = newOp(idnt, getVTSave.second);
+            inst->next = joinHead->next;
+            joinHead->next = (INST*) inst;
+
+            joinTail->b = newOp(i.first, currInstNum++);
+        }
+        joinTail->InstNum = currInstNum++;
+    }
+    
+
 
     if(!nextIs("fi")){
         throw std::invalid_argument("IfStatement expecting \"fi\" to end if");
@@ -743,9 +833,16 @@ void ifStatement(){
     // ========== update current layer after removeal =============
     phiInst = (Instruction*) joinHead->next;
     while(phiInst != NULL){
-        idt = phiInst->a->name;
-        insertVT(idt, phiInst->InstNum);
-        addCommentInst("Let " + idt + " <- " + 
+        if(phiInst->op == STORECONST){ 
+            phiInst = (Instruction*) phiInst->next;
+            continue;
+        }
+        std::cout << " =" <<  ( phiInst->a == NULL ) 
+        << std::endl;
+        idnt = phiInst->a->name;
+
+        insertVT(idnt, phiInst->InstNum);
+        addCommentInst("Let " + idnt + " <- " + 
             std::to_string(phiInst->InstNum)
         );
         phiInst = (Instruction*) phiInst->next;
@@ -772,16 +869,18 @@ void whileStatement(){
     struct InstBlock* odBlock = newInstBlock(labels[2]);
     struct InstBlock* endBlock = newInstBlock(labels[3]);
 
+    odBlock->next = (INST*) whileBlock;
     whileBlock->next = (INST*) doBlock;
-    whileBlock->next2 = (INST*) odBlock;
+    whileBlock->next2 = (INST*) endBlock;
     doBlock->next = (INST*) whileBlock;
-    odBlock->next = (INST*) endBlock;
 
+    // Join block should be infront of everything.
     struct Instruction* joinHead = (Instruction*) odBlock->head;
     struct Instruction* joinTail = joinHead;
+    addInst( (INST*) odBlock);
+
 
     // Jump into while block  <Check condition>
-    addInst( (INST*) whileBlock);
     InstTail = whileBlock->head;
 
     relation(labels[2]);

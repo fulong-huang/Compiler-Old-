@@ -8,9 +8,7 @@ void declareVar(std::string ident){
 
 void insertVT(std::string ident, int inst){
     int idx = ValueTable.size()-1; // both table must have same depth;
-    std::cout << "---"<<std::endl;
     ValueTable[idx][ident] = inst;
-    std::cout << "++++"<<std::endl;
     if(ConstVal[idx].find(ident) != ConstVal[idx].end()){
         ConstVal[idx].erase(ident);
     }
@@ -19,6 +17,27 @@ void insertVT(std::string ident, int inst){
 std::pair<int, int> getVT(std::string ident){
     std::pair<int, int> result;
     int lastIdx = ValueTable.size()-1;
+    for(int i = lastIdx; i >= 0; i--){
+        if(ValueTable[i].find(ident) != ValueTable[i].end()){
+            result.first = ValueTable[i][ident];
+            return result;
+        }
+    }
+    for(int i = lastIdx; i >= 0; i--){
+        if(ConstVal[i].find(ident) != ConstVal[i].end()){
+            result.first = -1;
+            result.second = ConstVal[i][ident];
+            return result;
+        }
+    }
+    // value not exist
+    result.first = -2;
+    return result;
+}
+
+std::pair<int, int> getPrevVT(std::string ident){
+    std::pair<int, int> result;
+    int lastIdx = ValueTable.size()-2;
     for(int i = lastIdx; i >= 0; i--){
         if(ValueTable[i].find(ident) != ValueTable[i].end()){
             result.first = ValueTable[i][ident];
