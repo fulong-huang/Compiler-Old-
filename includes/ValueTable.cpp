@@ -8,6 +8,38 @@ void declareVar(std::string ident){
 
 void insertVT(std::string ident, int inst){
     int idx = ValueTable.size()-1; // both table must have same depth;
+    if(InWhile){
+        // ============== Update all instructions ================
+        // 
+        // addLabelInst("ADDED HERE========");
+
+        // update phi function;
+        std::pair<int, int> vt = getVT(ident);
+        if(vt.first >= 0){
+            WhileJoin = addPhiInst(WhileJoin, newOp(ident, vt.first), newOp(ident, inst));
+            WhileJoin->InstNum = currInstNum;
+            // Update Value Table
+            InWhile = false;
+            insertVT(ident, currInstNum++);
+            InWhile = true;
+        }
+        else{
+            struct Instruction* instruction = newInstruction();
+            instruction->op = STORECONST;
+            instruction->InstNum = currInstNum;
+            instruction->a = newOp(ident, vt.second);
+            WhileJoin->next = (INST*) instruction;
+            WhileJoin = instruction;
+            
+            // Update Value Table
+            WhileJoin = addPhiInst(WhileJoin, newOp(ident, currInstNum++), newOp(ident, inst));
+            InWhile = false;
+            insertVT(ident, currInstNum++);
+            InWhile = true;
+
+        }
+        return;
+    }
     ValueTable[idx][ident] = inst;
     if(ConstVal[idx].find(ident) != ConstVal[idx].end()){
         ConstVal[idx].erase(ident);
@@ -59,6 +91,43 @@ std::pair<int, int> getPrevVT(std::string ident){
 
 void insertCV(std::string ident, int inst){
     int idx = ValueTable.size()-1; // both table must have same depth;
+    if(InWhile){
+        struct Instruction* instruction = newInstruction();
+        instruction->op = STORECONST;
+        instruction->InstNum = currInstNum;
+        instruction->a = newOp(ident, inst);
+        WhileJoin->next = (INST*) instruction;
+        WhileJoin = instruction;
+
+        Opr* nOp = newOp(ident, currInstNum++);
+
+        std::pair<int, int> vt = getVT(ident);
+        if(vt.first >= 0){
+            WhileJoin = addPhiInst(WhileJoin, newOp(ident, vt.first), nOp);
+            WhileJoin->InstNum = currInstNum;
+            // Update Value Table
+            InWhile = false;
+            insertVT(ident, currInstNum++);
+            InWhile = true;
+        }
+        else{
+            instruction = newInstruction();
+            instruction->op = STORECONST;
+            instruction->InstNum = currInstNum;
+            instruction->a = newOp(ident, vt.second);
+            WhileJoin->next = (INST*) instruction;
+            WhileJoin = instruction;
+            
+            // Update Value Table
+            WhileJoin = addPhiInst(WhileJoin, newOp(ident, currInstNum++), nOp);
+            WhileJoin->InstNum = currInstNum;
+            InWhile = false;
+            insertVT(ident, currInstNum++);
+            InWhile = true;
+
+        }
+        return;
+    }
     ConstVal[idx][ident] = inst;
     if(ValueTable[idx].find(ident) != ValueTable[idx].end()){
         ValueTable[idx].erase(ident);
@@ -86,5 +155,9 @@ void InitVT(){
     ValueTable.clear();
     ConstVal.clear();
     InsertVTLayer();
-    currInstNum = 2;
+    currInstNum = 0;
+    InWhile = false;
+    WhileCondition = NULL;
+    WhileDo = NULL;
+    WhileJoin = NULL;
 }

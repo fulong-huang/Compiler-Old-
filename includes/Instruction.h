@@ -6,6 +6,8 @@ struct INST *InstHead, *InstTail;
 bool InMain;
 struct INST *JoinBlock;
 
+std::string stringIndent = "";
+
 void InitInstruction();
 
 struct Instruction* newInstruction();

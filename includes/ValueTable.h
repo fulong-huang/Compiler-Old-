@@ -22,6 +22,8 @@ std::vector<std::unordered_map<std::string, int> > ValueTable;
 //  var z; z = x+y;                    ConstVal = {[x:5], [y:3], [z:8]}             0 instruction created
 std::vector<std::unordered_map<std::string, int> > ConstVal; // store instNum of constant;
 
+bool InWhile;
+struct Instruction *WhileCondition, *WhileDo, *WhileJoin;
 
 
 void InitVT();

@@ -60,49 +60,53 @@ void InitInstruction(){
 
 void PrintInstBlock(struct InstBlock* instBlock){
     struct InstBlock *n1, *n2;
+    stringIndent += "\t";
     if(instBlock->name[0] == 'I'){
-        addLabel(instBlock->name);
+        addLabel(stringIndent + instBlock->name);
         PrintInst((INST*) instBlock->head);
 
         n1 = (InstBlock*) instBlock->next;
         n2 = (InstBlock*) instBlock->next2;
-        addLabel(n1->name);
+        addLabel(stringIndent + n1->name);
         PrintInst(n1->head);
-        addLabel(n2->name);
+        addLabel(stringIndent + n2->name);
         PrintInst(n2->head);
 
         // Join block
         n1 = (InstBlock*) n1->next;
-        addLabel(n1->name);
+        addLabel(stringIndent + n1->name);
         PrintInst(n1->head);
 
         // returned to upper level
+        stringIndent = stringIndent.substr(0, stringIndent.size()-1);
         n1 = (InstBlock*) n1->next;
-        addLabel(n1->name);
+        addLabel(stringIndent + n1->name);
         PrintInst(n1->head);
     }
     else if(instBlock->name[0] == 'J'){ // Join while
-        addLabel(instBlock->name);
+        addLabel(stringIndent + instBlock->name);
         // print join block
         PrintInst((INST*) instBlock->head);
 
         // print while block
         n1 = (InstBlock*) instBlock->next;
-        addLabel(n1->name);
+        addLabel(stringIndent + n1->name);
         PrintInst(n1->head);
 
         n2 = (InstBlock*) n1->next2;
         n1 = (InstBlock*) n1->next;
         // print do block
-        addLabel(n1->name);
+        addLabel(stringIndent + n1->name);
         PrintInst(n1->head);
         // print end block 
-        addLabel(n2->name);
+        stringIndent = stringIndent.substr(0, stringIndent.size()-1);
+        addLabel(stringIndent + n2->name);
         PrintInst(n2->head);
 
     }
     else if(instBlock->name[0] == 'M'){ // Main block, only ran once
-        addLabel(instBlock->name);
+        stringIndent = "";
+        addLabel(stringIndent+ instBlock->name);
         PrintInst((INST*) instBlock->head);
     }
     else{
@@ -124,18 +128,21 @@ void PrintInst(struct INST* currInst){
             continue;
         }
         if(inst->op == LABEL){
-            addLabel(inst->a->name);
+            addLabel(stringIndent + inst->a->name);
             currInst = currInst->next;
             continue;
         }
         if(inst->op == COMMENT){
-            put("\t<" + inst->a->name + ">");
+            put(stringIndent + "  <" + inst->a->name + ">");
             currInst = currInst->next;
             continue;
         }
         std::string cmd = std::to_string(inst->InstNum) + "\t" + 
                         opText[inst->op] + " ";
         if(inst->a->name != "-"){
+            if(inst->a->name == ""){
+                cmd += "#";
+            }
             cmd += inst->a->name;
         }
         n = inst->a->instNum;
@@ -155,7 +162,7 @@ void PrintInst(struct INST* currInst){
                 cmd += " #" + std::to_string(inst->b->instNum) + " ";
             }
         }
-        put(cmd);
+        put(stringIndent + cmd);
 
         currInst = currInst->next;
     }

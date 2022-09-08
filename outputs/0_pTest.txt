@@ -1,66 +1,62 @@
 	---------- Printing Instructions ----------
 
 MAIN: 
+	0	bra InputNum
+	  <Let a <- 0>
+	1	bra InputNum
+	  <Let b <- 1>
 	2	bra InputNum
-		<Let a <- 2>
+	  <Let c <- 2>
 	3	bra InputNum
-		<Let b <- 3>
-	4	bra InputNum
-		<Let c <- 4>
-	5	bra InputNum
-		<Let prof <- 5>
-JOIN_WHILE_0: 
-	21	phi b(18)  b(18)
-	22	phi a(19)  a(19)
-	23	phi c(17)  c(17)
-WHILE_0: 
-	6	cmpi a(2)  #100 
-	7	bge (6)  (JOIN_WHILE_0)
-DO_0: 
-IF_0: 
-	8	cmpi b(3)  #0 
-	9	bge (8)  (ELSE_0)
-THEN_0: 
-	10	addi b(3)  #1 
-		<Let b <- 10>
-IF_1: 
-	11	cmpi c(4)  #0 
-	12	bge (11)  (ELSE_1)
-THEN_1: 
-	13	addi c(4)  #1 
-		<Let c <- 13>
-	14	bra JOIN_IF_1
-ELSE_1: 
-JOIN_IF_1: 
-	15	phi c(13)  c(4)
-END_IF_1: 
-		<Let c <- 15>
-	16	bra JOIN_IF_0
-ELSE_0: 
-JOIN_IF_0: 
-	17	phi c(15)  c(4)
-	18	phi b(10)  b(3)
-END_IF_0: 
-		<Let c <- 17>
-		<Let b <- 18>
-	19	addi a(2)  #1 
-		<Let a <- 19>
-	20	bra WHILE_0
+	  <Let prof <- 3>
+	JOIN_WHILE_0: 
+		18	phi a(0)  a(17)
+	WHILE_0: 
+		4	cmpi a(0)  #100 
+		5	bge (4)  (JOIN_WHILE_0)
+	DO_0: 
+		IF_0: 
+			6	cmpi b(1)  #0 
+			7	bge (6)  (ELSE_0)
+		THEN_0: 
+			8	addi b(1)  #1 
+			  <Let b <- 8>
+			IF_1: 
+				9	cmpi c(2)  #0 
+				10	bge (9)  (ELSE_1)
+			THEN_1: 
+				11	addi c(2)  #1 
+				  <Let c <- 11>
+				12	bra JOIN_IF_1
+			ELSE_1: 
+			JOIN_IF_1: 
+				13	phi c(11)  c(2)
+		END_IF_1: 
+			  <Let c <- 13>
+			14	bra JOIN_IF_0
+		ELSE_0: 
+		JOIN_IF_0: 
+			15	phi c(13)  c(2)
+			16	phi b(8)  b(1)
+	END_IF_0: 
+		  <Let c <- 15>
+		  <Let b <- 16>
+		17	addi a(0)  #1 
+		  <Let a <- 17>
+		19	bra WHILE_0
 END_WHILE_0: 
-		<Let b <- 21>
-		<Let a <- 22>
-		<Let c <- 23>
-	24	bra OutputNum
-	25	bra OutputNum
-	26	bra OutputNum
+	  <Let a <- 18>
+	20	bra OutputNum
+	21	bra OutputNum
+	22	bra OutputNum
 	
 
 ------------------ Values Start Here ------------------
 	Value Table size: 1
-	5, prof
-	21, b
-	22, a
-	23, c
+	1, b
+	2, c
+	3, prof
+	18, a
 	
 
 

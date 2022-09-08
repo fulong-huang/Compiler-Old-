@@ -1,31 +1,31 @@
 	---------- Printing Instructions ----------
 
 MAIN: 
-		<Use of UNINITIALIZED variable: c>
-		<Let a <- 0>
-		<Use of UNKNOWN variable: g>
-		<Let a <- 0>
-IF_0: 
-		<Comparing two constant: 2, 0>
-	2	bra ELSE_0
-THEN_0: 
-		<Use of UNINITIALIZED variable: b>
-	3	addi b(0)  #1 
-		<Let b <- 3>
-	4	bra JOIN_IF_0
-ELSE_0: 
-JOIN_IF_0: 
-	5	storeConst b(0) 
-	6	phi b(3)  b(5)
+	  <Use of UNINITIALIZED variable: c>
+	  <Let a <- 0>
+	  <Use of UNKNOWN variable: g>
+	  <Let a <- 0>
+	IF_0: 
+		  <Comparing two constant: 2, 0>
+		0	bra ELSE_0
+	THEN_0: 
+		  <Use of UNINITIALIZED variable: b>
+		1	addi b(0)  #1 
+		  <Let b <- 1>
+		2	bra JOIN_IF_0
+	ELSE_0: 
+	JOIN_IF_0: 
+		3	storeConst b(0) 
+		4	phi b(1)  b(3)
 END_IF_0: 
-		<Let b <- 6>
+	  <Let b <- 4>
 	
 
 ------------------ Values Start Here ------------------
 	Value Table size: 1
 	-3, c
 	0, a
-	6, b
+	4, b
 	
 
 

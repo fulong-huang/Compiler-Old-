@@ -218,7 +218,7 @@ std::pair<std::string, int> term(){
                 //   1 / (rhs):
                 inst->InstNum = currInstNum++;
                 inst->op = DIV;
-                inst->a = newOp("-", 1);
+                inst->a = newOp("", 1);
                 inst->b = newOp(rhs.first, rhs.second);
                 addInst((INST*) inst);
 
@@ -515,7 +515,7 @@ void relation(std::string target){
             default:
                 throw std::invalid_argument("Unknow relOp\n");
         }
-        inst->a = newOp("", currInstNum-1);
+        inst->a = newOp("-", currInstNum-1);
         inst->b = newOp(target, -1);
         inst->InstNum = currInstNum++;
         addInst((INST*) inst);
@@ -641,6 +641,8 @@ void ifStatement(){
     elseBlock->next = (INST*) fiBlock; 
     fiBlock->next = (INST*) endBlock;
 
+    bool inWhileSave = InWhile;
+    InWhile = false;
     // Pointers to join block
     struct Instruction* joinHead = (Instruction*) fiBlock->head;
     struct Instruction* joinTail = joinHead;
@@ -847,6 +849,7 @@ void ifStatement(){
         );
         phiInst = (Instruction*) phiInst->next;
     }
+    InWhile = inWhileSave;
 }
 
 
@@ -875,9 +878,24 @@ void whileStatement(){
     doBlock->next = (INST*) whileBlock;
 
     // Join block should be infront of everything.
-    struct Instruction* joinHead = (Instruction*) odBlock->head;
-    struct Instruction* joinTail = joinHead;
     addInst( (INST*) odBlock);
+    // struct Instruction* joinHead = (Instruction*) odBlock->head;
+    // struct Instruction* joinTail = joinHead;
+
+
+    // =========================================================
+    // ================== INDICATE WHILE STARTED ===============
+    // =========================================================
+    bool inWhileSave = InWhile;
+
+    struct Instruction* whileConditionSave = WhileCondition;
+    struct Instruction* whileDoSave = WhileDo;
+    struct Instruction* whileJoinSave = WhileJoin;
+
+    InWhile = true;
+    WhileCondition = (Instruction*) whileBlock->head;
+    WhileDo        = (Instruction*) doBlock->head;
+    WhileJoin      = (Instruction*) odBlock->head;
 
 
     // Jump into while block  <Check condition>
@@ -916,16 +934,25 @@ void whileStatement(){
     InstTail = endBlock->head;
     // ******************* Sub Value Table *******************
     // ******************* Insert PHI FUnction *******************
-    for(std::pair<std::string, int> i : ValueTable[ValueTable.size()-1]){
-        joinTail = addPhiInst(joinTail, newOp(i.first, i.second), newOp(i.first, getVT(i.first).first));
+    // for(std::pair<std::string, int> i : ValueTable[ValueTable.size()-1]){
+    //     joinTail = addPhiInst(joinTail, newOp(i.first, i.second), newOp(i.first, getVT(i.first).first));
         
-    }
+    // }
     RemoveVTLayer();
-    struct Instruction* phiInst = (Instruction*) joinHead->next;
+    // Exit this while loop;
+    InWhile = inWhileSave;
+    WhileCondition = whileConditionSave;
+    WhileDo = whileDoSave;
+    WhileJoin = whileJoinSave;
+
+    struct Instruction* phiInst = (Instruction*) odBlock->head->next;
     std::string idt;
     while(phiInst != NULL){
+        if(phiInst->op != PHI){
+            phiInst = (Instruction*) phiInst->next;
+            continue;
+        }
         idt = phiInst->a->name;
-        phiInst->InstNum = currInstNum++;
         insertVT(idt, phiInst->InstNum);
         addCommentInst("Let " + idt + " <- " + 
             std::to_string(phiInst->InstNum)
@@ -933,7 +960,6 @@ void whileStatement(){
 
         phiInst = (Instruction*) phiInst->next;
     }
-
 }
 
 void returnStatement(){ // only call when expression is guaranteed

@@ -1,0 +1,64 @@
+	---------- Printing Instructions ----------
+
+MAIN: 
+	0	bra InputNum
+	  <Let a <- 0>
+	1	bra InputNum
+	  <Let b <- 1>
+	2	bra InputNum
+	  <Let c <- 2>
+	3	bra InputNum
+	  <Let d <- 3>
+	4	bra InputNum
+	  <Let e <- 4>
+	5	bra InputNum
+	  <Let f <- 5>
+	JOIN_WHILE_0: 
+		8	storeConst b(6) 
+		9	phi b(1)  b(8)
+		17	storeConst f(5) 
+		18	phi f(5)  f(17)
+	WHILE_0: 
+		6	cmpi a(0)  #5 
+		7	bge (6)  (JOIN_WHILE_0)
+	DO_0: 
+		IF_0: 
+			10	cmpi c(2)  #7 
+			11	ble (10)  (ELSE_0)
+		THEN_0: 
+			12	bra JOIN_IF_0
+		ELSE_0: 
+		JOIN_IF_0: 
+			13	storeConst d(19) 
+			14	phi d(13)  d(3)
+			15	storeConst e(0) 
+			16	phi e(15)  e(4)
+	END_IF_0: 
+		  <Let d <- 14>
+		  <Let e <- 16>
+		19	bra WHILE_0
+END_WHILE_0: 
+	  <Let b <- 9>
+	  <Let f <- 18>
+	20	bra OutputNum
+	21	bra OutputNum
+	22	bra OutputNum
+	
+
+------------------ Values Start Here ------------------
+	Value Table size: 1
+	0, a
+	2, c
+	3, d
+	4, e
+	9, b
+	18, f
+	
+
+
+	l, 10
+	h, 6
+	k, 9
+	i, 7
+	j, 8
+	g, 5

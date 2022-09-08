@@ -1,99 +1,99 @@
 	---------- Printing Instructions ----------
 
 MAIN: 
+	0	bra InputNum
+	  <Let a <- 0>
+	1	bra InputNum
+	  <Let b <- 1>
 	2	bra InputNum
-		<Let a <- 2>
+	  <Let c <- 2>
 	3	bra InputNum
-		<Let b <- 3>
+	  <Let d <- 3>
 	4	bra InputNum
-		<Let c <- 4>
+	  <Let e <- 4>
 	5	bra InputNum
-		<Let d <- 5>
-	6	bra InputNum
-		<Let e <- 6>
-	7	bra InputNum
-		<Let f <- 7>
-IF_0: 
-		<Comparing two constant: 1, 2>
-THEN_0: 
-	8	bra InputNum
-		<Let f <- 8>
-IF_1: 
-	9	cmp a(2)  b(3)
-	10	bge (9)  (ELSE_1)
-THEN_1: 
-	11	muli e(6)  #6 
-		<Let g <- 11>
-	12	addi f(8)  #2 
-		<Let k <- 12>
-	13	bra JOIN_IF_1
-ELSE_1: 
-IF_2: 
-	14	cmpi c(4)  #7 
-	15	blt (14)  (ELSE_2)
-THEN_2: 
-	16	muli f(8)  #2 
-		<Let e <- 16>
-	17	bra JOIN_IF_2
-ELSE_2: 
-	19	bra InputNum
-		<Let b <- 19>
-JOIN_IF_2: 
-	18	storeConst e(14) 
-	20	phi e(18)  e(6)
-	21	phi b(19)  b(3)
-END_IF_2: 
-		<Let e <- 20>
-		<Let b <- 21>
-JOIN_IF_1: 
-	24	storeConst g(5) 
-	22	storeConst k(9) 
-	23	phi k(12)  k(22)
-	25	phi g(11)  g(24)
-	26	phi b(21)  b(3)
-	27	phi e(20)  e(6)
-END_IF_1: 
-		<Let k <- 23>
-		<Let g <- 25>
-		<Let b <- 26>
-		<Let e <- 27>
-	28	bra JOIN_IF_0
-ELSE_0: 
-	29	add f(7)  b(3)
-		<Let a <- 29>
-	30	muli e(6)  #2 
-		<Let b <- 30>
-JOIN_IF_0: 
-	35	storeConst k(9) 
-	33	storeConst g(5) 
-	31	phi e(27)  e(6)
-	32	phi b(26)  b(30)
-	34	phi g(25)  g(33)
-	36	phi k(23)  k(35)
-	37	phi f(8)  f(7)
-	38	phi a(29)  a(2)
+	  <Let f <- 5>
+	IF_0: 
+		  <Comparing two constant: 1, 2>
+	THEN_0: 
+		6	bra InputNum
+		  <Let f <- 6>
+		IF_1: 
+			7	cmp a(0)  b(1)
+			8	bge #(7)  (ELSE_1)
+		THEN_1: 
+			9	muli e(4)  #6 
+			  <Let g <- 9>
+			10	addi f(6)  #2 
+			  <Let k <- 10>
+			11	bra JOIN_IF_1
+		ELSE_1: 
+			IF_2: 
+				12	cmpi c(2)  #7 
+				13	blt (12)  (ELSE_2)
+			THEN_2: 
+				14	muli f(6)  #2 
+				  <Let e <- 14>
+				15	bra JOIN_IF_2
+			ELSE_2: 
+				17	bra InputNum
+				  <Let b <- 17>
+			JOIN_IF_2: 
+				16	storeConst e(14) 
+				18	phi e(16)  e(4)
+				19	phi b(17)  b(1)
+		END_IF_2: 
+			  <Let e <- 18>
+			  <Let b <- 19>
+		JOIN_IF_1: 
+			22	storeConst g(5) 
+			20	storeConst k(9) 
+			21	phi k(10)  k(20)
+			23	phi g(9)  g(22)
+			24	phi b(19)  b(1)
+			25	phi e(18)  e(4)
+	END_IF_1: 
+		  <Let k <- 21>
+		  <Let g <- 23>
+		  <Let b <- 24>
+		  <Let e <- 25>
+		26	bra JOIN_IF_0
+	ELSE_0: 
+		27	add f(5)  b(1)
+		  <Let a <- 27>
+		28	muli e(4)  #2 
+		  <Let b <- 28>
+	JOIN_IF_0: 
+		33	storeConst k(9) 
+		31	storeConst g(5) 
+		29	phi e(25)  e(4)
+		30	phi b(24)  b(28)
+		32	phi g(23)  g(31)
+		34	phi k(21)  k(33)
+		35	phi f(6)  f(5)
+		36	phi a(27)  a(0)
 END_IF_0: 
-		<Let e <- 31>
-		<Let b <- 32>
-		<Let g <- 34>
-		<Let k <- 36>
-		<Let f <- 37>
-		<Let a <- 38>
+	  <Let e <- 29>
+	  <Let b <- 30>
+	  <Let g <- 32>
+	  <Let k <- 34>
+	  <Let f <- 35>
+	  <Let a <- 36>
+	37	bra OutputNum
+	38	bra OutputNum
 	39	bra OutputNum
-	40	bra OutputNum
-	41	bra OutputNum
 	
 
 ------------------ Values Start Here ------------------
 	Value Table size: 1
-	4, c
-	5, d
-	31, e
-	32, b
-	34, g
-	36, k
-	37, f
-	38, a
+	2, c
+	3, d
+	29, e
+	30, b
+	32, g
+	34, k
+	35, f
+	36, a
 	
 
 
