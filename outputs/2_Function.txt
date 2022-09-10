@@ -1,13 +1,15 @@
 	---------- Printing Instructions ----------
 
 MAIN: 
+	  <Let y <- #579>
 	IF_0: 
 		  <Comparing two constant: 2, 3>
 		0	bra ELSE_0
 	THEN_0: 
+		  <Let b <- #3>
 		  <Use of UNINITIALIZED variable: b>
 		1	addi b(0)  #579 
-		  <Let s <- 1>
+		  <Let s <- (1)>
 		2	bra JOIN_IF_0
 	ELSE_0: 
 	JOIN_IF_0: 
@@ -17,8 +19,10 @@ MAIN:
 		3	storeConst b(3) 
 		7	phi b(3)  b(6)
 END_IF_0: 
-	  <Let s <- 5>
-	  <Let b <- 7>
+	  <Let s <- (5)>
+	  <Let b <- (7)>
+	  <Let y <- #28>
+	  <Let b <- #2>
 	8	bra thisfunc
 	
 

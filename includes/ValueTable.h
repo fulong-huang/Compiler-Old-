@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <string>
 #include <vector>
@@ -22,9 +23,8 @@ std::vector<std::unordered_map<std::string, int> > ValueTable;
 //  var z; z = x+y;                    ConstVal = {[x:5], [y:3], [z:8]}             0 instruction created
 std::vector<std::unordered_map<std::string, int> > ConstVal; // store instNum of constant;
 
-bool InWhile;
-struct Instruction *WhileCondition, *WhileDo, *WhileJoin;
-
+bool InWhile, WhileIf;
+struct Instruction* WhileJoin;
 
 void InitVT();
 
@@ -35,7 +35,6 @@ std::pair<int, int> getVT(std::string ident);
 
 void insertCV(std::string ident, int inst);
 // std::pair<bool, int> getCV(std::string ident);
-
 
 void InsertVTLayer();
 void RemoveVTLayer();

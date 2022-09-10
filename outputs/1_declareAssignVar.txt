@@ -1,24 +1,28 @@
 	---------- Printing Instructions ----------
 
 MAIN: 
+	  <Let x <- #2>
+	  <Let y <- #2>
+	  <Let z <- #2>
+	  <Let a <- #3>
 	  <Use of UNINITIALIZED variable: c>
-	  <Let a <- 0>
+	  <Let a <- (0)>
 	  <Use of UNKNOWN variable: g>
-	  <Let a <- 0>
+	  <Let a <- (0)>
 	IF_0: 
 		  <Comparing two constant: 2, 0>
 		0	bra ELSE_0
 	THEN_0: 
 		  <Use of UNINITIALIZED variable: b>
-		1	addi b(0)  #1 
-		  <Let b <- 1>
+		1	addi b(0)  (1)
+		  <Let b <- (1)>
 		2	bra JOIN_IF_0
 	ELSE_0: 
 	JOIN_IF_0: 
 		3	storeConst b(0) 
 		4	phi b(1)  b(3)
 END_IF_0: 
-	  <Let b <- 4>
+	  <Let b <- (4)>
 	
 
 ------------------ Values Start Here ------------------

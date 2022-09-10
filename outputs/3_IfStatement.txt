@@ -2,30 +2,38 @@
 
 MAIN: 
 	0	bra InputNum
-	  <Let a <- 0>
+	  <Let a <- (0)>
 	1	bra InputNum
-	  <Let b <- 1>
+	  <Let b <- (1)>
 	2	bra InputNum
-	  <Let c <- 2>
+	  <Let c <- (2)>
 	3	bra InputNum
-	  <Let d <- 3>
+	  <Let d <- (3)>
 	4	bra InputNum
-	  <Let e <- 4>
+	  <Let e <- (4)>
 	5	bra InputNum
-	  <Let f <- 5>
+	  <Let f <- (5)>
+	  <Let g <- #5>
+	  <Let h <- #6>
+	  <Let i <- #7>
+	  <Let j <- #8>
+	  <Let k <- #9>
+	  <Let l <- #10>
 	IF_0: 
 		  <Comparing two constant: 1, 2>
 	THEN_0: 
+		  <Let f <- #5>
 		6	bra InputNum
-		  <Let f <- 6>
+		  <Let f <- (6)>
 		IF_1: 
 			7	cmp a(0)  b(1)
-			8	bge #(7)  (ELSE_1)
+			8	bge (7)  (ELSE_1)
 		THEN_1: 
+			  <Let g <- #12>
 			9	muli e(4)  #6 
-			  <Let g <- 9>
+			  <Let g <- (9)>
 			10	addi f(6)  #2 
-			  <Let k <- 10>
+			  <Let k <- (10)>
 			11	bra JOIN_IF_1
 		ELSE_1: 
 			IF_2: 
@@ -33,18 +41,19 @@ MAIN:
 				13	blt (12)  (ELSE_2)
 			THEN_2: 
 				14	muli f(6)  #2 
-				  <Let e <- 14>
+				  <Let e <- (14)>
+				  <Let e <- #14>
 				15	bra JOIN_IF_2
 			ELSE_2: 
 				17	bra InputNum
-				  <Let b <- 17>
+				  <Let b <- (17)>
 			JOIN_IF_2: 
 				16	storeConst e(14) 
 				18	phi e(16)  e(4)
 				19	phi b(17)  b(1)
 		END_IF_2: 
-			  <Let e <- 18>
-			  <Let b <- 19>
+			  <Let e <- (18)>
+			  <Let b <- (19)>
 		JOIN_IF_1: 
 			22	storeConst g(5) 
 			20	storeConst k(9) 
@@ -53,16 +62,16 @@ MAIN:
 			24	phi b(19)  b(1)
 			25	phi e(18)  e(4)
 	END_IF_1: 
-		  <Let k <- 21>
-		  <Let g <- 23>
-		  <Let b <- 24>
-		  <Let e <- 25>
+		  <Let k <- (21)>
+		  <Let g <- (23)>
+		  <Let b <- (24)>
+		  <Let e <- (25)>
 		26	bra JOIN_IF_0
 	ELSE_0: 
 		27	add f(5)  b(1)
-		  <Let a <- 27>
+		  <Let a <- (27)>
 		28	muli e(4)  #2 
-		  <Let b <- 28>
+		  <Let b <- (28)>
 	JOIN_IF_0: 
 		33	storeConst k(9) 
 		31	storeConst g(5) 
@@ -73,12 +82,12 @@ MAIN:
 		35	phi f(6)  f(5)
 		36	phi a(27)  a(0)
 END_IF_0: 
-	  <Let e <- 29>
-	  <Let b <- 30>
-	  <Let g <- 32>
-	  <Let k <- 34>
-	  <Let f <- 35>
-	  <Let a <- 36>
+	  <Let e <- (29)>
+	  <Let b <- (30)>
+	  <Let g <- (32)>
+	  <Let k <- (34)>
+	  <Let f <- (35)>
+	  <Let a <- (36)>
 	37	bra OutputNum
 	38	bra OutputNum
 	39	bra OutputNum

@@ -1,4 +1,3 @@
-
 #include "Instruction.h"
 
 
@@ -56,6 +55,79 @@ void InitInstruction(){
     InMain = true;
     InstHead = (INST*) newInstBlock("MAIN");
     InstTail = ((InstBlock*) InstHead)->head;
+}
+
+void updateInst(Opr* oldOp, int newNum){ // use when while loop create an update
+    // 1. constant value were referenced or assigned
+    // 2. value have different instruction number.
+    updateIndivInst((INST*) WhileCondition, oldOp, newNum);
+    updateIndivInst((INST*) WhileDo, oldOp, newNum);
+}
+
+void updateBlockInst(struct INST* instruction, Opr* oldOp, int newNum){
+    struct Instruction* inst;
+    struct InstBlock* blockInst;
+    struct InstBlock* saveBlock;
+
+    blockInst = (InstBlock*) instruction;
+    if(blockInst->name[0] == 'I'){
+        // cond if
+        updateIndivInst(blockInst->head, oldOp, newNum);
+
+        // then (cond->next)
+        updateIndivInst(((InstBlock*) blockInst->next)->head, oldOp, newNum);
+
+        // else (cond->next2)
+        updateIndivInst(((InstBlock*) blockInst->next2)->head, oldOp, newNum);
+
+        // join (then/else->next)
+        updateIndivInst(((InstBlock*) blockInst->next2->next)->head, oldOp, newNum);
+
+        // end block
+        updateIndivInst(((InstBlock*) blockInst->next2->next->next)->head, oldOp, newNum);
+
+    }
+    else if(blockInst->name[0] == 'J'){
+        // join block
+        updateIndivInst(blockInst->head, oldOp, newNum);
+
+        // cond
+        updateIndivInst(((InstBlock*) blockInst->next)->head, oldOp, newNum);
+
+        // do block
+        updateIndivInst(((InstBlock*) blockInst->next->next)->head, oldOp, newNum);
+
+        // end block
+        blockInst = (InstBlock*) blockInst->next;
+        updateIndivInst(((InstBlock*) blockInst->next2)->head, oldOp, newNum);
+    }
+}
+
+void updateIndivInst(INST* instruction, Opr* oldOp, int newNum){
+    struct Opr* op;
+    struct Instruction* inst;
+    while(instruction != NULL){
+        if(instruction->TYPE == BLOCK){
+            updateBlockInst(instruction, oldOp, newNum);
+            break;
+        }
+        inst = (Instruction*) instruction;
+        updateOp(inst->a, oldOp, newNum);
+        updateOp(inst->b, oldOp, newNum);
+        instruction = instruction->next;
+    }
+}
+
+void updateOp(Opr* thisOp, Opr* targetOp, int num){
+    if(thisOp != NULL &&
+        thisOp->instNum == targetOp->instNum &&
+        thisOp->name.compare(targetOp->name) == 0)
+    {
+        thisOp->instNum = num;
+        if(thisOp->name[0] == '#'){
+            thisOp->name = thisOp->name.substr(1);
+        }
+    }
 }
 
 void PrintInstBlock(struct InstBlock* instBlock){
@@ -120,7 +192,7 @@ void PrintInst(struct INST* currInst){
     while(currInst != NULL){
         if(currInst->TYPE == BLOCK){
             PrintInstBlock((InstBlock*) currInst);
-            break;
+            return;
         }
         inst = (Instruction*) currInst;
         if(inst->InstNum == -1){
@@ -140,9 +212,6 @@ void PrintInst(struct INST* currInst){
         std::string cmd = std::to_string(inst->InstNum) + "\t" + 
                         opText[inst->op] + " ";
         if(inst->a->name != "-"){
-            if(inst->a->name == ""){
-                cmd += "#";
-            }
             cmd += inst->a->name;
         }
         n = inst->a->instNum;
@@ -151,7 +220,7 @@ void PrintInst(struct INST* currInst){
         }
         
         if(inst->b != NULL){
-            if(inst->b->name != ""){
+            if(inst->b->name != "#"){
                 if(inst->b->instNum < 0)
                     cmd += " (" + inst->b->name + ")";
                 else
@@ -159,7 +228,10 @@ void PrintInst(struct INST* currInst){
                         std::to_string(inst->b->instNum) + ")";
             }
             else{
-                cmd += " #" + std::to_string(inst->b->instNum) + " ";
+                if(inst->b->instNum != 0 && inst->b->instNum != 1)
+                    cmd += " #" + std::to_string(inst->b->instNum) + " ";
+                else
+                    cmd += " (" + std::to_string(inst->b->instNum) + ")";
             }
         }
         put(stringIndent + cmd);

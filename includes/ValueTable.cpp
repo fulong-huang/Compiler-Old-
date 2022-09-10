@@ -5,10 +5,11 @@ void declareVar(std::string ident){
     insertVT(ident, -3);
 }
 
-
 void insertVT(std::string ident, int inst){
     int idx = ValueTable.size()-1; // both table must have same depth;
     if(InWhile){
+        struct Opr* a;
+        struct Opr* b = newOp(ident, inst);
         // ============== Update all instructions ================
         // 
         // addLabelInst("ADDED HERE========");
@@ -16,23 +17,31 @@ void insertVT(std::string ident, int inst){
         // update phi function;
         std::pair<int, int> vt = getVT(ident);
         if(vt.first >= 0){
-            WhileJoin = addPhiInst(WhileJoin, newOp(ident, vt.first), newOp(ident, inst));
+            a = newOp(ident, vt.first);
+            WhileJoin = addPhiInst(WhileJoin, a, b);
             WhileJoin->InstNum = currInstNum;
             // Update Value Table
             InWhile = false;
-            insertVT(ident, currInstNum++);
+            insertVT(ident, currInstNum);
+            updateInst(a, currInstNum);
+            updateInst(b, currInstNum);
+            currInstNum++;
             InWhile = true;
         }
-        else{
+        else{ // if pre exist value was a constant
             struct Instruction* instruction = newInstruction();
             instruction->op = STORECONST;
             instruction->InstNum = currInstNum;
-            instruction->a = newOp(ident, vt.second);
+            a = newOp("#"+ident, vt.second);
+            instruction->a = a;
             WhileJoin->next = (INST*) instruction;
             WhileJoin = instruction;
-            
             // Update Value Table
-            WhileJoin = addPhiInst(WhileJoin, newOp(ident, currInstNum++), newOp(ident, inst));
+            WhileJoin = addPhiInst(WhileJoin, newOp(ident, currInstNum++), b);
+            // if it were constant, also need to update constant;
+            updateInst(a, currInstNum);
+            updateInst(b, currInstNum);
+            WhileJoin->InstNum = currInstNum;
             InWhile = false;
             insertVT(ident, currInstNum++);
             InWhile = true;
@@ -88,6 +97,18 @@ std::pair<int, int> getPrevVT(std::string ident){
     return result;
 }
 
+void createInstCV(std::string ident, int val){
+    struct Instruction* instruction = newInstruction();
+    instruction->op = STORECONST;
+    instruction->InstNum = currInstNum;
+    instruction->a = newOp("#"+ident, val);
+    WhileJoin->next = (INST*) instruction;
+    WhileJoin = instruction;
+    // // Update Value Table
+    InWhile = false;
+    insertVT(ident, currInstNum++);
+    InWhile = true;
+}
 
 void insertCV(std::string ident, int inst){
     int idx = ValueTable.size()-1; // both table must have same depth;
@@ -95,7 +116,7 @@ void insertCV(std::string ident, int inst){
         struct Instruction* instruction = newInstruction();
         instruction->op = STORECONST;
         instruction->InstNum = currInstNum;
-        instruction->a = newOp(ident, inst);
+        instruction->a = newOp("#"+ident, inst);
         WhileJoin->next = (INST*) instruction;
         WhileJoin = instruction;
 
@@ -114,7 +135,7 @@ void insertCV(std::string ident, int inst){
             instruction = newInstruction();
             instruction->op = STORECONST;
             instruction->InstNum = currInstNum;
-            instruction->a = newOp(ident, vt.second);
+            instruction->a = newOp("#"+ident, vt.second);
             WhileJoin->next = (INST*) instruction;
             WhileJoin = instruction;
             

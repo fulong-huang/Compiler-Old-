@@ -2,61 +2,65 @@
 
 MAIN: 
 	0	bra InputNum
-	  <Let a <- 0>
+	  <Let a <- (0)>
 	1	bra InputNum
-	  <Let b <- 1>
+	  <Let b <- (1)>
 	2	bra InputNum
-	  <Let c <- 2>
+	  <Let c <- (2)>
 	3	bra InputNum
-	  <Let prof <- 3>
+	  <Let prof <- (3)>
 	JOIN_WHILE_0: 
-		18	phi a(0)  a(17)
+		17	phi c(2)  c(15)
+		18	phi b(1)  b(16)
+		20	phi a(0)  a(19)
 	WHILE_0: 
-		4	cmpi a(0)  #100 
+		4	cmpi a(20)  #100 
 		5	bge (4)  (JOIN_WHILE_0)
 	DO_0: 
 		IF_0: 
-			6	cmpi b(1)  #0 
+			6	cmpi b(18)  (0)
 			7	bge (6)  (ELSE_0)
 		THEN_0: 
-			8	addi b(1)  #1 
-			  <Let b <- 8>
+			8	addi b(18)  (1)
+			  <Let b <- (8)>
 			IF_1: 
-				9	cmpi c(2)  #0 
+				9	cmpi c(17)  (0)
 				10	bge (9)  (ELSE_1)
 			THEN_1: 
-				11	addi c(2)  #1 
-				  <Let c <- 11>
+				11	addi c(17)  (1)
+				  <Let c <- (11)>
 				12	bra JOIN_IF_1
 			ELSE_1: 
 			JOIN_IF_1: 
-				13	phi c(11)  c(2)
+				13	phi c(11)  c(17)
 		END_IF_1: 
-			  <Let c <- 13>
+			  <Let c <- (13)>
 			14	bra JOIN_IF_0
 		ELSE_0: 
 		JOIN_IF_0: 
-			15	phi c(13)  c(2)
-			16	phi b(8)  b(1)
+			15	phi c(13)  c(17)
+			16	phi b(8)  b(18)
 	END_IF_0: 
-		  <Let c <- 15>
-		  <Let b <- 16>
-		17	addi a(0)  #1 
-		  <Let a <- 17>
-		19	bra WHILE_0
+		  <Let c <- (15)>
+		  <Let b <- (16)>
+		19	addi a(20)  (1)
+		  <Let a <- (20)>
+		21	bra WHILE_0
 END_WHILE_0: 
-	  <Let a <- 18>
-	20	bra OutputNum
-	21	bra OutputNum
+	  <Let c <- (17)>
+	  <Let b <- (18)>
+	  <Let a <- (20)>
 	22	bra OutputNum
+	23	bra OutputNum
+	24	bra OutputNum
 	
 
 ------------------ Values Start Here ------------------
 	Value Table size: 1
-	1, b
-	2, c
 	3, prof
-	18, a
+	17, c
+	18, b
+	20, a
 	
 
 

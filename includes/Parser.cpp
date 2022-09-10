@@ -93,7 +93,7 @@ std::pair<std::string, int> factor(){ // return result as pair<name, int>
     nextChar();
     if(isdigit(CURR)){          // number
         int n = number();
-        result.first = ""; // constant
+        result.first[0] = '#'; // constant
         result.second = n;
     }
     else if(CURR == '('){       // '(' expression ')'
@@ -115,7 +115,14 @@ std::pair<std::string, int> factor(){ // return result as pair<name, int>
             std::pair<int, int> val = varRef(idt);
             
             if(val.first == -1){
-                result.first = "";
+                if(WhileIf || InWhile){
+                    result.first = idt;
+                    createInstCV(idt, val.second); 
+                    result.second = varRef(idt).first;
+                    put(result.first);
+                    return result;
+                }
+                result.first = "#" + idt;
                 result.second = val.second;
             }
             else if(val.first == -2){
@@ -151,8 +158,8 @@ std::pair<std::string, int> term(){
     while( mul || CURR == '/'){
         next();
         rhs = factor();
-        constLHS = (lhs.first == "");
-        constRHS = (rhs.first == "");
+        constLHS = (lhs.first[0] == '#');
+        constRHS = (rhs.first[0] == '#');
         struct Instruction* inst = newInstruction();
         if(mul){ // ================ MULT =====================
             if(constLHS){
@@ -178,7 +185,7 @@ std::pair<std::string, int> term(){
                 inst->InstNum = currInstNum;
                 inst->op = MULI;
                 inst->a = newOp(lhs.first, lhs.second);
-                inst->b = newOp(rhs.first, rhs.second);
+                inst->b = newOp("#", rhs.second);
 
                 addInst((INST*) inst);
                 lhs.first = "-";
@@ -218,7 +225,7 @@ std::pair<std::string, int> term(){
                 //   1 / (rhs):
                 inst->InstNum = currInstNum++;
                 inst->op = DIV;
-                inst->a = newOp("", 1);
+                inst->a = newOp("-", 1);
                 inst->b = newOp(rhs.first, rhs.second);
                 addInst((INST*) inst);
 
@@ -227,7 +234,7 @@ std::pair<std::string, int> term(){
                 inst->InstNum = currInstNum;
                 inst->op = MULI;
                 inst->a = newOp("-", currInstNum-1);
-                inst->b = newOp("", lhs.second);
+                inst->b = newOp("#", lhs.second);
                 addInst((INST*) inst);
 
                 lhs.first = "-";
@@ -241,7 +248,7 @@ std::pair<std::string, int> term(){
                 inst->InstNum = currInstNum;
                 inst->op = DIVI;
                 inst->a = newOp(lhs.first, lhs.second);
-                inst->b = newOp(rhs.first, rhs.second);
+                inst->b = newOp("#", rhs.second);
 
                 addInst((INST*) inst);
                 lhs.first = "-";
@@ -282,8 +289,8 @@ std::pair<std::string, int> expression(){
     while(add || CURR == '-'){
         next();
         rhs = term();
-        constLHS = (lhs.first == "");
-        constRHS = (rhs.first == "");
+        constLHS = (lhs.first[0] == '#');
+        constRHS = (rhs.first[0] == '#');
         struct Instruction* inst = newInstruction();
         if(add){ // ================ ADD =====================
             if(constLHS){
@@ -297,7 +304,7 @@ std::pair<std::string, int> expression(){
                 inst->InstNum = currInstNum;
                 inst->op = ADDI;
                 inst->a = newOp(rhs.first, rhs.second);
-                inst->b = newOp(lhs.first, lhs.second);
+                inst->b = newOp("#", lhs.second);
                 addInst((INST*) inst);
                 lhs.first = "-";
                 lhs.second = currInstNum++;
@@ -310,7 +317,7 @@ std::pair<std::string, int> expression(){
                 inst->InstNum = currInstNum;
                 inst->op = ADDI;
                 inst->a = newOp(lhs.first, lhs.second);
-                inst->b = newOp(rhs.first, rhs.second);
+                inst->b = newOp("#", rhs.second);
                 addInst((INST*) inst);
                 lhs.first = "-";
                 lhs.second = currInstNum++;
@@ -333,7 +340,7 @@ std::pair<std::string, int> expression(){
                 continue;
             }
         }
-        if(CURR == '-'){ // ================ SUB =====================
+        else{ // ================ SUB =====================
             if(constLHS){
                 if(constRHS){
                     lhs.second = lhs.second - rhs.second;
@@ -356,7 +363,7 @@ std::pair<std::string, int> expression(){
                 inst->InstNum = currInstNum;
                 inst->op = ADDI;
                 inst->a = newOp("-", currInstNum-1);
-                inst->b = newOp("", lhs.second);
+                inst->b = newOp("#", lhs.second);
                 addInst((INST*) inst);
 
                 lhs.first = "-";
@@ -370,7 +377,7 @@ std::pair<std::string, int> expression(){
                 inst->InstNum = currInstNum;
                 inst->op = SUBI;
                 inst->a = newOp(lhs.first, lhs.second);
-                inst->b = newOp(rhs.first, rhs.second);
+                inst->b = newOp("#", rhs.second);
                 addInst((INST*) inst);
                 lhs.first = "-";
                 lhs.second = currInstNum++;
@@ -406,15 +413,15 @@ void relation(std::string target){
     Ops op = relOp();
     std::pair<std::string, int> rhs = expression();
 
-    bool constLHS = (lhs.first == "");
-    bool constRHS = (rhs.first == "");
+    bool constLHS = (lhs.first[0] == '#');
+    bool constRHS = (rhs.first[0] == '#');
     
 
     struct Instruction* inst;
     bool neg = false;
-    if(lhs.first == ""){
+    if(lhs.first[0] == '#'){
         // if two constant: (1 > 2)
-        if(rhs.first == ""){
+        if(rhs.first[0] == '#'){
             addCommentInst(("Comparing two constant: "
                 + std::to_string(lhs.second) + ", " + 
                 std::to_string(rhs.second)
@@ -476,11 +483,11 @@ void relation(std::string target){
         }
     }
 
-    if(rhs.first == ""){
+    if(rhs.first[0] == '#'){
         inst = newInstruction();
         inst->op = CMPI;
         inst->a = newOp(lhs.first, lhs.second);
-        inst->b = newOp(rhs.first, rhs.second);
+        inst->b = newOp("#", rhs.second);
         inst->InstNum = currInstNum++;
         addInst((INST*) inst);
 
@@ -553,7 +560,7 @@ void relation(std::string target){
         default:
             throw std::invalid_argument("Unknow relOp\n");
     }
-    inst->a = newOp("", currInstNum-1);
+    inst->a = newOp("-", currInstNum-1);
     inst->b = newOp(target, -1);
     inst->InstNum = currInstNum++;
     addInst((INST*) inst);
@@ -573,16 +580,18 @@ void assignment(){
         throw std::invalid_argument("Assignment expecting \"<-\" after ident");
     }
     std::pair<std::string, int> val = expression();
-    if(val.first == ""){ 
+    if(val.first[0] == '#'){ 
         insertCV(name, val.second);
-        // ======== update instruction if needed ========= 
-    }
-    else{
-        addCommentInst("Let " + name + " <- " + 
+
+        addCommentInst("Let " + name + " <- #" + 
             std::to_string(val.second)
         );
-        
+    }
+    else{
         insertVT(name, val.second);
+        addCommentInst("Let " + name + " <- (" + 
+            std::to_string(varRef(name).first)+")"
+        );
     }
 }
 
@@ -642,6 +651,8 @@ void ifStatement(){
     fiBlock->next = (INST*) endBlock;
 
     bool inWhileSave = InWhile;
+    bool whileIfSave = WhileIf;
+    WhileIf = WhileIf || InWhile;
     InWhile = false;
     // Pointers to join block
     struct Instruction* joinHead = (Instruction*) fiBlock->head;
@@ -832,10 +843,12 @@ void ifStatement(){
     // ******************* Sub Value Table *******************
     RemoveVTLayer();
 
+    InWhile = inWhileSave;
+    WhileIf = whileIfSave;
     // ========== update current layer after removeal =============
     phiInst = (Instruction*) joinHead->next;
     while(phiInst != NULL){
-        if(phiInst->op == STORECONST){ 
+        if(phiInst->op != PHI){ 
             phiInst = (Instruction*) phiInst->next;
             continue;
         }
@@ -844,12 +857,11 @@ void ifStatement(){
         idnt = phiInst->a->name;
 
         insertVT(idnt, phiInst->InstNum);
-        addCommentInst("Let " + idnt + " <- " + 
-            std::to_string(phiInst->InstNum)
+        addCommentInst("Let " + idnt + " <- (" + 
+            std::to_string(phiInst->InstNum) + ")"
         );
         phiInst = (Instruction*) phiInst->next;
     }
-    InWhile = inWhileSave;
 }
 
 
@@ -954,8 +966,8 @@ void whileStatement(){
         }
         idt = phiInst->a->name;
         insertVT(idt, phiInst->InstNum);
-        addCommentInst("Let " + idt + " <- " + 
-            std::to_string(phiInst->InstNum)
+        addCommentInst("Let " + idt + " <- (" + 
+            std::to_string(phiInst->InstNum) +")"
         );
 
         phiInst = (Instruction*) phiInst->next;
@@ -1120,7 +1132,7 @@ void computation(){
                 funcDecl();
             }
             else{
-                throw std::invalid_argument("Computation UNKNOWN TOKEN, expecting keyword \"function\"");
+                throw std::invalid_argument("Computation UNKNOWN TOKEN, expecting keyword \"function\"#");
             }
         }
         else if(nextIs("function")){

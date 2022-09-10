@@ -1,5 +1,5 @@
 main
-var a, b, c, d, e, f, g, h, i, j, k, l,z;
+var a, b, c, d, e, f, g, h, i, j, k, l;
 {
     let a <- call InputNum();
 	let b <- call InputNum();
@@ -16,15 +16,15 @@ var a, b, c, d, e, f, g, h, i, j, k, l,z;
 	let l <- 10;
 
 	while a < g do
-		let b <- h; 
-		let z <- b;
-		let c <- 2/e;
-		let g <- h+2;
-		let k <- l * 3;
-		let c <- l + 2;
-		let z <- c+1;
-		let e <- 5+a;
 		let a <- a + 1;
+		let b <- a - 1;
+		while a > 2 do
+			let a <- a - 1;
+			let b <- a + 1;
+		od;
+
+		let b <- b + 1;
+		let a <- b + 1;
 	od;
 
 	call OutputNum(a);

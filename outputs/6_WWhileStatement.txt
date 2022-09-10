@@ -23,47 +23,46 @@ MAIN:
 	JOIN_WHILE_0: 
 		6	storeConst #g(5) 
 		10	phi a(0)  a(9)
-		20	phi a(10)  a(18)
-		21	phi b(1)  b(19)
+		12	phi b(1)  b(11)
+		20	phi a(10)  a(16)
+		21	phi b(12)  b(18)
 		23	phi b(21)  b(22)
-		25	phi b(23)  b(24)
+		25	phi a(20)  a(24)
 	WHILE_0: 
-		7	cmp a(20)  g(6)
+		7	cmp a(25)  g(6)
 		8	bge (7)  (JOIN_WHILE_0)
 	DO_0: 
-		9	addi a(20)  (1)
+		9	addi a(25)  (1)
 		  <Let a <- (10)>
-		IF_0: 
-			11	cmpi a(20)  #2 
-			12	ble (11)  (ELSE_0)
-		THEN_0: 
-			13	addi a(20)  #2 
-			  <Let b <- (13)>
-			14	addi b(13)  (1)
-			  <Let a <- (14)>
-			15	bra JOIN_IF_0
-		ELSE_0: 
-			16	muli a(20)  #2 
-			  <Let b <- (16)>
-			17	addi b(16)  (1)
-			  <Let a <- (17)>
-		JOIN_IF_0: 
-			18	phi a(14)  a(17)
-			19	phi b(13)  b(16)
-	END_IF_0: 
-		  <Let a <- (18)>
-		  <Let b <- (19)>
-		22	addi b(25)  (1)
+		11	subi a(25)  (1)
+		  <Let b <- (12)>
+		JOIN_WHILE_1: 
+			16	phi a(25)  a(15)
+			18	phi b(23)  b(17)
+		WHILE_1: 
+			13	cmpi a(25)  #2 
+			14	ble (13)  (JOIN_WHILE_1)
+		DO_1: 
+			15	subi a(25)  (1)
+			  <Let a <- (16)>
+			17	addi a(25)  (1)
+			  <Let b <- (18)>
+			19	bra WHILE_1
+	END_WHILE_1: 
+		  <Let a <- (16)>
+		  <Let b <- (18)>
+		22	addi b(23)  (1)
 		  <Let b <- (23)>
-		24	addi b(25)  #2 
-		  <Let b <- (25)>
+		24	addi b(23)  (1)
+		  <Let a <- (25)>
 		26	bra WHILE_0
 END_WHILE_0: 
 	  <Let a <- (10)>
+	  <Let b <- (12)>
 	  <Let a <- (20)>
 	  <Let b <- (21)>
 	  <Let b <- (23)>
-	  <Let b <- (25)>
+	  <Let a <- (25)>
 	27	bra OutputNum
 	28	bra OutputNum
 	29	bra OutputNum
@@ -76,8 +75,8 @@ END_WHILE_0:
 	4, e
 	5, f
 	6, g
-	20, a
-	25, b
+	23, b
+	25, a
 	
 
 

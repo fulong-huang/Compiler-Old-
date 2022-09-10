@@ -16,14 +16,17 @@ var a, b, c, d, e, f, g, h, i, j, k, l;
 	let l <- 10;
 
 	while a < g do
-		let b <- h;
-		if c > i
+		let a <- a + 1;
+		if a > 2
 		then
-			let d <- j * 2 + 3;
+			let b <- a + 2;
+			let a <- b+1;
 		else
-			let e <- 2 / k;
+			let b <- a * 2;
+			let a <- b+1;
 		fi;
-		let f <- l / 2;
+		let b <- b + 1;
+		let b <- b + 2;
 	od;
 
 	call OutputNum(a);
