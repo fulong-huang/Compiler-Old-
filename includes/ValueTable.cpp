@@ -176,7 +176,6 @@ void InitVT(){
     ValueTable.clear();
     ConstVal.clear();
     InsertVTLayer();
-    currInstNum = 0;
     InWhile = false;
     WhileCondition = NULL;
     WhileDo = NULL;

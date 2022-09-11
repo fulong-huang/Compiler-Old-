@@ -1,108 +1,170 @@
 	---------- Printing Instructions ----------
 
 MAIN: 
-	0	bra InputNum
-	  <Let a <- (0)>
+	0 <empty>
 	1	bra InputNum
-	  <Let b <- (1)>
+	  <Let a = (1)>
 	2	bra InputNum
-	  <Let c <- (2)>
+	  <Let b = (2)>
 	3	bra InputNum
-	  <Let d <- (3)>
+	  <Let c = (3)>
 	4	bra InputNum
-	  <Let e <- (4)>
+	  <Let d = (4)>
 	5	bra InputNum
-	  <Let f <- (5)>
-	  <Let g <- #5>
-	  <Let h <- #6>
-	  <Let i <- #7>
-	  <Let j <- #8>
-	  <Let k <- #9>
-	  <Let l <- #10>
+	  <Let e = (5)>
+	6	bra InputNum
+	  <Let f = (6)>
+	  <Let g = #5>
+	  <Let h = #6>
+	  <Let i = #7>
+	  <Let j = #8>
+	  <Let k = #9>
+	  <Let l = #10>
 	IF_0: 
+		7 <empty>
 		  <Comparing two constant: 1, 2>
 	THEN_0: 
-		  <Let f <- #5>
-		6	bra InputNum
-		  <Let f <- (6)>
+		8 <empty>
+		  <Let f = #5>
+		12	bra InputNum
+		  <Let f = (12)>
 		IF_1: 
-			7	cmp a(0)  b(1)
-			8	bge (7)  (ELSE_1)
+			13 <empty>
+			18	cmp a(1)  b(2)
+			19	bge (18)  ELSE_1(15)
 		THEN_1: 
-			  <Let g <- #12>
-			9	muli e(4)  #6 
-			  <Let g <- (9)>
-			10	addi f(6)  #2 
-			  <Let k <- (10)>
-			11	bra JOIN_IF_1
+			14 <empty>
+			  <Let g = #12>
+			20	muli e(5)  #6 
+			  <Let g = (20)>
+			21	addi f(12)  #2 
+			  <Let k = (21)>
+			22	bra JOIN_IF_1(16) 
 		ELSE_1: 
+			15 <empty>
 			IF_2: 
-				12	cmpi c(2)  #7 
-				13	blt (12)  (ELSE_2)
+				23 <empty>
+				28	cmpi c(3)  #7 
+				29	blt (28)  ELSE_2(25)
 			THEN_2: 
-				14	muli f(6)  #2 
-				  <Let e <- (14)>
-				  <Let e <- #14>
-				15	bra JOIN_IF_2
+				24 <empty>
+				30	muli f(12)  #2 
+				  <Let e = (30)>
+				  <Let e = #14>
+				31	bra JOIN_IF_2(26) 
 			ELSE_2: 
-				17	bra InputNum
-				  <Let b <- (17)>
+				25 <empty>
+				33	bra InputNum
+				  <Let b = (33)>
 			JOIN_IF_2: 
-				16	storeConst e(14) 
-				18	phi e(16)  e(4)
-				19	phi b(17)  b(1)
+				26 <empty>
+				32	storeConst e(14) 
+				34	phi e(32)  e(5)
+				35	phi b(33)  b(2)
 		END_IF_2: 
-			  <Let e <- (18)>
-			  <Let b <- (19)>
+			27 <empty>
+			  <Let e = (34)>
+			  <Let b = (35)>
 		JOIN_IF_1: 
-			22	storeConst g(5) 
-			20	storeConst k(9) 
-			21	phi k(10)  k(20)
-			23	phi g(9)  g(22)
-			24	phi b(19)  b(1)
-			25	phi e(18)  e(4)
+			16 <empty>
+			38	storeConst g(5) 
+			36	storeConst k(9) 
+			37	phi k(21)  k(36)
+			39	phi g(20)  g(38)
+			40	phi b(35)  b(2)
+			41	phi e(34)  e(5)
 	END_IF_1: 
-		  <Let k <- (21)>
-		  <Let g <- (23)>
-		  <Let b <- (24)>
-		  <Let e <- (25)>
-		26	bra JOIN_IF_0
+		17 <empty>
+		  <Let k = (37)>
+		  <Let g = (39)>
+		  <Let b = (40)>
+		  <Let e = (41)>
+		42	bra JOIN_IF_0(10) 
 	ELSE_0: 
-		27	add f(5)  b(1)
-		  <Let a <- (27)>
-		28	muli e(4)  #2 
-		  <Let b <- (28)>
+		9 <empty>
+		43	add f(6)  b(2)
+		  <Let a = (43)>
+		44	muli e(5)  #2 
+		  <Let b = (44)>
 	JOIN_IF_0: 
-		33	storeConst k(9) 
-		31	storeConst g(5) 
-		29	phi e(25)  e(4)
-		30	phi b(24)  b(28)
-		32	phi g(23)  g(31)
-		34	phi k(21)  k(33)
-		35	phi f(6)  f(5)
-		36	phi a(27)  a(0)
+		10 <empty>
+		49	storeConst k(9) 
+		47	storeConst g(5) 
+		45	phi e(41)  e(5)
+		46	phi b(40)  b(44)
+		48	phi g(39)  g(47)
+		50	phi k(37)  k(49)
+		51	phi f(12)  f(6)
+		52	phi a(43)  a(1)
 END_IF_0: 
-	  <Let e <- (29)>
-	  <Let b <- (30)>
-	  <Let g <- (32)>
-	  <Let k <- (34)>
-	  <Let f <- (35)>
-	  <Let a <- (36)>
-	37	bra OutputNum
-	38	bra OutputNum
-	39	bra OutputNum
+	11 <empty>
+	  <Let e = (45)>
+	  <Let b = (46)>
+	  <Let g = (48)>
+	  <Let k = (50)>
+	  <Let f = (51)>
+	  <Let a = (52)>
+	53	bra OutputNum
+	54	bra OutputNum
+	55	bra OutputNum
+	  <END.>
+	
+
+
+	
+digraph G { 
+MAIN [shape=record, label="<b>MAIN | {0: \<empty\>|1: bra InputNum|\<Let a = (1)\>|2: bra InputNum|\<Let b = (2)\>|3: bra InputNum|\<Let c = (3)\>|4: bra InputNum|\<Let d = (4)\>|5: bra InputNum|\<Let e = (5)\>|6: bra InputNum|\<Let f = (6)\>|\<Let g = #5\>|\<Let h = #6\>|\<Let i = #7\>|\<Let j = #8\>|\<Let k = #9\>|\<Let l = #10\>}"];
+IF_0[shape=record, label="<b>IF_0| {7: \<empty\>|\<Comparing two constant: 1, 2\>}"];
+THEN_0[shape=record, label="<b>THEN_0| {8: \<empty\>|\<Let f = #5\>|12: bra InputNum|\<Let f = (12)\>}"];
+IF_1[shape=record, label="<b>IF_1| {13: \<empty\>|18: cmp a(1) b(2)|19: bge(18) ELSE_1(15)}"];
+THEN_1[shape=record, label="<b>THEN_1| {14: \<empty\>|\<Let g = #12\>|20: muli e(5) 6|\<Let g = (20)\>|21: addi f(12) 2|\<Let k = (21)\>|22: bra JOIN_IF_1(16)}"];
+ELSE_1[shape=record, label="<b>ELSE_1| {15: \<empty\>}"];
+IF_2[shape=record, label="<b>IF_2| {23: \<empty\>|28: cmpi c(3) 7|29: blt(28) ELSE_2(25)}"];
+THEN_2[shape=record, label="<b>THEN_2| {24: \<empty\>|30: muli f(12) 2|\<Let e = (30)\>|\<Let e = #14\>|31: bra JOIN_IF_2(26)}"];
+ELSE_2[shape=record, label="<b>ELSE_2| {25: \<empty\>|33: bra InputNum|\<Let b = (33)\>}"];
+JOIN_IF_2[shape=record, label="<b>JOIN_IF_2| {26: \<empty\>|32: storeConst e(14)|34: phi e(32) e(5)|35: phi b(33) b(2)}"];
+END_IF_2[shape=record, label="<b>END_IF_2| {27: \<empty\>|\<Let e = (34)\>|\<Let b = (35)\>}"];
+JOIN_IF_1[shape=record, label="<b>JOIN_IF_1| {16: \<empty\>|38: storeConst g(5)|36: storeConst k(9)|37: phi k(21) k(36)|39: phi g(20) g(38)|40: phi b(35) b(2)|41: phi e(34) e(5)}"];
+END_IF_1[shape=record, label="<b>END_IF_1| {17: \<empty\>|\<Let k = (37)\>|\<Let g = (39)\>|\<Let b = (40)\>|\<Let e = (41)\>|42: bra JOIN_IF_0(10)}"];
+ELSE_0[shape=record, label="<b>ELSE_0| {9: \<empty\>|43: add f(6) b(2)|\<Let a = (43)\>|44: muli e(5) 2|\<Let b = (44)\>}"];
+JOIN_IF_0[shape=record, label="<b>JOIN_IF_0| {10: \<empty\>|49: storeConst k(9)|47: storeConst g(5)|45: phi e(41) e(5)|46: phi b(40) b(44)|48: phi g(39) g(47)|50: phi k(37) k(49)|51: phi f(12) f(6)|52: phi a(43) a(1)}"];
+END_IF_0[shape=record, label="<b>END_IF_0| {11: \<empty\>|\<Let e = (45)\>|\<Let b = (46)\>|\<Let g = (48)\>|\<Let k = (50)\>|\<Let f = (51)\>|\<Let a = (52)\>|53: bra OutputNum|54: bra OutputNum|55: bra OutputNum|\<END.\>}"];
+
+
+MAIN:s -> IF_0:n [label="fall-through(cond)"];
+IF_0:s -> THEN_0:n [label="fall-through"];
+IF_0:s -> ELSE_0:n [label="branch"];
+THEN_0:s -> IF_1:n [label="fall-through(cond)"];
+IF_1:s -> THEN_1:n [label="fall-through"];
+IF_1:s -> ELSE_1:n [label="branch"];
+THEN_1:s -> JOIN_IF_1:n [label="branch"];
+ELSE_1:s -> IF_2:n [label="fall-through(cond)"];
+IF_2:s -> THEN_2:n [label="fall-through"];
+IF_2:s -> ELSE_2:n [label="branch"];
+THEN_2:s -> JOIN_IF_2:n [label="branch"];
+ELSE_2:s -> JOIN_IF_2:n [label="fall-through"];
+JOIN_IF_2:s -> END_IF_2:n [label="fall-thorough(out)"];
+END_IF_2:s -> JOIN_IF_1:n [label="fall-through"];
+JOIN_IF_1:s -> END_IF_1:n [label="fall-thorough(out)"];
+END_IF_1:s -> JOIN_IF_0:n [label="branch"];
+ELSE_0:s -> JOIN_IF_0:n [label="fall-through"];
+JOIN_IF_0:s -> END_IF_0:n [label="fall-thorough(out)"];
+
+}
+
+
 	
 
 ------------------ Values Start Here ------------------
 	Value Table size: 1
-	2, c
-	3, d
-	29, e
-	30, b
-	32, g
-	34, k
-	35, f
-	36, a
+	3, c
+	4, d
+	45, e
+	46, b
+	48, g
+	50, k
+	51, f
+	52, a
 	
 
 

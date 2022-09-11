@@ -3,6 +3,7 @@
 
 #include "HandleFiles/HandleReadFile.cpp"
 #include "HandleFiles/HandleWriteFile.cpp"
+#include "DrawGraph.cpp"
 #include "Structures.cpp"
 // #include "InstValue.cpp"
 #include "ValueTable.cpp"
@@ -19,7 +20,7 @@ std::pair<int, int> varRef(std::string ident);
 std::pair<std::string, int> factor();
 std::pair<std::string, int> term();
 std::pair<std::string, int> expression();
-void relation(std::string target);
+void relation(struct Opr* target);
 
 void assignment();
 

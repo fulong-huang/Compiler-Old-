@@ -406,7 +406,7 @@ std::pair<std::string, int> expression(){
 
 
 // ========================================= MAY NOT REQUIRE RETURN ============================
-void relation(std::string target){ 
+void relation(struct Opr* target){ 
     std::cout << "RELATION" << std::endl;
 
     std::pair<std::string, int> lhs = expression();
@@ -428,7 +428,7 @@ void relation(std::string target){
             ));
             inst = newInstruction();
             inst->op = BRA;
-            inst->a = newOp(target, -1);
+            inst->a = target;
             int diff = lhs.second - rhs.second;
             switch(op){
                 case EQ: // branch when not equal
@@ -523,7 +523,7 @@ void relation(std::string target){
                 throw std::invalid_argument("Unknow relOp\n");
         }
         inst->a = newOp("-", currInstNum-1);
-        inst->b = newOp(target, -1);
+        inst->b = target;
         inst->InstNum = currInstNum++;
         addInst((INST*) inst);
         return;
@@ -561,7 +561,7 @@ void relation(std::string target){
             throw std::invalid_argument("Unknow relOp\n");
     }
     inst->a = newOp("-", currInstNum-1);
-    inst->b = newOp(target, -1);
+    inst->b = target;
     inst->InstNum = currInstNum++;
     addInst((INST*) inst);
 
@@ -583,13 +583,13 @@ void assignment(){
     if(val.first[0] == '#'){ 
         insertCV(name, val.second);
 
-        addCommentInst("Let " + name + " <- #" + 
+        addCommentInst("Let " + name + " = #" + 
             std::to_string(val.second)
         );
     }
     else{
         insertVT(name, val.second);
-        addCommentInst("Let " + name + " <- (" + 
+        addCommentInst("Let " + name + " = (" + 
             std::to_string(varRef(name).first)+")"
         );
     }
@@ -642,7 +642,13 @@ void ifStatement(){
     struct InstBlock* elseBlock = newInstBlock(labels[2]);
     struct InstBlock* fiBlock = newInstBlock(labels[3]);
     struct InstBlock* endBlock = newInstBlock(labels[4]);
+    // Pointers to join block
+    struct Instruction* joinHead = (Instruction*) fiBlock->head;
+    struct Instruction* joinTail = joinHead;
 
+    struct Opr* elseTarget = newOp(labels[2], ((Instruction*) elseBlock->head)->InstNum);
+    struct Opr* fiTarget = newOp(labels[3], joinHead->InstNum);
+    
     // Connect instruction Blocks;
     ifBlock->next = (INST*) thenBlock; 
     ifBlock->next2 = (INST*) elseBlock;
@@ -654,9 +660,6 @@ void ifStatement(){
     bool whileIfSave = WhileIf;
     WhileIf = WhileIf || InWhile;
     InWhile = false;
-    // Pointers to join block
-    struct Instruction* joinHead = (Instruction*) fiBlock->head;
-    struct Instruction* joinTail = joinHead;
 
     // Save JoinBlock (from outer block)
     //  Replace JoinBlock with current joinBlock (fiBlock).
@@ -668,7 +671,7 @@ void ifStatement(){
     InstTail = ifBlock->head;
 
     nextChar();
-    relation(labels[2]); 
+    relation(elseTarget); 
     nextChar();
 
     // Then here
@@ -691,7 +694,7 @@ void ifStatement(){
     // If statement need to skip it
     struct Instruction* inst = newInstruction();
     inst->op = BRA;
-    inst->a = newOp(fiBlock->name, -1);
+    inst->a = fiTarget;
     inst->InstNum = currInstNum++;
     addInst((INST*) inst);
 
@@ -852,12 +855,10 @@ void ifStatement(){
             phiInst = (Instruction*) phiInst->next;
             continue;
         }
-        std::cout << " =" <<  ( phiInst->a == NULL ) 
-        << std::endl;
         idnt = phiInst->a->name;
 
         insertVT(idnt, phiInst->InstNum);
-        addCommentInst("Let " + idnt + " <- (" + 
+        addCommentInst("Let " + idnt + " = (" + 
             std::to_string(phiInst->InstNum) + ")"
         );
         phiInst = (Instruction*) phiInst->next;
@@ -883,6 +884,10 @@ void whileStatement(){
     struct InstBlock* doBlock = newInstBlock(labels[1]);
     struct InstBlock* odBlock = newInstBlock(labels[2]);
     struct InstBlock* endBlock = newInstBlock(labels[3]);
+
+    struct Opr* whileTarget = newOp(labels[0], ((Instruction*) whileBlock->head)->InstNum);
+    struct Opr* odTarget = newOp(labels[3], ((Instruction*) endBlock->head)->InstNum);
+
 
     odBlock->next = (INST*) whileBlock;
     whileBlock->next = (INST*) doBlock;
@@ -913,7 +918,7 @@ void whileStatement(){
     // Jump into while block  <Check condition>
     InstTail = whileBlock->head;
 
-    relation(labels[2]);
+    relation(odTarget);
     nextChar();
 
     if(!nextIs("do")){
@@ -938,7 +943,7 @@ void whileStatement(){
     // jump back to while block
     struct Instruction* inst = newInstruction();
     inst->op = BRA;
-    inst->a = newOp(whileBlock->name, -1);
+    inst->a = whileTarget;
     inst->InstNum = currInstNum++;
     addInst((INST*) inst);
 
@@ -966,7 +971,7 @@ void whileStatement(){
         }
         idt = phiInst->a->name;
         insertVT(idt, phiInst->InstNum);
-        addCommentInst("Let " + idt + " <- (" + 
+        addCommentInst("Let " + idt + " = (" + 
             std::to_string(phiInst->InstNum) +")"
         );
 
@@ -1158,6 +1163,7 @@ void computation(){
         throw std::invalid_argument("Computation expecting \".\" to end computation");
     }
     next(); // eat '.', which is end of computation;
+    addCommentInst("END.");
 }
 
 

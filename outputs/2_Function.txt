@@ -1,36 +1,66 @@
 	---------- Printing Instructions ----------
 
 MAIN: 
-	  <Let y <- #579>
+	0 <empty>
+	  <Let y = #579>
 	IF_0: 
+		1 <empty>
 		  <Comparing two constant: 2, 3>
-		0	bra ELSE_0
+		6	bra ELSE_0(3) 
 	THEN_0: 
-		  <Let b <- #3>
+		2 <empty>
+		  <Let b = #3>
 		  <Use of UNINITIALIZED variable: b>
-		1	addi b(0)  #579 
-		  <Let s <- (1)>
-		2	bra JOIN_IF_0
+		7	addi b(0)  #579 
+		  <Let s = (7)>
+		8	bra JOIN_IF_0(4) 
 	ELSE_0: 
+		3 <empty>
 	JOIN_IF_0: 
-		6	storeConst b(0) 
-		4	storeConst s(0) 
-		5	phi s(1)  s(4)
-		3	storeConst b(3) 
-		7	phi b(3)  b(6)
+		4 <empty>
+		12	storeConst b(0) 
+		10	storeConst s(0) 
+		11	phi s(7)  s(10)
+		9	storeConst b(3) 
+		13	phi b(9)  b(12)
 END_IF_0: 
-	  <Let s <- (5)>
-	  <Let b <- (7)>
-	  <Let y <- #28>
-	  <Let b <- #2>
-	8	bra thisfunc
+	5 <empty>
+	  <Let s = (11)>
+	  <Let b = (13)>
+	  <Let y = #28>
+	  <Let b = #2>
+	14	bra thisfunc
+	  <END.>
+	
+
+
+	
+digraph G { 
+MAIN [shape=record, label="<b>MAIN | {0: \<empty\>|\<Let y = #579\>}"];
+IF_0[shape=record, label="<b>IF_0| {1: \<empty\>|\<Comparing two constant: 2, 3\>|6: bra ELSE_0(3)}"];
+THEN_0[shape=record, label="<b>THEN_0| {2: \<empty\>|\<Let b = #3\>|\<Use of UNINITIALIZED variable: b\>|7: addi b(0) 579|\<Let s = (7)\>|8: bra JOIN_IF_0(4)}"];
+ELSE_0[shape=record, label="<b>ELSE_0| {3: \<empty\>}"];
+JOIN_IF_0[shape=record, label="<b>JOIN_IF_0| {4: \<empty\>|12: storeConst b(0)|10: storeConst s(0)|11: phi s(7) s(10)|9: storeConst b(3)|13: phi b(9) b(12)}"];
+END_IF_0[shape=record, label="<b>END_IF_0| {5: \<empty\>|\<Let s = (11)\>|\<Let b = (13)\>|\<Let y = #28\>|\<Let b = #2\>|14: bra thisfunc|\<END.\>}"];
+
+
+MAIN:s -> IF_0:n [label="fall-through(cond)"];
+IF_0:s -> THEN_0:n [label="fall-through"];
+IF_0:s -> ELSE_0:n [label="branch"];
+THEN_0:s -> JOIN_IF_0:n [label="branch"];
+ELSE_0:s -> JOIN_IF_0:n [label="fall-through"];
+JOIN_IF_0:s -> END_IF_0:n [label="fall-thorough(out)"];
+
+}
+
+
 	
 
 ------------------ Values Start Here ------------------
 	Value Table size: 1
 	-3, a
 	-3, d
-	5, s
+	11, s
 	
 
 

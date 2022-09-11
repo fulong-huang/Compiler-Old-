@@ -20,6 +20,10 @@ void addLabel(std::string label){
     ofile << label << ": " << std::endl;
 }
 
+void draw(std::string str){
+    ofile << str << std::endl;
+}
+
 void closeWriteFile(){
     try{
         ofile.close();

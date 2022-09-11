@@ -35,6 +35,7 @@ int main()
                     InitInstruction();
                     InitVT();
                     InitHelp();
+                    InitGraph();
 
                     // --- PROGRAM START ---
                     computation();
@@ -52,7 +53,8 @@ int main()
                 // std::cout <<'~' << std::endl;
                 put( "---------- Printing Instructions ----------\n");
                 PrintInst(InstHead);
-                
+                put("\n\n");
+                put("\n"+graph+"\n\n"+graphConnection+"\n}\n\n");
                 put("\n\n------------------ Values Start Here ------------------");
                 put("Value Table size: " + std::to_string(ValueTable.size()));
                 std::vector<std::pair<std::string, int> > vt(ValueTable[0].begin(), ValueTable[0].end());

@@ -2,82 +2,125 @@
 	---------- Printing Instructions ----------
 
 MAIN: 
-	0	bra InputNum
-	  <Let a <- (0)>
+	0 <empty>
 	1	bra InputNum
-	  <Let b <- (1)>
+	  <Let a = (1)>
 	2	bra InputNum
-	  <Let c <- (2)>
+	  <Let b = (2)>
 	3	bra InputNum
-	  <Let d <- (3)>
+	  <Let c = (3)>
 	4	bra InputNum
-	  <Let e <- (4)>
+	  <Let d = (4)>
 	5	bra InputNum
-	  <Let f <- (5)>
-	  <Let g <- #5>
-	  <Let h <- #6>
-	  <Let i <- #7>
-	  <Let j <- #8>
-	  <Let k <- #9>
-	  <Let l <- #10>
+	  <Let e = (5)>
+	6	bra InputNum
+	  <Let f = (6)>
+	  <Let g = #5>
+	  <Let h = #6>
+	  <Let i = #7>
+	  <Let j = #8>
+	  <Let k = #9>
+	  <Let l = #10>
 	JOIN_WHILE_0: 
-		6	storeConst #g(5) 
-		10	phi a(0)  a(9)
-		20	phi a(10)  a(18)
-		21	phi b(1)  b(19)
-		23	phi b(21)  b(22)
-		25	phi b(23)  b(24)
+		9 <empty>
+		11	storeConst #g(5) 
+		15	phi a(1)  a(14)
+		30	phi a(15)  a(28)
+		31	phi b(2)  b(29)
+		33	phi b(31)  b(32)
+		35	phi b(33)  b(34)
 	WHILE_0: 
-		7	cmp a(20)  g(6)
-		8	bge (7)  (JOIN_WHILE_0)
+		7 <empty>
+		12	cmp a(30)  g(11)
+		13	bge (12)  END_WHILE_0(10)
 	DO_0: 
-		9	addi a(20)  (1)
-		  <Let a <- (10)>
+		8 <empty>
+		14	addi a(30)  (1)
+		  <Let a = (15)>
 		IF_0: 
-			11	cmpi a(20)  #2 
-			12	ble (11)  (ELSE_0)
+			16 <empty>
+			21	cmpi a(30)  #2 
+			22	ble (21)  ELSE_0(18)
 		THEN_0: 
-			13	addi a(20)  #2 
-			  <Let b <- (13)>
-			14	addi b(13)  (1)
-			  <Let a <- (14)>
-			15	bra JOIN_IF_0
+			17 <empty>
+			23	addi a(30)  #2 
+			  <Let b = (23)>
+			24	addi b(23)  (1)
+			  <Let a = (24)>
+			25	bra JOIN_IF_0(19) 
 		ELSE_0: 
-			16	muli a(20)  #2 
-			  <Let b <- (16)>
-			17	addi b(16)  (1)
-			  <Let a <- (17)>
+			18 <empty>
+			26	muli a(30)  #2 
+			  <Let b = (26)>
+			27	addi b(26)  (1)
+			  <Let a = (27)>
 		JOIN_IF_0: 
-			18	phi a(14)  a(17)
-			19	phi b(13)  b(16)
+			19 <empty>
+			28	phi a(24)  a(27)
+			29	phi b(23)  b(26)
 	END_IF_0: 
-		  <Let a <- (18)>
-		  <Let b <- (19)>
-		22	addi b(25)  (1)
-		  <Let b <- (23)>
-		24	addi b(25)  #2 
-		  <Let b <- (25)>
-		26	bra WHILE_0
+		20 <empty>
+		  <Let a = (28)>
+		  <Let b = (29)>
+		32	addi b(35)  (1)
+		  <Let b = (33)>
+		34	addi b(35)  #2 
+		  <Let b = (35)>
+		36	bra WHILE_0(7) 
 END_WHILE_0: 
-	  <Let a <- (10)>
-	  <Let a <- (20)>
-	  <Let b <- (21)>
-	  <Let b <- (23)>
-	  <Let b <- (25)>
-	27	bra OutputNum
-	28	bra OutputNum
-	29	bra OutputNum
+	10 <empty>
+	  <Let a = (15)>
+	  <Let a = (30)>
+	  <Let b = (31)>
+	  <Let b = (33)>
+	  <Let b = (35)>
+	37	bra OutputNum
+	38	bra OutputNum
+	39	bra OutputNum
+	  <END.>
+	
+
+
+	
+digraph G { 
+MAIN [shape=record, label="<b>MAIN | {0: \<empty\>|1: bra InputNum|\<Let a = (1)\>|2: bra InputNum|\<Let b = (2)\>|3: bra InputNum|\<Let c = (3)\>|4: bra InputNum|\<Let d = (4)\>|5: bra InputNum|\<Let e = (5)\>|6: bra InputNum|\<Let f = (6)\>|\<Let g = #5\>|\<Let h = #6\>|\<Let i = #7\>|\<Let j = #8\>|\<Let k = #9\>|\<Let l = #10\>}"];
+JOIN_WHILE_0[shape=record, label="<b>JOIN_WHILE_0| {9: \<empty\>|11: storeConst #g(5)|15: phi a(1) a(14)|30: phi a(15) a(28)|31: phi b(2) b(29)|33: phi b(31) b(32)|35: phi b(33) b(34)}"];
+WHILE_0[shape=record, label="<b>WHILE_0| {7: \<empty\>|12: cmp a(30) g(11)|13: bge(12) END_WHILE_0(10)}"];
+DO_0[shape=record, label="<b>DO_0| {8: \<empty\>|14: addi a(30) (1)|\<Let a = (15)\>}"];
+IF_0[shape=record, label="<b>IF_0| {16: \<empty\>|21: cmpi a(30) 2|22: ble(21) ELSE_0(18)}"];
+THEN_0[shape=record, label="<b>THEN_0| {17: \<empty\>|23: addi a(30) 2|\<Let b = (23)\>|24: addi b(23) (1)|\<Let a = (24)\>|25: bra JOIN_IF_0(19)}"];
+ELSE_0[shape=record, label="<b>ELSE_0| {18: \<empty\>|26: muli a(30) 2|\<Let b = (26)\>|27: addi b(26) (1)|\<Let a = (27)\>}"];
+JOIN_IF_0[shape=record, label="<b>JOIN_IF_0| {19: \<empty\>|28: phi a(24) a(27)|29: phi b(23) b(26)}"];
+END_IF_0[shape=record, label="<b>END_IF_0| {20: \<empty\>|\<Let a = (28)\>|\<Let b = (29)\>|32: addi b(35) (1)|\<Let b = (33)\>|34: addi b(35) 2|\<Let b = (35)\>|36: bra WHILE_0(7)}"];
+END_WHILE_0[shape=record, label="<b>END_WHILE_0| {10: \<empty\>|\<Let a = (15)\>|\<Let a = (30)\>|\<Let b = (31)\>|\<Let b = (33)\>|\<Let b = (35)\>|37: bra OutputNum|38: bra OutputNum|39: bra OutputNum|\<END.\>}"];
+
+
+MAIN:s -> JOIN_WHILE_0:n [label="fall-thorough"];
+JOIN_WHILE_0:s -> WHILE_0:n [label="fall-thorough"];
+WHILE_0:s -> DO_0:n [label="fall-thorough",color=green];
+DO_0:s -> IF_0:n [label="fall-through(cond)"];
+IF_0:s -> THEN_0:n [label="fall-through"];
+IF_0:s -> ELSE_0:n [label="branch"];
+THEN_0:s -> JOIN_IF_0:n [label="branch"];
+ELSE_0:s -> JOIN_IF_0:n [label="fall-through"];
+JOIN_IF_0:s -> END_IF_0:n [label="fall-thorough(out)"];
+END_IF_0:s -> WHILE_0:n [label="branch",color=red];
+WHILE_0:s -> END_WHILE_0:n [label="branch",color=blue];
+
+}
+
+
 	
 
 ------------------ Values Start Here ------------------
 	Value Table size: 1
-	2, c
-	3, d
-	4, e
-	5, f
-	6, g
-	20, a
-	25, b
+	3, c
+	4, d
+	5, e
+	6, f
+	11, g
+	30, a
+	35, b
 	
 
 

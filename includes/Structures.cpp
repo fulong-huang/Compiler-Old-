@@ -92,7 +92,8 @@ enum Mnemonic{
 
 
     LABEL,
-    COMMENT
+    COMMENT,
+    NLL,
     // IFLOOP,
     // WHILELOOP
 };
