@@ -25,13 +25,7 @@ var a, b, c, d, e, f, g, h, i, j, k, l;
 			let g <- e*h;
 			let k <- f+2;
 		else
-			if c >= i
-			then
-				let e <- f*2;
-				let e <- g+k;
-			else
-				let b <- call InputNum();
-			fi;
+			let b <- call InputNum();
 		fi;
 	else
 		let a <- f + b;

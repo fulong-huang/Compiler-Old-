@@ -23,6 +23,7 @@ struct Instruction* newInstruction(){
 
 void addInst(struct INST* inst){
     InstTail->next = inst;
+    inst->prev = InstTail;
     InstTail = inst;
 }
 
@@ -208,6 +209,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
         graph += instBlock->name+"[shape=record, label=\"<b>"+instBlock->name+"| {";
         graphConnection += prevLabel+":s -> "+instBlock->name+":n [label=\"fall-thorough\"];\n";
         prevLabel = instBlock->name;
+        std::string joinName = instBlock->name;
         addLabel(stringIndent + instBlock->name);
         // print join block
         PrintInst((INST*) instBlock->head);
@@ -238,7 +240,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
         PrintInst(n1->head);
         // do connect to while
         //  Must be after printinst for the latest block to connect back to while
-        graphConnection += prevLabel+":s -> "+whileName+":n [label=\"branch\",color=red];\n";
+        graphConnection += prevLabel+":s -> "+joinName+":n [label=\"branch\",color=red];\n";
 
         // print end block 
         stringIndent = stringIndent.substr(0, stringIndent.size()-1);

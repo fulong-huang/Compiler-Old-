@@ -107,6 +107,7 @@ std::pair<std::string, int> factor(){ // return result as pair<name, int>
         if(nextIs("call")){     // function Call
             skipNext(4);       // must eat call before funCall();
             int fNum = funcCall();     // ------------- change result -------------
+            std::cout << "====="<<std::endl;
             result.first = "FunCall";
             result.second = fNum;
         }
@@ -119,7 +120,6 @@ std::pair<std::string, int> factor(){ // return result as pair<name, int>
                     result.first = idt;
                     createInstCV(idt, val.second); 
                     result.second = varRef(idt).first;
-                    put(result.first);
                     return result;
                 }
                 result.first = "#" + idt;
@@ -148,7 +148,7 @@ std::pair<std::string, int> factor(){ // return result as pair<name, int>
 }
 
 std::pair<std::string, int> term(){
-    // std::cout << "TERM" << std::endl;
+    std::cout << "TERM" << std::endl;
 
     std::pair<std::string, int> lhs = factor();
     std::pair<std::string, int> rhs;

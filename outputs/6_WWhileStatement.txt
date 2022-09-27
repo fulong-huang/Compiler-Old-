@@ -1,4 +1,3 @@
-	g
 	---------- Printing Instructions ----------
 
 MAIN: 
@@ -104,9 +103,9 @@ WHILE_0:s -> DO_0:n [label="fall-thorough",color=green];
 DO_0:s -> JOIN_WHILE_1:n [label="fall-thorough"];
 JOIN_WHILE_1:s -> WHILE_1:n [label="fall-thorough"];
 WHILE_1:s -> DO_1:n [label="fall-thorough",color=green];
-DO_1:s -> WHILE_1:n [label="branch",color=red];
+DO_1:s -> JOIN_WHILE_1:n [label="branch",color=red];
 WHILE_1:s -> END_WHILE_1:n [label="branch",color=blue];
-END_WHILE_1:s -> WHILE_0:n [label="branch",color=red];
+END_WHILE_1:s -> JOIN_WHILE_0:n [label="branch",color=red];
 WHILE_0:s -> END_WHILE_0:n [label="branch",color=blue];
 
 }

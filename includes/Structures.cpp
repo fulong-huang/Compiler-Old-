@@ -118,6 +118,7 @@ struct INST
 {
     InstType TYPE;
     INST* next;
+    INST* prev;
 };
 
 // Single instruction
@@ -125,6 +126,7 @@ struct Instruction
 {
     InstType TYPE;// = SINGLE;
     INST* next;
+    INST* prev;
     int InstNum;
     Mnemonic op;
     Opr* a;
@@ -136,7 +138,16 @@ struct InstBlock
 {
     InstType TYPE;// = BLOCK;
     INST* next;  // Fall-through
+    INST* prev;
     INST* next2; // Branch
     INST* head; // first inst in block;
     std::string name;
 };
+
+struct InstLinkedList
+{
+    struct Instruction* inst;
+    struct Instruction* next;
+};
+
+

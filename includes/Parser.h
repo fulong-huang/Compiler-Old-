@@ -6,6 +6,7 @@
 #include "DrawGraph.cpp"
 #include "Structures.cpp"
 // #include "InstValue.cpp"
+#include "Instruction.cpp" 
 #include "ValueTable.cpp"
 #include "HELP.cpp"
 

@@ -106,7 +106,7 @@ JOIN_IF_1:s -> END_IF_1:n [label="fall-thorough(out)"];
 END_IF_1:s -> JOIN_IF_0:n [label="branch"];
 ELSE_0:s -> JOIN_IF_0:n [label="fall-through"];
 JOIN_IF_0:s -> END_IF_0:n [label="fall-thorough(out)"];
-END_IF_0:s -> WHILE_0:n [label="branch",color=red];
+END_IF_0:s -> JOIN_WHILE_0:n [label="branch",color=red];
 WHILE_0:s -> END_WHILE_0:n [label="branch",color=blue];
 
 }

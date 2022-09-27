@@ -2,6 +2,12 @@
 int currInstNum;
 struct INST *InstHead, *InstTail;
 
+std::vector<struct InstLinkedList*> InstLinkedList;
+// InstLinkedList ------
+// WRONG STRUCT TO CONTAIN TYPE
+//  Should be inst block like structure
+//  Need to be able to track dominate relationship
+
 bool InMain;
 struct INST *JoinBlock;
 

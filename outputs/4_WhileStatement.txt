@@ -1,6 +1,3 @@
-	g
-	h
-	l
 	---------- Printing Instructions ----------
 
 MAIN: 
@@ -93,7 +90,7 @@ END_WHILE_0[shape=record, label="<b>END_WHILE_0| {10: \<empty\>|\<Let b = (15)\>
 MAIN:s -> JOIN_WHILE_0:n [label="fall-thorough"];
 JOIN_WHILE_0:s -> WHILE_0:n [label="fall-thorough"];
 WHILE_0:s -> DO_0:n [label="fall-thorough",color=green];
-DO_0:s -> WHILE_0:n [label="branch",color=red];
+DO_0:s -> JOIN_WHILE_0:n [label="branch",color=red];
 WHILE_0:s -> END_WHILE_0:n [label="branch",color=blue];
 
 }
