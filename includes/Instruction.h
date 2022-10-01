@@ -1,4 +1,5 @@
 #pragma once
+#include "HELP.cpp"
 int currInstNum;
 struct INST *InstHead, *InstTail;
 
@@ -14,6 +15,7 @@ struct INST *JoinBlock;
 std::string stringIndent = "";
 
 struct Instruction *WhileCondition, *WhileDo;
+
 
 void InitInstruction();
 
