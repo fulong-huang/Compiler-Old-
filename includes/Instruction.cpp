@@ -8,6 +8,7 @@ struct InstBlock* newInstBlock(std::string blockName){
     inst->next2 = NULL;
     inst->head = (INST*) newInstruction();
     ((Instruction*)inst->head)->InstNum = currInstNum++;
+    ((Instruction*)inst->head)->a = newOp(blockName, newInstInt(-1));
     inst->name = blockName;
     return inst;
 }
@@ -23,9 +24,13 @@ struct Instruction* newInstruction(){
 
 void addInst(struct INST* inst){
     InstTail->next = inst;
-    inst->prev = InstTail;
     InstTail = inst;
 }
+
+
+
+
+
 
 struct Instruction* addPhiInst(struct Instruction* inst, struct Opr* a, struct Opr* b){
     struct Instruction* instruction = newInstruction();
@@ -41,7 +46,7 @@ void addLabelInst(std::string labl){
     struct Instruction* inst = newInstruction();
     inst->op = LABEL;
     inst->InstNum = 100;
-    inst->a = newOp(labl, -1);
+    inst->a = newOp(labl, newInstInt(-1));
     addInst((INST*) inst);
 }
 
@@ -49,25 +54,28 @@ void addCommentInst(std::string comt){
     struct Instruction* inst = newInstruction();
     inst->op = COMMENT;
     inst->InstNum = 101;
-    inst->a = newOp(comt, -1);
+    inst->a = newOp(comt, newInstInt(-1));
     addInst((INST*) inst);
 }
 
 void InitInstruction(){
-    currInstNum = 0;
+    currInstNum = 1;
     InMain = true;
-    InstHead = (INST*) newInstBlock("MAIN");
+
+    InstBlock* instBlock = newInstBlock("MAIN");
+    ((Instruction*) instBlock->head)->op = COMMENT;
+    InstHead = (INST*) instBlock;
     InstTail = ((InstBlock*) InstHead)->head;
 }
 
-void updateInst(Opr* oldOp, int newNum){ // use when while loop create an update
+void updateInst(Opr* oldOp, Instruction* newInst){ // use when while loop create an update
     // 1. constant value were referenced or assigned
     // 2. value have different instruction number.
-    updateIndivInst((INST*) WhileCondition, oldOp, newNum);
-    updateIndivInst((INST*) WhileDo, oldOp, newNum);
+    updateIndivInst((INST*) WhileCondition, oldOp, newInst);
+    updateIndivInst((INST*) WhileDo, oldOp, newInst);
 }
 
-void updateBlockInst(struct INST* instruction, Opr* oldOp, int newNum){
+void updateBlockInst(struct INST* instruction, Opr* oldOp, Instruction* newInst){
     struct Instruction* inst;
     struct InstBlock* blockInst;
     struct InstBlock* saveBlock;
@@ -75,58 +83,58 @@ void updateBlockInst(struct INST* instruction, Opr* oldOp, int newNum){
     blockInst = (InstBlock*) instruction;
     if(blockInst->name[0] == 'I'){
         // cond if
-        updateIndivInst(blockInst->head, oldOp, newNum);
+        updateIndivInst(blockInst->head, oldOp, newInst);
 
         // then (cond->next)
-        updateIndivInst(((InstBlock*) blockInst->next)->head, oldOp, newNum);
+        updateIndivInst(((InstBlock*) blockInst->next)->head, oldOp, newInst);
 
         // else (cond->next2)
-        updateIndivInst(((InstBlock*) blockInst->next2)->head, oldOp, newNum);
+        updateIndivInst(((InstBlock*) blockInst->next2)->head, oldOp, newInst);
 
         // join (then/else->next)
-        updateIndivInst(((InstBlock*) blockInst->next2->next)->head, oldOp, newNum);
+        updateIndivInst(((InstBlock*) blockInst->next2->next)->head, oldOp, newInst);
 
         // end block
-        updateIndivInst(((InstBlock*) blockInst->next2->next->next)->head, oldOp, newNum);
+        updateIndivInst(((InstBlock*) blockInst->next2->next->next)->head, oldOp, newInst);
 
     }
     else if(blockInst->name[0] == 'J'){
         // join block
-        updateIndivInst(blockInst->head, oldOp, newNum);
+        updateIndivInst(blockInst->head, oldOp, newInst);
 
         // cond
-        updateIndivInst(((InstBlock*) blockInst->next)->head, oldOp, newNum);
+        updateIndivInst(((InstBlock*) blockInst->next)->head, oldOp, newInst);
 
         // do block
-        updateIndivInst(((InstBlock*) blockInst->next->next)->head, oldOp, newNum);
+        updateIndivInst(((InstBlock*) blockInst->next->next)->head, oldOp, newInst);
 
         // end block
         blockInst = (InstBlock*) blockInst->next;
-        updateIndivInst(((InstBlock*) blockInst->next2)->head, oldOp, newNum);
+        updateIndivInst(((InstBlock*) blockInst->next2)->head, oldOp, newInst);
     }
 }
 
-void updateIndivInst(INST* instruction, Opr* oldOp, int newNum){
+void updateIndivInst(INST* instruction, Opr* oldOp, Instruction* newInst){
     struct Opr* op;
     struct Instruction* inst;
     while(instruction != NULL){
         if(instruction->TYPE == BLOCK){
-            updateBlockInst(instruction, oldOp, newNum);
+            updateBlockInst(instruction, oldOp, newInst);
             break;
         }
         inst = (Instruction*) instruction;
-        updateOp(inst->a, oldOp, newNum);
-        updateOp(inst->b, oldOp, newNum);
+        updateOp(inst->a, oldOp, newInst);
+        updateOp(inst->b, oldOp, newInst);
         instruction = instruction->next;
     }
 }
 
-void updateOp(Opr* thisOp, Opr* targetOp, int num){
+void updateOp(Opr* thisOp, Opr* targetOp, Instruction* newInst){
     if(thisOp != NULL &&
-        thisOp->instNum == targetOp->instNum &&
+        thisOp->inst == targetOp->inst &&
         thisOp->name.compare(targetOp->name) == 0)
     {
-        thisOp->instNum = num;
+        thisOp->inst = newInst;
         if(thisOp->name[0] == '#'){
             thisOp->name = thisOp->name.substr(1);
         }
@@ -136,7 +144,8 @@ void updateOp(Opr* thisOp, Opr* targetOp, int num){
 void PrintInstBlock(struct InstBlock* instBlock){
     struct InstBlock *n1, *n2;
     stringIndent += "\t";
-    if(instBlock->name[0] == 'I'){
+    Instruction* insthead = (Instruction*) instBlock->head;
+    if(insthead->a->name[0] == 'I'){
         // Condition block
         if(graph[graph.size()-1] != '\n'){
             graph += "}\"];\n";
@@ -202,7 +211,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
         }
 
     }
-    else if(instBlock->name[0] == 'J'){ // Join while
+    else if(insthead->a->name[0] == 'J'){ // Join while
         if(graph[graph.size()-1] != '\n'){
             graph += "}\"];\n";
         }
@@ -258,7 +267,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
             graph += "}\"];\n";
         }
     }
-    else if(instBlock->name[0] == 'M'){ // Main block, only ran once
+    else if(insthead->a->name[0] == 'M'){ // Main block, only ran once
         stringIndent = "";
         addLabel(stringIndent+ instBlock->name);
         PrintInst((INST*) instBlock->head);
@@ -289,49 +298,51 @@ void PrintInst(struct INST* currInst){
         }
         if(inst->op == COMMENT){
             put(stringIndent + "  <" + inst->a->name + ">");
-graph += "|\\<"+inst->a->name + "\\>";
+        graph += "|\\<"+inst->a->name + "\\>";
             currInst = currInst->next;
             continue;
         }
         if(inst->op == NLL){
-            put(stringIndent + std::to_string(inst->InstNum) + " <empty>");
-graph += std::to_string(inst->InstNum) + ": \\<empty\\>";
+            put(stringIndent + std::to_string(inst->InstNum) + " <" + inst->a->name + "> ");
+        graph += std::to_string(inst->InstNum) + ": \\<"+inst->a->name + "\\>";
             currInst = currInst->next;
             continue;
         }
         std::string cmd = std::to_string(inst->InstNum) + "\t" + 
                         opText[inst->op] + " ";
-graph += "|"+std::to_string(inst->InstNum)+": "+opText[inst->op];
+        graph += "|"+std::to_string(inst->InstNum)+": "+opText[inst->op] + " ";
         if(inst->a->name != "-"){
             cmd += inst->a->name;
-graph += " " + inst->a->name;
+            graph += " " + inst->a->name;
         }
-        n = inst->a->instNum;
+        n = inst->a->inst->TYPE == INT? ((InstInt*)inst->a->inst)->num : inst->a->inst->InstNum;
         if(n != -1){
-            cmd += "(" + std::to_string(inst->a->instNum) + ") ";
-graph += "("+std::to_string(inst->a->instNum) + ")";
+            cmd += "(" + std::to_string(n) + ") ";
+            graph += "("+std::to_string(n) + ")";
         }
         
         if(inst->b != NULL){
+            // n = inst->b->inst->InstNum;
+            n = inst->b->inst->TYPE == INT? ((InstInt*)inst->b->inst)->num : inst->b->inst->InstNum;
             if(inst->b->name != "#"){
-                if(inst->b->instNum < 0){
+                if(n == -1){
                     cmd += " (" + inst->b->name + ")";
-graph += " ("+inst->b->name + ")";
+                    graph += " ("+inst->b->name + ")";
                 }
                 else{
                     cmd += " " + inst->b->name + "(" + 
-                        std::to_string(inst->b->instNum) + ")";
-graph += " " + inst->b->name + "("+std::to_string(inst->b->instNum)+")";
+                        std::to_string(n) + ")";
+                    graph += " " + inst->b->name + "("+std::to_string(n)+")";
                 }
             }
             else{
-                if(inst->b->instNum != 0 && inst->b->instNum != 1){
-                    cmd += " #" + std::to_string(inst->b->instNum) + " ";
-graph += " " + std::to_string(inst->b->instNum);
+                if(n != 0 && n != 1){
+                    cmd += " #" + std::to_string(n) + " ";
+                    graph += " " + std::to_string(n);
                 }
                 else{
-                    cmd += " (" + std::to_string(inst->b->instNum) + ")";
-graph += " (" + std::to_string(inst->b->instNum) + ")";
+                    cmd += " (" + std::to_string(n) + ")";
+                    graph += " (" + std::to_string(n) + ")";
                 }
             }
         }

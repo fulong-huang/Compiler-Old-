@@ -1,11 +1,11 @@
-
+#pragma once
 #include <iostream>
 #include <string>
 
-int ifNum, doNum, mainNum;
+int ifNum, doNum, mainNum, blockNum;
 
-bool VTcmp(std::pair<std::string, int> a, std::pair<std::string, int> b) 
-{ return a.second < b.second; }
+bool VTcmp(std::pair<std::string, Instruction*> a, std::pair<std::string, Instruction*> b) 
+{ return ((InstInt*)a.second)->num < ((InstInt*)b.second)->num; }
 
 bool CTcmp(std::pair<int, int> a, std::pair<int, int> b) 
 { return a.second < b.second; }
@@ -30,8 +30,12 @@ std::string* getWhile(){
     return result;
 }
 
+std::string getBlock(){
+    return "BB"+std::to_string(blockNum++);
+}
 
 void InitHelp(){
     doNum = ifNum = doNum = mainNum = 0;
+    blockNum = 1;
 }
 

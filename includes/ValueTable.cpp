@@ -2,182 +2,207 @@
 
 
 void declareVar(std::string ident){
-    insertVT(ident, -3);
+    struct Instruction* intInst = newInstInt(-1);
+    insertVT(ident, intInst);
 }
 
-void insertVT(std::string ident, int inst){
+void insertVT(std::string ident, Instruction* inst){
     int idx = ValueTable.size()-1; // both table must have same depth;
     if(InWhile){
+        // During while need to update phi fuction whenever variable is used.
+        //  However, it will not be done during while,
+        //  it need to update with phi function of "if loop"
         struct Opr* a;
         struct Opr* b = newOp(ident, inst);
-        // ============== Update all instructions ================
-        // 
-        // addLabelInst("ADDED HERE========");
 
+        // ============== Update all instructions ================
         // update phi function;
-        std::pair<int, int> vt = getVT(ident);
-        if(vt.first >= 0){
-            a = newOp(ident, vt.first);
+        Instruction* vt = getVT(ident);
+        // if it's a instruction, shoudl be ALWAYS TRUE;
+        //      Everything inserted should be variable
+        // if(vt.first){ 
+            a = newOp(ident, vt);
             WhileJoin = addPhiInst(WhileJoin, a, b);
             WhileJoin->InstNum = currInstNum;
             // Update Value Table
             InWhile = false;
-            insertVT(ident, currInstNum);
-            updateInst(a, currInstNum);
-            updateInst(b, currInstNum);
+            struct Instruction* intInst = newInstInt(currInstNum);
+            insertVT(ident, intInst);
+            updateInst(a, intInst);
+            updateInst(b, intInst);
+            // updateInst(a, currInstNum);
+            // updateInst(b, currInstNum);
             currInstNum++;
             InWhile = true;
-        }
-        else{ // if pre exist value was a constant
-            struct Instruction* instruction = newInstruction();
-            instruction->op = STORECONST;
-            instruction->InstNum = currInstNum;
-            a = newOp("#"+ident, vt.second);
-            instruction->a = a;
-            WhileJoin->next = (INST*) instruction;
-            WhileJoin = instruction;
-            // Update Value Table
-            WhileJoin = addPhiInst(WhileJoin, newOp(ident, currInstNum++), b);
-            // if it were constant, also need to update constant;
-            updateInst(a, currInstNum);
-            updateInst(b, currInstNum);
-            WhileJoin->InstNum = currInstNum;
-            InWhile = false;
-            insertVT(ident, currInstNum++);
-            InWhile = true;
+        // }
+        // else{ // if pre exist value was a constant
+        //     struct Instruction* instruction = newInstruction();
+        //     instruction->op = STORECONST;
+        //     instruction->InstNum = currInstNum;
+        //     a = newOp("#"+ident, vt.second);
+        //     instruction->a = a;
+        //     WhileJoin->next = (INST*) instruction;
+        //     WhileJoin = instruction;
+        //     // Update Value Table
+        //     WhileJoin = addPhiInst(WhileJoin, newOp(ident, currInstNum++), b);
+        //     // if it were constant, also need to update constant;
+        //     updateInst(a, currInstNum);
+        //     updateInst(b, currInstNum);
+        //     WhileJoin->InstNum = currInstNum;
+        //     InWhile = false;
+        //     insertVT(ident, currInstNum++);
+        //     InWhile = true;
 
-        }
+        // }
         return;
     }
     ValueTable[idx][ident] = inst;
-    if(ConstVal[idx].find(ident) != ConstVal[idx].end()){
-        ConstVal[idx].erase(ident);
+    // if(ConstVal[idx].find(ident) != ConstVal[idx].end()){
+    //     ConstVal[idx].erase(ident);
+    // }
+}
+
+void insertCT(std::string ident, int val){
+    if(ConstTable.find(val) != ConstTable.end()){
+        insertVT(ident, ConstTable[val]);
+    }
+    else{
+        insertVT(ident, createConst(val));
     }
 }
 
-std::pair<int, int> getVT(std::string ident){
-    std::pair<int, int> result;
+// save constant into ConstTable
+Instruction* createConst(int val){
+    struct Instruction* intInst = newInstInt(currConstNum);
+    ConstTable[val] = intInst;
+    Instruction* inst = newInstruction();
+    inst->InstNum = currConstNum;
+    inst->a = newOp("#", newInstInt(val));
+    inst->op = CONST;
+    inst->next = InstHead;
+    InstHead = (INST*) inst;
+    currConstNum--;
+    return intInst;
+}
+
+
+Instruction* getVT(std::string ident){
     int lastIdx = ValueTable.size()-1;
+    // find variable
     for(int i = lastIdx; i >= 0; i--){
         if(ValueTable[i].find(ident) != ValueTable[i].end()){
-            result.first = ValueTable[i][ident];
-            return result;
+            return ValueTable[i][ident];
         }
     }
-    for(int i = lastIdx; i >= 0; i--){
-        if(ConstVal[i].find(ident) != ConstVal[i].end()){
-            result.first = -1;
-            result.second = ConstVal[i][ident];
-            return result;
-        }
-    }
+    // for(int i = lastIdx; i >= 0; i--){
+    //     if(ConstVal[i].find(ident) != ConstVal[i].end()){
+    //         result.first = -1;
+    //         result.second = ConstVal[i][ident];
+    //         return result;
+    //     }
+    // }
     // value not exist
-    result.first = -2;
-    return result;
+    
+    // variable not found
+    return newInstInt(-2);
 }
 
-std::pair<int, int> getPrevVT(std::string ident){
-    std::pair<int, int> result;
+Instruction* getPrevVT(std::string ident){
+    std::pair<bool, Instruction*> result;
     int lastIdx = ValueTable.size()-2;
     for(int i = lastIdx; i >= 0; i--){
         if(ValueTable[i].find(ident) != ValueTable[i].end()){
-            result.first = ValueTable[i][ident];
-            return result;
+            return ValueTable[i][ident];
         }
     }
-    for(int i = lastIdx; i >= 0; i--){
-        if(ConstVal[i].find(ident) != ConstVal[i].end()){
-            result.first = -1;
-            result.second = ConstVal[i][ident];
-            return result;
-        }
-    }
+    // for(int i = lastIdx; i >= 0; i--){
+    //     if(ConstVal[i].find(ident) != ConstVal[i].end()){
+    //         result.first = -1;
+    //         result.second = ConstVal[i][ident];
+    //         return result;
+    //     }
+    // }
     // value not exist
-    result.first = -2;
-    return result;
+    return newInstInt(-2);
 }
 
-void createInstCV(std::string ident, int val){
-    struct Instruction* instruction = newInstruction();
-    instruction->op = STORECONST;
-    instruction->InstNum = currInstNum;
-    instruction->a = newOp("#"+ident, val);
-    WhileJoin->next = (INST*) instruction;
-    WhileJoin = instruction;
-    // // Update Value Table
-    InWhile = false;
-    insertVT(ident, currInstNum++);
-    InWhile = true;
-}
 
-void insertCV(std::string ident, int inst){
-    int idx = ValueTable.size()-1; // both table must have same depth;
-    if(InWhile){
-        struct Instruction* instruction = newInstruction();
-        instruction->op = STORECONST;
-        instruction->InstNum = currInstNum;
-        instruction->a = newOp("#"+ident, inst);
-        WhileJoin->next = (INST*) instruction;
-        WhileJoin = instruction;
 
-        Opr* nOp = newOp(ident, currInstNum++);
 
-        std::pair<int, int> vt = getVT(ident);
-        if(vt.first >= 0){
-            WhileJoin = addPhiInst(WhileJoin, newOp(ident, vt.first), nOp);
-            WhileJoin->InstNum = currInstNum;
-            // Update Value Table
-            InWhile = false;
-            insertVT(ident, currInstNum++);
-            InWhile = true;
-        }
-        else{
-            instruction = newInstruction();
-            instruction->op = STORECONST;
-            instruction->InstNum = currInstNum;
-            instruction->a = newOp("#"+ident, vt.second);
-            WhileJoin->next = (INST*) instruction;
-            WhileJoin = instruction;
+// void insertCV(std::string ident, int inst){
+//     int idx = ValueTable.size()-1; // both table must have same depth;
+//     if(InWhile){
+//         struct Instruction* instruction = newInstruction();
+//         instruction->op = STORECONST;
+//         instruction->InstNum = currInstNum;
+//         instruction->a = newOp("#"+ident, inst);
+//         WhileJoin->next = (INST*) instruction;
+//         WhileJoin = instruction;
+
+//         Opr* nOp = newOp(ident, currInstNum++);
+
+//         std::pair<int, int> vt = getVT(ident);
+//         if(vt.first >= 0){
+//             WhileJoin = addPhiInst(WhileJoin, newOp(ident, vt.first), nOp);
+//             WhileJoin->InstNum = currInstNum;
+//             // Update Value Table
+//             InWhile = false;
+//             insertVT(ident, currInstNum++);
+//             InWhile = true;
+//         }
+//         else{
+//             instruction = newInstruction();
+//             instruction->op = STORECONST;
+//             instruction->InstNum = currInstNum;
+//             instruction->a = newOp("#"+ident, vt.second);
+//             WhileJoin->next = (INST*) instruction;
+//             WhileJoin = instruction;
             
-            // Update Value Table
-            WhileJoin = addPhiInst(WhileJoin, newOp(ident, currInstNum++), nOp);
-            WhileJoin->InstNum = currInstNum;
-            InWhile = false;
-            insertVT(ident, currInstNum++);
-            InWhile = true;
+//             // Update Value Table
+//             WhileJoin = addPhiInst(WhileJoin, newOp(ident, currInstNum++), nOp);
+//             WhileJoin->InstNum = currInstNum;
+//             InWhile = false;
+//             insertVT(ident, currInstNum++);
+//             InWhile = true;
 
-        }
-        return;
-    }
-    ConstVal[idx][ident] = inst;
-    if(ValueTable[idx].find(ident) != ValueTable[idx].end()){
-        ValueTable[idx].erase(ident);
-    }
-}
+//         }
+//         return;
+//     }
+//     ConstVal[idx][ident] = inst;
+//     if(ValueTable[idx].find(ident) != ValueTable[idx].end()){
+//         ValueTable[idx].erase(ident);
+//     }
+// }
 
 void InsertVTLayer(){
-    ValueTable.push_back(std::unordered_map<std::string, int>());
-    ConstVal.push_back(std::unordered_map<std::string, int>());
+    ValueTable.push_back(std::unordered_map<std::string, Instruction*>());
+    // ConstVal.push_back(std::unordered_map<std::string, int>());
 }
 void RemoveVTLayer(){
     // int idx = ValueTable.size()-1;
     // ValueTable.erase(ValueTable.begin()+idx);
     // ConstVal.erase(ConstVal.begin()+idx);
     ValueTable.pop_back();
-    ConstVal.pop_back();
+    // ConstVal.pop_back();
 }
 void ClearLastLayer(){
     int idx = ValueTable.size()-1;
     ValueTable[idx].clear();
-    ConstVal[idx].clear();
+    // ConstVal[idx].clear();
 }
 
 void InitVT(){
     ValueTable.clear();
-    ConstVal.clear();
+    // ConstVal.clear();
+    ConstTable.clear();
     InsertVTLayer();
     InWhile = false;
     WhileCondition = NULL;
     WhileDo = NULL;
     WhileJoin = NULL;
+    currConstNum = 1;
+    createConst(1);
+    createConst(0);
+    currConstNum = -3;
+    
 }

@@ -1,7 +1,7 @@
 #include "DrawGraph.h"
 
 void InitGraph(){
-    graph = "digraph G { \nMAIN [shape=record, label=\"<b>MAIN | {";
+    graph = "digraph G { \nBB0 [shape=record, label=\"<b>BB0 | {\\<CONST\\>";
     graphConnection = "";
-    prevLabel = "MAIN";
+    prevLabel = "BB0";
 }

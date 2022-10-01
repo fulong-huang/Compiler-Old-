@@ -1,93 +1,66 @@
 	---------- Printing Instructions ----------
 
+	-8	const #(10) 
+	-7	const #(9) 
+	-6	const #(8) 
+	-5	const #(7) 
+	-4	const #(6) 
+	-3	const #(5) 
+	0	const #(0) 
+	1	const #(1) 
 MAIN: 
-	0 <empty>
-	1	bra InputNum
-	  <Let a = (1)>
+	  <MAIN>
 	2	bra InputNum
-	  <Let b = (2)>
 	3	bra InputNum
-	  <Let c = (3)>
 	4	bra InputNum
-	  <Let d = (4)>
 	5	bra InputNum
-	  <Let e = (5)>
 	6	bra InputNum
-	  <Let f = (6)>
-	  <Let g = #5>
-	  <Let h = #6>
-	  <Let i = #7>
-	  <Let j = #8>
-	  <Let k = #9>
-	  <Let l = #10>
+	7	bra InputNum
 	JOIN_WHILE_0: 
-		9 <empty>
-		11	storeConst #g(5) 
-		14	storeConst #h(6) 
-		15	phi b(2)  b(14)
-		16	storeConst #z(0) 
-		17	phi z(16)  z(15)
-		20	phi c(3)  c(19)
-		22	phi g(11)  g(21)
-		23	storeConst #l(10) 
-		25	storeConst #k(9) 
-		26	phi k(25)  k(24)
-		28	phi c(20)  c(27)
-		30	phi z(17)  z(29)
-		32	phi e(5)  e(31)
-		34	phi a(1)  a(33)
+		10 <JOIN_WHILE_0> 
+		14	phi b(3)  b(-4)
+		15	phi z z(14)
+		18	phi c(4)  c(17)
+		20	phi g(-3)  g(19)
+		22	phi k(-7)  k(21)
+		24	phi c(18)  c(23)
+		26	phi z(15)  z(25)
+		28	phi e(6)  e(27)
+		30	phi a(2)  a(29)
 	WHILE_0: 
-		7 <empty>
-		12	cmp a(34)  g(22)
-		13	bge (12)  END_WHILE_0(10)
+		8 <WHILE_0> 
+		12	cmp a(30)  g(20)
+		13	bge (12)  END_WHILE_0(11)
 	DO_0: 
-		8 <empty>
-		  <Let b = (15)>
-		  <Let z = (17)>
-		18	div (1)  e(32)
-		19	muli (18)  #2 
-		  <Let c = (20)>
-		21	addi h(14)  #2 
-		  <Let g = (22)>
-		24	muli l(23)  #3 
-		  <Let k = (26)>
-		27	addi l(23)  #2 
-		  <Let c = (28)>
-		29	addi c(28)  (1)
-		  <Let z = (30)>
-		31	addi a(34)  #5 
-		  <Let e = (32)>
-		33	addi a(34)  (1)
-		  <Let a = (34)>
-		35	bra WHILE_0(7) 
+		9 <DO_0> 
+		16	div (1)  e(28)
+		17	muli (16)  #2 
+		19	addi h(-4)  #2 
+		21	muli l(-8)  #3 
+		23	addi l(-8)  #2 
+		25	addi c(24)  (1)
+		27	addi a(30)  #5 
+		29	addi a(30)  (1)
+		31	bra WHILE_0(8) 
 END_WHILE_0: 
-	10 <empty>
-	  <Let b = (15)>
-	  <Let z = (17)>
-	  <Let c = (20)>
-	  <Let g = (22)>
-	  <Let k = (26)>
-	  <Let c = (28)>
-	  <Let z = (30)>
-	  <Let e = (32)>
-	  <Let a = (34)>
-	36	bra OutputNum
-	37	bra OutputNum
-	38	bra OutputNum
+	11 <END_WHILE_0> 
+	32	bra OutputNum
+	33	bra OutputNum
+	34	bra OutputNum
 	  <END.>
 	
 
 
 	
 digraph G { 
-MAIN [shape=record, label="<b>MAIN | {0: \<empty\>|1: bra InputNum|\<Let a = (1)\>|2: bra InputNum|\<Let b = (2)\>|3: bra InputNum|\<Let c = (3)\>|4: bra InputNum|\<Let d = (4)\>|5: bra InputNum|\<Let e = (5)\>|6: bra InputNum|\<Let f = (6)\>|\<Let g = #5\>|\<Let h = #6\>|\<Let i = #7\>|\<Let j = #8\>|\<Let k = #9\>|\<Let l = #10\>}"];
-JOIN_WHILE_0[shape=record, label="<b>JOIN_WHILE_0| {9: \<empty\>|11: storeConst #g(5)|14: storeConst #h(6)|15: phi b(2) b(14)|16: storeConst #z(0)|17: phi z(16) z(15)|20: phi c(3) c(19)|22: phi g(11) g(21)|23: storeConst #l(10)|25: storeConst #k(9)|26: phi k(25) k(24)|28: phi c(20) c(27)|30: phi z(17) z(29)|32: phi e(5) e(31)|34: phi a(1) a(33)}"];
-WHILE_0[shape=record, label="<b>WHILE_0| {7: \<empty\>|12: cmp a(34) g(22)|13: bge(12) END_WHILE_0(10)}"];
-DO_0[shape=record, label="<b>DO_0| {8: \<empty\>|\<Let b = (15)\>|\<Let z = (17)\>|18: div(1) e(32)|19: muli(18) 2|\<Let c = (20)\>|21: addi h(14) 2|\<Let g = (22)\>|24: muli l(23) 3|\<Let k = (26)\>|27: addi l(23) 2|\<Let c = (28)\>|29: addi c(28) (1)|\<Let z = (30)\>|31: addi a(34) 5|\<Let e = (32)\>|33: addi a(34) (1)|\<Let a = (34)\>|35: bra WHILE_0(7)}"];
-END_WHILE_0[shape=record, label="<b>END_WHILE_0| {10: \<empty\>|\<Let b = (15)\>|\<Let z = (17)\>|\<Let c = (20)\>|\<Let g = (22)\>|\<Let k = (26)\>|\<Let c = (28)\>|\<Let z = (30)\>|\<Let e = (32)\>|\<Let a = (34)\>|36: bra OutputNum|37: bra OutputNum|38: bra OutputNum|\<END.\>}"];
+BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-8: const  #(10)|-7: const  #(9)|-6: const  #(8)|-5: const  #(7)|-4: const  #(6)|-3: const  #(5)|0: const  #(0)|1: const  #(1)|\<MAIN\>|2: bra  InputNum|3: bra  InputNum|4: bra  InputNum|5: bra  InputNum|6: bra  InputNum|7: bra  InputNum}"];
+JOIN_WHILE_0[shape=record, label="<b>JOIN_WHILE_0| {10: \<JOIN_WHILE_0\>|14: phi  b(3) b(-4)|15: phi  z z(14)|18: phi  c(4) c(17)|20: phi  g(-3) g(19)|22: phi  k(-7) k(21)|24: phi  c(18) c(23)|26: phi  z(15) z(25)|28: phi  e(6) e(27)|30: phi  a(2) a(29)}"];
+WHILE_0[shape=record, label="<b>WHILE_0| {8: \<WHILE_0\>|12: cmp  a(30) g(20)|13: bge (12) END_WHILE_0(11)}"];
+DO_0[shape=record, label="<b>DO_0| {9: \<DO_0\>|16: div (1) e(28)|17: muli (16) 2|19: addi  h(-4) 2|21: muli  l(-8) 3|23: addi  l(-8) 2|25: addi  c(24) (1)|27: addi  a(30) 5|29: addi  a(30) (1)|31: bra  WHILE_0(8)}"];
+END_WHILE_0[shape=record, label="<b>END_WHILE_0| {11: \<END_WHILE_0\>|32: bra  OutputNum|33: bra  OutputNum|34: bra  OutputNum|\<END.\>}"];
 
 
-MAIN:s -> JOIN_WHILE_0:n [label="fall-thorough"];
+BB0:s -> JOIN_WHILE_0:n [label="fall-thorough"];
 JOIN_WHILE_0:s -> WHILE_0:n [label="fall-thorough"];
 WHILE_0:s -> DO_0:n [label="fall-thorough",color=green];
 DO_0:s -> JOIN_WHILE_0:n [label="branch",color=red];
@@ -100,19 +73,19 @@ WHILE_0:s -> END_WHILE_0:n [label="branch",color=blue];
 
 ------------------ Values Start Here ------------------
 	Value Table size: 1
-	4, d
-	6, f
-	15, b
-	22, g
-	26, k
-	28, c
-	30, z
-	32, e
-	34, a
+	-8, l
+	-6, j
+	-5, i
+	-4, h
+	5, d
+	7, f
+	14, b
+	20, g
+	22, k
+	24, c
+	26, z
+	28, e
+	30, a
 	
 
 
-	l, 10
-	h, 6
-	i, 7
-	j, 8

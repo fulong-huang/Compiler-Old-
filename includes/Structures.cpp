@@ -10,7 +10,7 @@ static const std::string opText[] = {
     "ldw","ldx","pop","stw","stx","psh",
     // [32] FOR BEQ
     "beq","bne","blt","bge","ble","bgt","bsr","jsr","ret","rdd","wrd","wrh","wrl", 
-    "bra", "neg", "phi", "storeConst",
+    "bra", "neg", "phi", "const",
     
     "ifloop", "whileloop", 
     };
@@ -22,6 +22,8 @@ enum InstType{
 
     // Multiple instruction
     BLOCK,
+
+    INT, // just a number, not an instruction
 };
 
 enum Ops{
@@ -88,7 +90,7 @@ enum Mnemonic{
     NEG,
 
     PHI,
-    STORECONST,
+    CONST,
 
 
     LABEL,
@@ -99,18 +101,6 @@ enum Mnemonic{
 };
 
 
-struct Opr{
-    std::string name;
-    int instNum;
-};
-
-struct Opr* newOp(std::string name, int instNum){
-    struct Opr* result = new struct Opr();
-    result->name = name;
-    result->instNum = instNum;
-    return result;
-}
-
 /*
     Type cast instruction and instBlock into INST
 */
@@ -118,15 +108,13 @@ struct INST
 {
     InstType TYPE;
     INST* next;
-    INST* prev;
 };
-
+struct Opr;
 // Single instruction
 struct Instruction
 {
     InstType TYPE;// = SINGLE;
     INST* next;
-    INST* prev;
     int InstNum;
     Mnemonic op;
     Opr* a;
@@ -138,11 +126,18 @@ struct InstBlock
 {
     InstType TYPE;// = BLOCK;
     INST* next;  // Fall-through
-    INST* prev;
     INST* next2; // Branch
     INST* head; // first inst in block;
     std::string name;
 };
+
+struct InstInt
+{
+    InstType TYPE;
+    int num;
+};
+
+
 
 struct InstLinkedList
 {
@@ -150,4 +145,26 @@ struct InstLinkedList
     struct Instruction* next;
 };
 
+struct LinkedInst{
+    struct Instruction* inst;
+    struct Instruction* next;
+};
+
+struct Opr{
+    std::string name;
+    Instruction* inst;
+};
+
+struct Opr* newOp(std::string name, Instruction* inst){
+    struct Opr* result = new struct Opr();
+    result->name = name;
+    result->inst = inst;
+    return result;
+}
+struct Instruction* newInstInt(int n){
+    InstInt* iint = new struct InstInt();
+    iint->TYPE = INT;
+    iint->num = n;
+    return (Instruction*) iint;
+}
 
