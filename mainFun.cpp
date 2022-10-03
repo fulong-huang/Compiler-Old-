@@ -25,7 +25,8 @@ int main()
         readdir (dir);
         strcat(thisPath, "/outputs");
         /* print all the files and directories within directory */
-        while ((ent = readdir (dir)) != NULL) {
+        bool running = true;
+        while ((ent = readdir (dir)) != NULL && running) {
             printf ("+++++++++++++++++++\t%s\t+++++++++++++++++++\n", ent->d_name);
             if(openReadFile(std::string(testPath) +'/' + std::string(ent->d_name))==0){
                 // next();
@@ -36,9 +37,17 @@ int main()
                     InitVT();
                     InitHelp();
                     InitGraph();
-
+                    
+                    nextChar();
+                    if(CURR == '-') {
+                        next();
+                        running = false;
+                    }
                     // --- PROGRAM START ---
                     computation();
+                    std::cout << "END COMPUTATION" << std::endl;
+                    CommonSubElim();
+                    std::cout << "End Common Subexpression Elimination" << std::endl;
                 }
                 catch(const std::exception &e){
                     std::cout << e.what() << std::endl;
@@ -55,14 +64,14 @@ int main()
                 PrintInst(InstHead);
                 put("\n\n");
                 put("\n"+graph+"\n\n"+graphConnection+"\n}\n\n");
-                put("\n\n------------------ Values Start Here ------------------");
-                put("Value Table size: " + std::to_string(ValueTable.size()));
-                std::vector<std::pair<std::string, Instruction*> > vt(ValueTable[0].begin(), ValueTable[0].end());
-                std::sort(vt.begin(), vt.end(), VTcmp);
+                // put("\n\n------------------ Values Start Here ------------------");
+                // put("Value Table size: " + std::to_string(ValueTable.size()));
+                // std::vector<std::pair<std::string, Instruction*> > vt(ValueTable[0].begin(), ValueTable[0].end());
+                // std::sort(vt.begin(), vt.end(), VTcmp);
 
-                for(std::pair<std::string, Instruction*> i : vt){
-                    put(std::to_string(((InstInt*)i.second)->num) + ", " + i.first);
-                }
+                // for(std::pair<std::string, Instruction*> i : vt){
+                //     put(std::to_string(((InstInt*)i.second)->num) + ", " + i.first);
+                // }
 
 
                 put("\n\n");
@@ -74,8 +83,6 @@ int main()
                 // }
                 closeWriteFile();
                 closeReadFile();
-                struct Opr* o = newOp("name", newInstInt(123));
-                std::cout << o->name << ","<<std::to_string(o->inst->InstNum)<<std::endl;
             }
 
 

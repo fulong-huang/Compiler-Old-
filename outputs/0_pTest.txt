@@ -1,7 +1,7 @@
 	---------- Printing Instructions ----------
 
-	0	const #(0) 
-	1	const #(1) 
+	0	const #0 
+	1	const #1 
 MAIN: 
 	  <MAIN>
 	2	bra InputNum
@@ -21,18 +21,18 @@ MAIN:
 		7 <DO_0> 
 		BB1: 
 			12 <IF_0> 
-			17	cmpi b(3)  (0)
+			17	cmpi b(3)  #0 
 			18	bge (17)  ELSE_0(14)
 		BB2: 
 			13 <THEN_0> 
-			19	addi b(3)  (1)
+			19	addi b(3)  #1 
 			BB3: 
 				20 <IF_1> 
-				25	cmpi c(4)  (0)
+				25	cmpi c(4)  #0 
 				26	bge (25)  ELSE_1(22)
 			BB4: 
 				21 <THEN_1> 
-				27	addi c(4)  (1)
+				27	addi c(4)  #1 
 				28	bra JOIN_IF_1(23) 
 			BB5: 
 				22 <ELSE_1> 
@@ -50,7 +50,7 @@ MAIN:
 			32	phi b(19)  b(3)
 	BB10: 
 		16 <END_IF_0> 
-		35	addi a(2)  (1)
+		35	addi a(2)  #1 
 		37	bra WHILE_0(6) 
 END_WHILE_0: 
 	9 <END_WHILE_0> 
@@ -63,20 +63,20 @@ END_WHILE_0:
 
 	
 digraph G { 
-BB0 [shape=record, label="<b>BB0 | {\<CONST\>|0: const  #(0)|1: const  #(1)|\<MAIN\>|2: bra  InputNum|3: bra  InputNum|4: bra  InputNum|5: bra  InputNum}"];
+BB0 [shape=record, label="<b>BB0 | {\<CONST\>|0: const  #0 |1: const  #1 |\<MAIN\>|2: bra  InputNum|3: bra  InputNum|4: bra  InputNum|5: bra  InputNum}"];
 JOIN_WHILE_0[shape=record, label="<b>JOIN_WHILE_0| {8: \<JOIN_WHILE_0\>|33: phi  c(4) c(31)|34: phi  b(3) b(32)|36: phi  a(2) a(35)}"];
-WHILE_0[shape=record, label="<b>WHILE_0| {6: \<WHILE_0\>|10: cmpi  a(36) 100|11: bge (10) END_WHILE_0(9)}"];
+WHILE_0[shape=record, label="<b>WHILE_0| {6: \<WHILE_0\>|10: cmpi  a(36) #100|11: bge (10) END_WHILE_0(9)}"];
 DO_0[shape=record, label="<b>DO_0| {7: \<DO_0\>}"];
-BB1[shape=record, label="<b>BB1| {12: \<IF_0\>|17: cmpi  b(3) (0)|18: bge (17) ELSE_0(14)}"];
-BB2[shape=record, label="<b>BB2| {13: \<THEN_0\>|19: addi  b(3) (1)}"];
-BB3[shape=record, label="<b>BB3| {20: \<IF_1\>|25: cmpi  c(4) (0)|26: bge (25) ELSE_1(22)}"];
-BB4[shape=record, label="<b>BB4| {21: \<THEN_1\>|27: addi  c(4) (1)|28: bra  JOIN_IF_1(23)}"];
+BB1[shape=record, label="<b>BB1| {12: \<IF_0\>|17: cmpi  b(3) #0|18: bge (17) ELSE_0(14)}"];
+BB2[shape=record, label="<b>BB2| {13: \<THEN_0\>|19: addi  b(3) #1}"];
+BB3[shape=record, label="<b>BB3| {20: \<IF_1\>|25: cmpi  c(4) #0|26: bge (25) ELSE_1(22)}"];
+BB4[shape=record, label="<b>BB4| {21: \<THEN_1\>|27: addi  c(4) #1|28: bra  JOIN_IF_1(23)}"];
 BB5[shape=record, label="<b>BB5| {22: \<ELSE_1\>}"];
 BB6[shape=record, label="<b>BB6| {23: \<JOIN_IF_1\>|29: phi  c(27) c(4)}"];
 BB7[shape=record, label="<b>BB7| {24: \<END_IF_1\>|30: bra  JOIN_IF_0(15)}"];
 BB8[shape=record, label="<b>BB8| {14: \<ELSE_0\>}"];
 BB9[shape=record, label="<b>BB9| {15: \<JOIN_IF_0\>|31: phi  c(29) c(4)|32: phi  b(19) b(3)}"];
-BB10[shape=record, label="<b>BB10| {16: \<END_IF_0\>|35: addi  a(2) (1)|37: bra  WHILE_0(6)}"];
+BB10[shape=record, label="<b>BB10| {16: \<END_IF_0\>|35: addi  a(2) #1|37: bra  WHILE_0(6)}"];
 END_WHILE_0[shape=record, label="<b>END_WHILE_0| {9: \<END_WHILE_0\>|38: bra  OutputNum|39: bra  OutputNum|40: bra  OutputNum|\<END.\>}"];
 
 
@@ -101,14 +101,6 @@ WHILE_0:s -> END_WHILE_0:n [label="branch",color=blue];
 }
 
 
-	
-
------------------- Values Start Here ------------------
-	Value Table size: 1
-	5, prof
-	33, c
-	34, b
-	36, a
 	
 
 

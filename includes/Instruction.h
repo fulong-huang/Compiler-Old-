@@ -3,11 +3,6 @@
 int currInstNum;
 struct INST *InstHead, *InstTail;
 
-std::vector<struct InstLinkedList*> InstLinkedList;
-// InstLinkedList ------
-// WRONG STRUCT TO CONTAIN TYPE
-//  Should be inst block like structure
-//  Need to be able to track dominate relationship
 
 bool InMain;
 struct INST *JoinBlock;
@@ -16,11 +11,15 @@ std::string stringIndent = "";
 
 struct Instruction *WhileCondition, *WhileDo;
 
+struct LinkedInst* LinkedInstHead[LICOUNT];
+
+struct LinkedInst* LinkedInstruction[LICOUNT];
+
 
 void InitInstruction();
 
-struct Instruction* newInstruction();
-struct InstBlock* newInstBlock(std::string blockName);
+// struct Instruction* newInstruction();
+// struct InstBlock* newInstBlock(std::string blockName);
 
 void addInst(struct INST* inst);
 void addLabelInst(std::string labl);

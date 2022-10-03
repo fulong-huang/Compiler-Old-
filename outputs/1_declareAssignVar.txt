@@ -1,41 +1,44 @@
 	---------- Printing Instructions ----------
 
-	-3	const #(2) 
-	0	const #(0) 
-	1	const #(1) 
+	-3	const #2 
+	0	const #0 
+	1	const #1 
 MAIN: 
 	  <MAIN>
-	2	addi x(-3)  (1)
-	  <WARNING: Use of UNINITIALIZED variable: c>
+	2	addi x(-3)  #1 
+	  <CSE: addi x(-3) #(1)>
+	4	subi b(2)  #1 
+	5	subi x(-3)  #1 
+	6	muli x(-3)  #5 
+	  <CSE: subi x(-3) #(1)>
 	  <WARNING: Use of UNKNOWN variable: g>
 	BB1: 
-		3 <IF_0> 
-		8	cmpi x(-3)  (0)
-		9	bge (8)  ELSE_0(5)
+		8 <IF_0> 
+		13	cmpi x(-3)  #0 
+		14	bge (13)  ELSE_0(10)
 	BB2: 
-		4 <THEN_0> 
-		  <WARNING: Use of UNINITIALIZED variable: b>
-		10	addi b (1)
-		11	bra JOIN_IF_0(6) 
+		9 <THEN_0> 
+		15	addi b(5)  #1 
+		16	bra JOIN_IF_0(11) 
 	BB3: 
-		5 <ELSE_0> 
+		10 <ELSE_0> 
 	BB4: 
-		6 <JOIN_IF_0> 
-		12	phi b(10)  (b)
+		11 <JOIN_IF_0> 
+		17	phi b(15)  b(5)
 BB5: 
-	7 <END_IF_0> 
+	12 <END_IF_0> 
 	  <END.>
 	
 
 
 	
 digraph G { 
-BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-3: const  #(2)|0: const  #(0)|1: const  #(1)|\<MAIN\>|2: addi  x(-3) (1)|\<WARNING: Use of UNINITIALIZED variable: c\>|\<WARNING: Use of UNKNOWN variable: g\>}"];
-BB1[shape=record, label="<b>BB1| {3: \<IF_0\>|8: cmpi  x(-3) (0)|9: bge (8) ELSE_0(5)}"];
-BB2[shape=record, label="<b>BB2| {4: \<THEN_0\>|\<WARNING: Use of UNINITIALIZED variable: b\>|10: addi  b (1)|11: bra  JOIN_IF_0(6)}"];
-BB3[shape=record, label="<b>BB3| {5: \<ELSE_0\>}"];
-BB4[shape=record, label="<b>BB4| {6: \<JOIN_IF_0\>|12: phi  b(10) (b)}"];
-BB5[shape=record, label="<b>BB5| {7: \<END_IF_0\>|\<END.\>}"];
+BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-3: const  #2 |0: const  #0 |1: const  #1 |\<MAIN\>|2: addi  x(-3) #1|\<CSE: addi x(-3) #(1)\>|4: subi  b(2) #1|5: subi  x(-3) #1|6: muli  x(-3) #5|\<CSE: subi x(-3) #(1)\>|\<WARNING: Use of UNKNOWN variable: g\>}"];
+BB1[shape=record, label="<b>BB1| {8: \<IF_0\>|13: cmpi  x(-3) #0|14: bge (13) ELSE_0(10)}"];
+BB2[shape=record, label="<b>BB2| {9: \<THEN_0\>|15: addi  b(5) #1|16: bra  JOIN_IF_0(11)}"];
+BB3[shape=record, label="<b>BB3| {10: \<ELSE_0\>}"];
+BB4[shape=record, label="<b>BB4| {11: \<JOIN_IF_0\>|17: phi  b(15) b(5)}"];
+BB5[shape=record, label="<b>BB5| {12: \<END_IF_0\>|\<END.\>}"];
 
 
 BB0:s -> BB1:n [label="fall-through(cond)"];
@@ -48,16 +51,6 @@ BB4:s -> BB5:n [label="fall-thorough(out)"];
 }
 
 
-	
-
------------------- Values Start Here ------------------
-	Value Table size: 1
-	-3, x
-	-3, z
-	-3, y
-	-2, a
-	-1, c
-	12, b
 	
 
 

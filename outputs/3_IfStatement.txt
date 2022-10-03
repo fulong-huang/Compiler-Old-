@@ -1,13 +1,13 @@
 	---------- Printing Instructions ----------
 
-	-8	const #(10) 
-	-7	const #(9) 
-	-6	const #(8) 
-	-5	const #(7) 
-	-4	const #(6) 
-	-3	const #(5) 
-	0	const #(0) 
-	1	const #(1) 
+	-8	const #10 
+	-7	const #9 
+	-6	const #8 
+	-5	const #7 
+	-4	const #6 
+	-3	const #5 
+	0	const #0 
+	1	const #1 
 MAIN: 
 	  <MAIN>
 	2	bra InputNum
@@ -16,67 +16,83 @@ MAIN:
 	5	bra InputNum
 	6	bra InputNum
 	7	bra InputNum
+	8	add e(6)  d(5)
+	  <CSE: add e(6) d(5)>
 	BB1: 
-		8 <IF_0> 
+		10 <IF_0> 
 		  <Comparing two constant: 1, 2>
-		13	bra ELSE_0(10) 
+		15	bra ELSE_0(12) 
 	BB2: 
-		9 <THEN_0> 
-		14	bra InputNum
+		11 <THEN_0> 
+		  <CSE: add e(6) d(5)>
+		17	addi a(2)  #1 
+		  <CSE: addi a(2) #(1)>
 		BB3: 
-			15 <IF_1> 
-			20	cmp a(2)  b(3)
-			21	bge (20)  ELSE_1(17)
+			19 <IF_1> 
+			24	cmp a(2)  b(17)
+			25	bge (24)  ELSE_1(21)
 		BB4: 
-			16 <THEN_1> 
-			22	muli h(-4)  #2 
-			23	mul e(6)  h(-4)
-			24	addi f(14)  #2 
-			25	bra JOIN_IF_1(18) 
+			20 <THEN_1> 
+			  <CSE: add e(6) d(5)>
+			  <CSE: addi a(2) #(1)>
+			  <CSE: addi a(2) #(1)>
+			29	addi a(2)  #5 
+			  <CSE: addi a(2) #(5)>
+			31	bra JOIN_IF_1(22) 
 		BB5: 
-			17 <ELSE_1> 
-			26	bra InputNum
+			21 <ELSE_1> 
+			  <CSE: add e(6) d(5)>
+			  <CSE: addi a(2) #(1)>
+			  <CSE: addi a(2) #(1)>
+			35	addi a(2)  #2 
+			  <CSE: addi a(2) #(2)>
 		BB6: 
-			18 <JOIN_IF_1> 
-			27	phi k(24)  k(-7)
-			28	phi g(23)  g(-3)
-			29	phi b(26)  b(3)
+			22 <JOIN_IF_1> 
+			37	phi b(29)  b(35)
+			38	phi c(29)  c(35)
 	BB7: 
-		19 <END_IF_1> 
-		30	bra JOIN_IF_0(11) 
+		23 <END_IF_1> 
+		39	bra JOIN_IF_0(13) 
 	BB8: 
-		10 <ELSE_0> 
-		31	add f(7)  b(3)
-		32	muli e(6)  #2 
+		12 <ELSE_0> 
+		  <CSE: add e(6) d(5)>
+		  <CSE: add e(6) d(5)>
+		42	addi a(2)  #1 
+		  <CSE: addi a(2) #(1)>
+		44	addi a(2)  #2 
+		  <CSE: addi a(2) #(2)>
 	BB9: 
-		11 <JOIN_IF_0> 
-		33	phi b(29)  b(32)
-		34	phi g(28)  g(-3)
-		35	phi k(27)  k(-7)
-		36	phi f(14)  f(7)
-		37	phi a(31)  a(2)
+		13 <JOIN_IF_0> 
+		46	phi c(38)  c(44)
+		47	phi b(37)  b(44)
 BB10: 
-	12 <END_IF_0> 
-	38	bra OutputNum
-	39	bra OutputNum
-	40	bra OutputNum
+	14 <END_IF_0> 
+	  <CSE: add e(6) d(5)>
+	49	addi a(2)  #1 
+	  <CSE: addi a(2) #(1)>
+	51	addi a(2)  #2 
+	  <CSE: addi a(2) #(2)>
+	53	add f(8)  c(51)
+	54	bra OutputNum
+	55	bra OutputNum
+	56	bra OutputNum
 	  <END.>
 	
 
 
 	
 digraph G { 
-BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-8: const  #(10)|-7: const  #(9)|-6: const  #(8)|-5: const  #(7)|-4: const  #(6)|-3: const  #(5)|0: const  #(0)|1: const  #(1)|\<MAIN\>|2: bra  InputNum|3: bra  InputNum|4: bra  InputNum|5: bra  InputNum|6: bra  InputNum|7: bra  InputNum}"];
-BB1[shape=record, label="<b>BB1| {8: \<IF_0\>|\<Comparing two constant: 1, 2\>|13: bra  ELSE_0(10)}"];
-BB2[shape=record, label="<b>BB2| {9: \<THEN_0\>|14: bra  InputNum}"];
-BB3[shape=record, label="<b>BB3| {15: \<IF_1\>|20: cmp  a(2) b(3)|21: bge (20) ELSE_1(17)}"];
-BB4[shape=record, label="<b>BB4| {16: \<THEN_1\>|22: muli  h(-4) 2|23: mul  e(6) h(-4)|24: addi  f(14) 2|25: bra  JOIN_IF_1(18)}"];
-BB5[shape=record, label="<b>BB5| {17: \<ELSE_1\>|26: bra  InputNum}"];
-BB6[shape=record, label="<b>BB6| {18: \<JOIN_IF_1\>|27: phi  k(24) k(-7)|28: phi  g(23) g(-3)|29: phi  b(26) b(3)}"];
-BB7[shape=record, label="<b>BB7| {19: \<END_IF_1\>|30: bra  JOIN_IF_0(11)}"];
-BB8[shape=record, label="<b>BB8| {10: \<ELSE_0\>|31: add  f(7) b(3)|32: muli  e(6) 2}"];
-BB9[shape=record, label="<b>BB9| {11: \<JOIN_IF_0\>|33: phi  b(29) b(32)|34: phi  g(28) g(-3)|35: phi  k(27) k(-7)|36: phi  f(14) f(7)|37: phi  a(31) a(2)}"];
-BB10[shape=record, label="<b>BB10| {12: \<END_IF_0\>|38: bra  OutputNum|39: bra  OutputNum|40: bra  OutputNum|\<END.\>}"];
+BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-8: const  #10 |-7: const  #9 |-6: const  #8 |-5: const  #7 |-4: const  #6 |-3: const  #5 |0: const  #0 |1: const  #1 |\<MAIN\>|2: bra  InputNum|3: bra  InputNum|4: bra  InputNum|5: bra  InputNum|6: bra  InputNum|7: bra  InputNum|8: add  e(6) d(5)|\<CSE: add e(6) d(5)\>}"];
+BB1[shape=record, label="<b>BB1| {10: \<IF_0\>|\<Comparing two constant: 1, 2\>|15: bra  ELSE_0(12)}"];
+BB2[shape=record, label="<b>BB2| {11: \<THEN_0\>|\<CSE: add e(6) d(5)\>|17: addi  a(2) #1|\<CSE: addi a(2) #(1)\>}"];
+BB3[shape=record, label="<b>BB3| {19: \<IF_1\>|24: cmp  a(2) b(17)|25: bge (24) ELSE_1(21)}"];
+BB4[shape=record, label="<b>BB4| {20: \<THEN_1\>|\<CSE: add e(6) d(5)\>|\<CSE: addi a(2) #(1)\>|\<CSE: addi a(2) #(1)\>|29: addi  a(2) #5|\<CSE: addi a(2) #(5)\>|31: bra  JOIN_IF_1(22)}"];
+BB5[shape=record, label="<b>BB5| {21: \<ELSE_1\>|\<CSE: add e(6) d(5)\>|\<CSE: addi a(2) #(1)\>|\<CSE: addi a(2) #(1)\>|35: addi  a(2) #2|\<CSE: addi a(2) #(2)\>}"];
+BB6[shape=record, label="<b>BB6| {22: \<JOIN_IF_1\>|37: phi  b(29) b(35)|38: phi  c(29) c(35)}"];
+BB7[shape=record, label="<b>BB7| {23: \<END_IF_1\>|39: bra  JOIN_IF_0(13)}"];
+BB8[shape=record, label="<b>BB8| {12: \<ELSE_0\>|\<CSE: add e(6) d(5)\>|\<CSE: add e(6) d(5)\>|42: addi  a(2) #1|\<CSE: addi a(2) #(1)\>|44: addi  a(2) #2|\<CSE: addi a(2) #(2)\>}"];
+BB9[shape=record, label="<b>BB9| {13: \<JOIN_IF_0\>|46: phi  c(38) c(44)|47: phi  b(37) b(44)}"];
+BB10[shape=record, label="<b>BB10| {14: \<END_IF_0\>|\<CSE: add e(6) d(5)\>|49: addi  a(2) #1|\<CSE: addi a(2) #(1)\>|51: addi  a(2) #2|\<CSE: addi a(2) #(2)\>|53: add  f(8) c(51)|54: bra  OutputNum|55: bra  OutputNum|56: bra  OutputNum|\<END.\>}"];
 
 
 BB0:s -> BB1:n [label="fall-through(cond)"];
@@ -95,22 +111,6 @@ BB9:s -> BB10:n [label="fall-thorough(out)"];
 }
 
 
-	
-
------------------- Values Start Here ------------------
-	Value Table size: 1
-	-8, l
-	-6, j
-	-5, i
-	-4, h
-	4, c
-	5, d
-	6, e
-	33, b
-	34, g
-	35, k
-	36, f
-	37, a
 	
 
 

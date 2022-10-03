@@ -107,7 +107,6 @@ std::pair<std::string, Instruction*> factor(){
         if(nextIs("call")){     // function Call
             skipNext(4);       // must eat call before funCall();
             int fNum = funcCall();     // ------------- change result -------------
-            std::cout << "====="<<std::endl;
             result.first = "FunCall";
             result.second = newInstInt(fNum);
         }
@@ -167,9 +166,10 @@ std::pair<std::string, Instruction*> term(){
                 inst->op = MULI;
                 inst->a = newOp(rhs.first, rhs.second);
                 inst->b = newOp(lhs.first, lhs.second);
-                addInst((INST*) inst);
+                // addInst((INST*) inst);
+                appendLL(inst, lMULI);
                 lhs.first = "-";
-                lhs.second = newInstInt(currInstNum++);
+                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
 
                 mul = (CURR == '*');    
                 nextChar();
@@ -181,9 +181,10 @@ std::pair<std::string, Instruction*> term(){
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp("#", rhs.second);
 
-                addInst((INST*) inst);
+                // addInst((INST*) inst);
+                appendLL(inst, lMULI);
                 lhs.first = "-";
-                lhs.second = newInstInt(currInstNum++);
+                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
                 nextChar();
                 
                 mul = (CURR == '*');    
@@ -195,9 +196,10 @@ std::pair<std::string, Instruction*> term(){
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp(rhs.first, rhs.second);
 
-                addInst((INST*) inst);
+                // addInst((INST*) inst);
+                appendLL(inst, lMUL);
                 lhs.first = "-";
-                lhs.second = newInstInt(currInstNum++);
+                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
                 nextChar();
                 
                 mul = (CURR == '*');    
@@ -229,10 +231,11 @@ std::pair<std::string, Instruction*> term(){
                 inst->op = MULI;
                 inst->a = newOp("-", newInstInt(currInstNum-1));
                 inst->b = newOp("#", lhs.second);
-                addInst((INST*) inst);
+                // addInst((INST*) inst);
+                appendLL(inst, lMULI);
 
                 lhs.first = "-";
-                lhs.second = newInstInt(currInstNum++);
+                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
                 nextChar();
                 
                 mul = (CURR == '*');    
@@ -246,7 +249,7 @@ std::pair<std::string, Instruction*> term(){
 
                 addInst((INST*) inst);
                 lhs.first = "-";
-                lhs.second = newInstInt(currInstNum++);
+                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
                 nextChar();
                 
                 mul = (CURR == '*');    
@@ -258,9 +261,10 @@ std::pair<std::string, Instruction*> term(){
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp(rhs.first, rhs.second);
 
-                addInst((INST*) inst);
+                // addInst((INST*) inst);
+                appendLL(inst, lMUL);
                 lhs.first = "-";
-                lhs.second = newInstInt(currInstNum++);
+                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
                 nextChar();
                 
                 mul = (CURR == '*');    
@@ -299,9 +303,10 @@ std::pair<std::string, Instruction*> expression(){
                 inst->op = ADDI;
                 inst->a = newOp(rhs.first, rhs.second);
                 inst->b = newOp("#", lhs.second);
-                addInst((INST*) inst);
+                // addInst((INST*) inst);
+                appendLL(inst, lADDI);
                 lhs.first = "-";
-                lhs.second = newInstInt(currInstNum++);
+                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
                 nextChar();
                     
                 add = (CURR == '+');
@@ -312,9 +317,10 @@ std::pair<std::string, Instruction*> expression(){
                 inst->op = ADDI;
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp("#", rhs.second);
-                addInst((INST*) inst);
+                // addInst((INST*) inst);
+                appendLL(inst, lADDI);
                 lhs.first = "-";
-                lhs.second = newInstInt(currInstNum++);
+                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
                 nextChar();
                     
                 add = (CURR == '+');
@@ -325,9 +331,10 @@ std::pair<std::string, Instruction*> expression(){
                 inst->op = ADD;
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp(rhs.first, rhs.second);
-                addInst((INST*) inst);
+                appendLL(inst, lADD);
+                // addInst((INST*) inst);
                 lhs.first = "-";
-                lhs.second = newInstInt(currInstNum++);
+                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
                 nextChar();
                     
                 add = (CURR == '+');
@@ -358,10 +365,11 @@ std::pair<std::string, Instruction*> expression(){
                 inst->op = ADDI;
                 inst->a = newOp("-", newInstInt(currInstNum-1));
                 inst->b = newOp("#", lhs.second);
-                addInst((INST*) inst);
+                // addInst((INST*) inst);
+                appendLL(inst, lADDI);
 
                 lhs.first = "-";
-                lhs.second = newInstInt(currInstNum++);
+                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
                 nextChar();
                     
                 add = (CURR == '+');
@@ -372,9 +380,10 @@ std::pair<std::string, Instruction*> expression(){
                 inst->op = SUBI;
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp("#", rhs.second);
-                addInst((INST*) inst);
+                // addInst((INST*) inst);
+                appendLL(inst, lSUBI);
                 lhs.first = "-";
-                lhs.second = newInstInt(currInstNum++);
+                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
                 nextChar();
                     
                 add = (CURR == '+');
@@ -385,9 +394,10 @@ std::pair<std::string, Instruction*> expression(){
                 inst->op = SUB;
                 inst->a = newOp(rhs.first, rhs.second);
                 inst->b = newOp(lhs.first, lhs.second);
-                addInst((INST*) inst);
+                // addInst((INST*) inst);
+                appendLL(inst, lSUB);
                 lhs.first = "-";
-                lhs.second = newInstInt(currInstNum++);
+                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
                 nextChar();
                     
                 add = (CURR == '+');
@@ -629,13 +639,15 @@ void ifStatement(){
     std::cout << "IF" << std::endl;
 
     std::string* labels = getIf();
+    // LinkedInst 
+    struct LinkedInst *LLsave[LICOUNT], *LLnew[LICOUNT], *LL[LICOUNT];
 
     // Init instruction blocks;
-    struct InstBlock* ifBlock = newInstBlock(labels[0]);
-    struct InstBlock* thenBlock = newInstBlock(labels[1]);
-    struct InstBlock* elseBlock = newInstBlock(labels[2]);
-    struct InstBlock* fiBlock = newInstBlock(labels[3]);
-    struct InstBlock* endBlock = newInstBlock(labels[4]);
+    struct InstBlock* ifBlock = newInstBlock(labels[0], currInstNum++);
+    struct InstBlock* thenBlock = newInstBlock(labels[1], currInstNum++);
+    struct InstBlock* elseBlock = newInstBlock(labels[2], currInstNum++);
+    struct InstBlock* fiBlock = newInstBlock(labels[3], currInstNum++);
+    struct InstBlock* endBlock = newInstBlock(labels[4], currInstNum++);
     // Pointers to join block
     struct Instruction* joinHead = (Instruction*) fiBlock->head;
     struct Instruction* joinTail = joinHead;
@@ -670,12 +682,25 @@ void ifStatement(){
     nextChar();
 
     // Then here
-    if(!nextIs("then")){
+    if(!nextIs("then")){  // Jump into then block THEN   THEN   THEN   THEN   THEN   THEN   THEN   THEN   THEN   THEN   
         throw std::invalid_argument("IfStatement expecting \"then\" after relation");
     }
     skipNext(4); // eat "then"
-    
-    // Jump into then block
+
+    // Save:      - current Linked Instruction to LL
+    // Create new empty Linked Inst to store then and else, as next and next2;
+    // Save:      - new Linked Inst to LLsave;
+    // Work on new Linked Inst for "Then" and "Else" block
+    // Wrap back to LL when finish if statement;
+    for(int i = 0; i < LICOUNT; i++){
+        LL[i] = LinkedInstruction[i];
+        LinkedInstruction[i]->next2 = newLinkedInst();
+        LLsave[i] = LinkedInstruction[i]->next2;
+
+        LLsave[i]->next = newLinkedInst();
+        LinkedInstruction[i] = LLsave[i]->next;
+    }
+
     thenBlock->name = getBlock();
     InstTail = thenBlock->head;
 
@@ -725,13 +750,24 @@ void ifStatement(){
     // Jump into else block
     elseBlock->name = getBlock();
     InstTail = elseBlock->head;
-    if(nextIs("else")){
+    if(nextIs("else")){ // ELSE   ELSE   ELSE   ELSE   ELSE   ELSE   ELSE   ELSE   ELSE   
         // eat "else"
         skipNext(4);
+        // Save current Linked Instruction, 
+        //  change current Linked Instruction to be where else is.
+        for(int i = 0; i < LICOUNT; i++){
+            LLsave[i]->next2 = newLinkedInst();
+            LinkedInstruction[i] = LLsave[i]->next2;
+        }
         statSequence();
     }
     nextChar();
-
+    
+    // return current Linked Instruction to next of end of "if" block, before "then" block
+    for(int i = 0; i < LICOUNT; i++){
+        LL[i]->next = newLinkedInst();
+        LinkedInstruction[i] = LL[i]->next;
+    }
 
 
     // ******************* Update Phi Function *******************
@@ -880,12 +916,15 @@ start new instruction for block inside while,
 void whileStatement(){
     std::cout << "WHILE" << std::endl;
     std::string* labels = getWhile();
+    
+    // Linked Instruction;
+    LinkedInst* LL[LICOUNT];
 
     // Init instruction blocks;
-    struct InstBlock* whileBlock = newInstBlock(labels[0]);
-    struct InstBlock* doBlock = newInstBlock(labels[1]);
-    struct InstBlock* odBlock = newInstBlock(labels[2]);
-    struct InstBlock* endBlock = newInstBlock(labels[3]);
+    struct InstBlock* whileBlock = newInstBlock(labels[0], currInstNum++);
+    struct InstBlock* doBlock = newInstBlock(labels[1], currInstNum++);
+    struct InstBlock* odBlock = newInstBlock(labels[2], currInstNum++);
+    struct InstBlock* endBlock = newInstBlock(labels[3], currInstNum++);
 
     struct Opr* whileTarget = newOp(labels[0], ((Instruction*) whileBlock->head));
     struct Opr* odTarget = newOp(labels[3], ((Instruction*) endBlock->head));
@@ -934,6 +973,13 @@ void whileStatement(){
     // Jump into do block
     InstTail = doBlock->head;
 
+    // Move to correct Linked Instruction
+    for(int i = 0; i < LICOUNT; i++){
+        LL[i] = LinkedInstruction[i];
+        LinkedInstruction[i]->next2 = newLinkedInst();
+        LinkedInstruction[i] = LinkedInstruction[i]->next2;
+    }
+
     statSequence();
     nextChar();
     if(!nextIs("od")){
@@ -948,6 +994,12 @@ void whileStatement(){
     inst->a = whileTarget;
     inst->InstNum = currInstNum++;
     addInst((INST*) inst);
+
+
+    for(int i = 0; i < LICOUNT; i++){
+        // LL[i]->next = newLinkedInst();
+        LinkedInstruction[i] = LL[i];
+    }
 
     // Jump into od block
     InstTail = endBlock->head;

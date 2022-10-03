@@ -10,7 +10,7 @@ static const std::string opText[] = {
     "ldw","ldx","pop","stw","stx","psh",
     // [32] FOR BEQ
     "beq","bne","blt","bge","ble","bgt","bsr","jsr","ret","rdd","wrd","wrh","wrl", 
-    "bra", "neg", "phi", "const",
+    "bra", "neg", "phi", "const", "label", "comment",
     
     "ifloop", "whileloop", 
     };
@@ -100,6 +100,16 @@ enum Mnemonic{
     // WHILELOOP
 };
 
+enum LIidx{
+    lADD, lADDI,
+    lSUB, lSUBI, 
+    lMUL, lMULI,
+    lDIV, lDIVI,
+
+
+
+    LICOUNT, // total number item in this enum (exclude this)
+};
 
 /*
     Type cast instruction and instBlock into INST
@@ -139,15 +149,10 @@ struct InstInt
 
 
 
-struct InstLinkedList
-{
-    struct Instruction* inst;
-    struct Instruction* next;
-};
-
 struct LinkedInst{
     struct Instruction* inst;
-    struct Instruction* next;
+    struct LinkedInst* next;
+    struct LinkedInst* next2;
 };
 
 struct Opr{
@@ -155,16 +160,45 @@ struct Opr{
     Instruction* inst;
 };
 
+struct Instruction* newInstInt(int n){
+    InstInt* inst = new struct InstInt();
+    inst->TYPE = INT;
+    inst->num = n;
+    return (Instruction*) inst;
+}
 struct Opr* newOp(std::string name, Instruction* inst){
     struct Opr* result = new struct Opr();
     result->name = name;
     result->inst = inst;
     return result;
 }
-struct Instruction* newInstInt(int n){
-    InstInt* iint = new struct InstInt();
-    iint->TYPE = INT;
-    iint->num = n;
-    return (Instruction*) iint;
+
+struct Instruction* newInstruction(){
+    Instruction* inst = new struct Instruction();
+    inst->TYPE = SINGLE;
+    inst->next = NULL;
+    inst->InstNum = -1;
+    inst->op = NLL;
+    return inst;
 }
 
+struct InstBlock* newInstBlock(std::string blockName, int n){
+    InstBlock* inst = new struct InstBlock();
+    inst->TYPE = BLOCK;
+    inst->next = NULL;
+    inst->next2 = NULL;
+    inst->head = (INST*) newInstruction();
+    ((Instruction*)inst->head)->InstNum = n;
+    ((Instruction*)inst->head)->a = newOp(blockName, newInstInt(-1));
+    inst->name = blockName;
+    return inst;
+}
+
+
+struct LinkedInst* newLinkedInst(){
+    LinkedInst* result = new struct LinkedInst();
+    result->inst = newInstruction();
+    result->inst->op = COMMENT;
+    result->inst->a = newOp("new LinkedInst", newInstInt(-1));
+    return result;
+}

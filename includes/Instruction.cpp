@@ -1,35 +1,97 @@
 #include "Instruction.h"
 
+void InitInstruction(){
+    currInstNum = 1;
+    InMain = true;
 
-struct InstBlock* newInstBlock(std::string blockName){
-    InstBlock* inst = new struct InstBlock();
-    inst->TYPE = BLOCK;
-    inst->next = NULL;
-    inst->next2 = NULL;
-    inst->head = (INST*) newInstruction();
-    ((Instruction*)inst->head)->InstNum = currInstNum++;
-    ((Instruction*)inst->head)->a = newOp(blockName, newInstInt(-1));
-    inst->name = blockName;
-    return inst;
+    InstBlock* instBlock = newInstBlock("MAIN", currInstNum++);
+    ((Instruction*) instBlock->head)->op = COMMENT;
+    InstHead = (INST*) instBlock;
+    InstTail = ((InstBlock*) InstHead)->head;
+
+    for(int i = 0; i < LICOUNT; i++){
+        LinkedInstruction[i] = LinkedInstHead[i] = newLinkedInst();
+    }
 }
 
-struct Instruction* newInstruction(){
-    Instruction* inst = new struct Instruction();
-    inst->TYPE = SINGLE;
-    inst->next = NULL;
-    inst->InstNum = -1;
-    inst->op = NLL;
-    return inst;
-}
 
 void addInst(struct INST* inst){
     InstTail->next = inst;
     InstTail = inst;
+    // if(inst->TYPE == SINGLE){
+    //     Instruction* i = (Instruction*) inst;
+    //     put(opText[i->op]);
+    // }
 }
 
+void appendLL(Instruction* inst, LIidx n){
+    addInst((INST*) inst);
+    LinkedInstruction[n]->next = newLinkedInst();
+    LinkedInstruction[n] = LinkedInstruction[n]->next;
+    LinkedInstruction[n]->inst = inst;
+}
 
+void elim(LinkedInst* LL, Instruction* inst){
+    if(LL == NULL) return;
+    if(inst->op == COMMENT) return;
+    if(LL->inst->op == COMMENT){
+        elim(LL->next, inst);
+        elim(LL->next2, inst);
+        return;
+    }
+    
+    if(LL->inst->a->inst->TYPE == inst->a->inst->TYPE &&
+        LL->inst->b->inst->TYPE == inst->b->inst->TYPE &&
+        LL->inst->a->name.compare(inst->a->name) == 0 &&
+        LL->inst->b->name.compare(inst->b->name) == 0)
+    {        
+        int lla, llb, ia, ib;
+        if(LL->inst->a->inst->TYPE == INT){
+            lla = ((InstInt*)LL->inst->a->inst)->num;
+            ia = ((InstInt*)inst->a->inst)->num;
+        }
+        else{
+            lla = LL->inst->a->inst->InstNum;
+            ia = inst->a->inst->InstNum;
+        }
 
+        if(LL->inst->b->inst->TYPE == INT){
+            llb = ((InstInt*)LL->inst->b->inst)->num;
+            ib = ((InstInt*)inst->b->inst)->num;
+        }
+        else{
+            llb = LL->inst->b->inst->InstNum;
+            ib = inst->b->inst->InstNum;
+        }
+        if(ia == lla && ib == llb){
+            LL->inst->a->name = "CSE: "+ opText[inst->op] + " " +
+                            LL->inst->a->name+"("+std::to_string(ia)+") "+
+                            LL->inst->b->name+"("+std::to_string(ib)+")";
+            LL->inst->op = COMMENT;
+            LL->inst->InstNum = inst->InstNum;
+        }
+        // ((InstInt*)LL->inst->a->inst)->num  = inst->InstNum;
+    }
+    elim(LL->next, inst);
+    elim(LL->next2, inst);
+}
 
+void ElimSub(LinkedInst* LL){
+    if(LL == NULL) return;
+
+    elim(LL->next, LL->inst);
+    elim(LL->next2, LL->inst);
+
+    ElimSub(LL->next);
+    ElimSub(LL->next2);
+}
+
+void CommonSubElim(){
+    for(int i = 0; i < LICOUNT; i++){
+        std::cout << std::to_string(i) << std::endl;
+        ElimSub(LinkedInstHead[i]);
+    }
+}
 
 
 struct Instruction* addPhiInst(struct Instruction* inst, struct Opr* a, struct Opr* b){
@@ -56,16 +118,6 @@ void addCommentInst(std::string comt){
     inst->InstNum = 101;
     inst->a = newOp(comt, newInstInt(-1));
     addInst((INST*) inst);
-}
-
-void InitInstruction(){
-    currInstNum = 1;
-    InMain = true;
-
-    InstBlock* instBlock = newInstBlock("MAIN");
-    ((Instruction*) instBlock->head)->op = COMMENT;
-    InstHead = (INST*) instBlock;
-    InstTail = ((InstBlock*) InstHead)->head;
 }
 
 void updateInst(Opr* oldOp, Instruction* newInst){ // use when while loop create an update
@@ -311,20 +363,30 @@ void PrintInst(struct INST* currInst){
         std::string cmd = std::to_string(inst->InstNum) + "\t" + 
                         opText[inst->op] + " ";
         graph += "|"+std::to_string(inst->InstNum)+": "+opText[inst->op] + " ";
-        if(inst->a->name != "-"){
+        if(inst->a->name.compare("-") != 0){
             cmd += inst->a->name;
             graph += " " + inst->a->name;
         }
         n = inst->a->inst->TYPE == INT? ((InstInt*)inst->a->inst)->num : inst->a->inst->InstNum;
-        if(n != -1){
+        if(inst->a->name.compare("#") == 0){
+            cmd += std::to_string(n) + " ";
+            graph += std::to_string(n) + " ";
+        }
+        else if(n != -1
+|| inst->op == PHI
+        ){
             cmd += "(" + std::to_string(n) + ") ";
             graph += "("+std::to_string(n) + ")";
         }
+        // else if(inst->op == PHI){
+        //     cmd += "(" + std::to_string(0) + ") ";
+        //     graph += "("+std::to_string(0) + ")";
+        // }
         
         if(inst->b != NULL){
             // n = inst->b->inst->InstNum;
             n = inst->b->inst->TYPE == INT? ((InstInt*)inst->b->inst)->num : inst->b->inst->InstNum;
-            if(inst->b->name != "#"){
+            if(inst->b->name != "#" && inst->b->name != ""){
                 if(n == -1){
                     cmd += " (" + inst->b->name + ")";
                     graph += " ("+inst->b->name + ")";
@@ -336,14 +398,14 @@ void PrintInst(struct INST* currInst){
                 }
             }
             else{
-                if(n != 0 && n != 1){
+                // if(n != 0 && n != 1){
                     cmd += " #" + std::to_string(n) + " ";
-                    graph += " " + std::to_string(n);
-                }
-                else{
-                    cmd += " (" + std::to_string(n) + ")";
-                    graph += " (" + std::to_string(n) + ")";
-                }
+                    graph += " #" + std::to_string(n);
+                // }
+                // else{
+                //     cmd += " (" + std::to_string(n) + ")";
+                //     graph += " (" + std::to_string(n) + ")";
+                // }
             }
         }
         put(stringIndent + cmd);

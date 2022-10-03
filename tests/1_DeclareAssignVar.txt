@@ -4,7 +4,14 @@ var x, y, z,a,b,c;
     let x <- 2;
     let y <- 2;
     let z <- x;
+
     let a <- x+1;
+    let b <- x+1;
+    
+    let c <- b-1;
+    let a <- x-1;
+    let y <- 5*x;
+    let b <- x-1;
 
     let a <- c;
     let a <- g;
