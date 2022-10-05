@@ -96,6 +96,7 @@ enum Mnemonic{
     LABEL,
     COMMENT,
     NLL,
+    FUNC,
     // IFLOOP,
     // WHILELOOP
 };
@@ -105,6 +106,8 @@ enum LIidx{
     lSUB, lSUBI, 
     lMUL, lMULI,
     lDIV, lDIVI,
+    lCMP, lCMPI,
+    lNEG,
 
 
 

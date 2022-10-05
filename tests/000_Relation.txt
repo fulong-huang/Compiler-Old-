@@ -1,0 +1,46 @@
+-main
+var a, b, c, d, e, f, g;
+{
+    let a <- call InputNum();
+    let b <- call InputNum();
+    let c <- call InputNum();
+
+    let d <- 21;
+    let e <- 31; 
+    let f <- 41;
+
+    if 1*8+3 < 2+2
+    then 
+        let g <- 1;
+    fi;
+    if 1 < d
+    then 
+        let g <- 1;
+    fi;
+    if d < 1
+    then 
+        let g <- 1;
+    fi;
+    if 1 < a
+    then 
+        let g <- 1;
+    fi;
+    if a < 1
+    then 
+        let g <- 1;
+    fi;
+
+    if d < a
+    then 
+        let g <- 1;
+    fi;
+    if a < d
+    then 
+        let g <- 1;
+    fi;
+    if d < e
+    then 
+        let g <- 1;
+    fi;
+
+}.

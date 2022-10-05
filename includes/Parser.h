@@ -6,9 +6,10 @@
 #include "DrawGraph.cpp"
 #include "Structures.cpp"
 // #include "InstValue.cpp"
+#include "HELP.cpp"
 #include "Instruction.cpp" 
 #include "ValueTable.cpp"
-#include "HELP.cpp"
+#include "Function.cpp"
 
 bool intNum;
 
@@ -27,7 +28,7 @@ void assignment();
 
 
 // ****************************************
-int funcCall();
+Instruction* funcCall();
 // ****************************************
 
 

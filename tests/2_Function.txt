@@ -1,4 +1,4 @@
-main
++main
 void function thisfunc(fistx, firsty); var a,b,s,d;{
     let y <- 123+456;
     if 2==3 then

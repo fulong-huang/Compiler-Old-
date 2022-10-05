@@ -10,7 +10,7 @@ term = factor {("*"|"/") factor}.
 expression = term {("+"|"-") term}.
 relation = expression relOp expression.
 
-assignment = "let" iden "<-" expression.
+assignment = "let" ident "<-" expression.
 funcCall = "call" ident ["(" [expression {"," expression}]")"].
 ifStatement = "if" relation "then" statSequence ["else" statSequence] "fi".
 whileStatement = "while" relation "do" StatSequence "od".

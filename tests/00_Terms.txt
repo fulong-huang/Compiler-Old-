@@ -1,0 +1,57 @@
++main
+var a, b, d, e;
+{
+    let a <- call InputNum();
+    let b <- call InputNum();
+    let c <- call InputNum();
+
+    let d <- 21;
+    let e <- 31; 
+    let f <- 41;
+
+    let a <- d * e;
+    let a <- b * a;
+    let a <- d + e;
+    let a <- b + a;
+
+    let a <- e / d;
+    let a <- b / a;
+    let a <- d - e;
+    let a <- b - a;
+
+    let a <- b + c;
+    let a <- b - c;
+
+    let a <- b + e;
+    let a <- b - e;
+
+    let a <- e + b;
+    let a <- e - b;
+
+    let a <- b + 10;
+    let a <- b - 10;
+
+    let a <- 10 + b;
+    let a <- 10 - b;
+
+    if 1 == 2
+    then
+        let f <- b;
+    fi;
+
+    let a <- b * c;
+    let a <- b / c;
+
+    let a <- b * e;
+    let a <- b / e;
+
+    let a <- e * b;
+    let a <- e / b;
+
+    let a <- b * 1;
+    let a <- b / 1;
+
+    let a <- 5 * b;
+    let a <- 5 / b;
+
+}.

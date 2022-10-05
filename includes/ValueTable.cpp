@@ -70,9 +70,15 @@ void insertCT(std::string ident, int val){
         insertVT(ident, createConst(val));
     }
 }
+void insertCT(std::string ident, Instruction* inst){
+    // createConst(((InstInt*)inst)->num);
+    insertVT(ident, inst);
+}
 
 // save constant into ConstTable
 Instruction* createConst(int val){
+    if(ConstTable.find(val) != ConstTable.end()) return ConstTable[val];
+
     struct Instruction* intInst = newInstInt(currConstNum);
     ConstTable[val] = intInst;
     Instruction* inst = newInstruction();
@@ -126,7 +132,15 @@ Instruction* getPrevVT(std::string ident){
     return newInstInt(-2);
 }
 
-
+Instruction* getCT(int instNum){
+    for(auto &it:ConstTable){
+        if(((InstInt*) it.second)->num == instNum){
+            std::cout << " ========== "<< it.first << " ========== "<< std::endl;
+            return newInstInt(it.first);
+        }
+    }
+    return newInstInt(-101);
+}
 
 
 // void insertCV(std::string ident, int inst){

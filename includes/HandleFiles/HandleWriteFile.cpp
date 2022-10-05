@@ -24,8 +24,9 @@ void draw(std::string str){
     ofile << str << std::endl;
 }
 
-void closeWriteFile(){
+void closeWriteFile(std::string name){
     try{
+        std::cout << "================ " << name  << " ================"<<std::endl;
         ofile.close();
     }
     catch(std::exception e){

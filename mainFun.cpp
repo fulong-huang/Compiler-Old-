@@ -43,11 +43,13 @@ int main()
                         next();
                         running = false;
                     }
+                    if(CURR != '+'){
                     // --- PROGRAM START ---
-                    computation();
-                    std::cout << "END COMPUTATION" << std::endl;
-                    CommonSubElim();
-                    std::cout << "End Common Subexpression Elimination" << std::endl;
+                        computation();
+                        std::cout << "END COMPUTATION" << std::endl;
+                        CommonSubElim();
+                        std::cout << "End Common Subexpression Elimination" << std::endl;
+                    }
                 }
                 catch(const std::exception &e){
                     std::cout << e.what() << std::endl;
@@ -81,7 +83,7 @@ int main()
                 // for(std::pair<std::string, int> i : ConstVal[0]){
                 //     put(i.first + ", " + std::to_string(i.second));
                 // }
-                closeWriteFile();
+                closeWriteFile(ent->d_name);
                 closeReadFile();
             }
 

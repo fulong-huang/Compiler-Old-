@@ -94,7 +94,8 @@ std::pair<std::string, Instruction*> factor(){
     if(isdigit(CURR)){          // number
         int n = number();
         result.first[0] = '#'; // constant
-        result.second = newInstInt(n);
+        result.second = createConst(n);
+        std::cout << " ------ " << n << " ------ " << std::endl;
     }
     else if(CURR == '('){       // '(' expression ')'
         next();
@@ -106,13 +107,15 @@ std::pair<std::string, Instruction*> factor(){
     else if(isChar()){
         if(nextIs("call")){     // function Call
             skipNext(4);       // must eat call before funCall();
-            int fNum = funcCall();     // ------------- change result -------------
+     // ------------- change result -------------
             result.first = "FunCall";
-            result.second = newInstInt(fNum);
+            result.second = funcCall();
         }
         else{                   // varRef
             std::string idt = ident();
             Instruction* val = varRef(idt);
+            result.first = idt;
+            result.second = val;
             if(val->TYPE == INT){
                 int valInt = ((InstInt*) val)->num;
                 if(valInt == -1){
@@ -122,16 +125,15 @@ std::pair<std::string, Instruction*> factor(){
                 //         result.second = varRef(idt).first;
                 //         return result;
                 //     }
-                //     result.first = "#" + idt;
-                //     result.second = val.second;
+                    result.second = newInstInt(0);
                     addCommentInst("WARNING: Use of UNINITIALIZED variable: " + idt);
                 }
                 else if(valInt == -2){
-                    addCommentInst("WARNING: Use of UNKNOWN variable: " + idt);
+                    result.second = newInstInt(0);
+                    addCommentInst("WARNING: Use of UNDECLARED variable: " + idt);
                 }
+                result.first = "#" + idt;
             }
-            result.first = idt;
-            result.second = val;
         }
     }
     else{                       // END
@@ -154,18 +156,22 @@ std::pair<std::string, Instruction*> term(){
         constLHS = (lhs.first[0] == '#');
         constRHS = (rhs.first[0] == '#');
         struct Instruction* inst = newInstruction();
+        if(constRHS)
+            rhs.second = getCT(((InstInt*) rhs.second)->num);
         if(mul){ // ================ MULT =====================
             if(constLHS){
+                lhs.second = getCT(((InstInt*) lhs.second)->num);
                 if(constRHS){
                     ((InstInt*)lhs.second)->num = ((InstInt*)lhs.second)->num * ((InstInt*)rhs.second)->num;
                     nextChar();
+                    lhs.second = createConst(((InstInt*)lhs.second)->num);
                     mul = (CURR == '*');
                     continue;
                 }
                 inst->InstNum = currInstNum;
                 inst->op = MULI;
                 inst->a = newOp(rhs.first, rhs.second);
-                inst->b = newOp(lhs.first, lhs.second);
+                inst->b = newOp("#", newInstInt(((InstInt*)lhs.second)->num));
                 // addInst((INST*) inst);
                 appendLL(inst, lMULI);
                 lhs.first = "-";
@@ -179,7 +185,7 @@ std::pair<std::string, Instruction*> term(){
                 inst->InstNum = currInstNum;
                 inst->op = MULI;
                 inst->a = newOp(lhs.first, lhs.second);
-                inst->b = newOp("#", rhs.second);
+                inst->b = newOp("#", newInstInt(((InstInt*)rhs.second)->num));
 
                 // addInst((INST*) inst);
                 appendLL(inst, lMULI);
@@ -209,6 +215,7 @@ std::pair<std::string, Instruction*> term(){
         else{    // ================ DIV =====================
             if(constLHS){
                 if(constRHS){
+                    lhs.second = getCT(((InstInt*) lhs.second)->num);
                     lhs.second = newInstInt(((InstInt*)lhs.second)->num / ((InstInt*)rhs.second)->num);
                     nextChar();
                 
@@ -219,20 +226,19 @@ std::pair<std::string, Instruction*> term(){
                 //  (lhs)/(rhs) ==       (1/(rhs))   *   (lhs)
 
                 //   1 / (rhs):
-                inst->InstNum = currInstNum++;
-                inst->op = DIV;
-                inst->a = newOp("-", newInstInt(1));
-                inst->b = newOp(rhs.first, rhs.second);
-                addInst((INST*) inst);
+                // inst->InstNum = currInstNum++;
+                // inst->op = DIV;
+                // inst->a = newOp("-", newInstInt(1));
+                // inst->b = newOp(rhs.first, rhs.second);
+                // addInst((INST*) inst);
 
                 //  result * (lhs)
-                inst = newInstruction();
                 inst->InstNum = currInstNum;
-                inst->op = MULI;
-                inst->a = newOp("-", newInstInt(currInstNum-1));
-                inst->b = newOp("#", lhs.second);
+                inst->op = DIV;
+                inst->a = newOp(lhs.first, lhs.second);
+                inst->b = newOp(rhs.first, rhs.second);
                 // addInst((INST*) inst);
-                appendLL(inst, lMULI);
+                appendLL(inst, lDIV);
 
                 lhs.first = "-";
                 lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
@@ -246,8 +252,9 @@ std::pair<std::string, Instruction*> term(){
                 inst->op = DIVI;
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp("#", rhs.second);
+                // addInst((INST*) inst);
+                appendLL(inst, lDIVI);
 
-                addInst((INST*) inst);
                 lhs.first = "-";
                 lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
                 nextChar();
@@ -257,12 +264,12 @@ std::pair<std::string, Instruction*> term(){
             }
             else{
                 inst->InstNum = currInstNum;
-                inst->op = MUL;
+                inst->op = DIV;
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp(rhs.first, rhs.second);
 
                 // addInst((INST*) inst);
-                appendLL(inst, lMUL);
+                appendLL(inst, lDIV);
                 lhs.first = "-";
                 lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
                 nextChar();
@@ -290,12 +297,15 @@ std::pair<std::string, Instruction*> expression(){
         constLHS = (lhs.first[0] == '#');
         constRHS = (rhs.first[0] == '#');
         struct Instruction* inst = newInstruction();
+        if(constRHS)
+            rhs.second = getCT(((InstInt*) rhs.second)->num);
         if(add){ // ================ ADD =====================
             if(constLHS){
+                lhs.second = getCT(((InstInt*) lhs.second)->num);
                 if(constRHS){
-                    lhs.second = newInstInt(((InstInt*)lhs.second)->num + ((InstInt*)rhs.second)->num);
+                    ((InstInt*)lhs.second)->num = ((InstInt*)lhs.second)->num + ((InstInt*)rhs.second)->num;
                     nextChar();
-
+                    lhs.second = createConst(((InstInt*)lhs.second)->num);
                     add = (CURR == '+');
                     continue;
                 }
@@ -344,7 +354,10 @@ std::pair<std::string, Instruction*> expression(){
         else{ // ================ SUB =====================
             if(constLHS){
                 if(constRHS){
-                    lhs.second = newInstInt(((InstInt*)lhs.second)->num - ((InstInt*)rhs.second)->num);
+                    lhs.second = getCT(((InstInt*) lhs.second)->num);
+                    ((InstInt*)lhs.second)->num = ((InstInt*)lhs.second)->num - ((InstInt*)rhs.second)->num;
+                    nextChar();
+                    lhs.second = createConst(((InstInt*)lhs.second)->num);
                     nextChar();
                     
                     add = (CURR == '+');
@@ -354,19 +367,18 @@ std::pair<std::string, Instruction*> expression(){
                 //  (lhs)-(rhs) =    (0 - (rhs)) + lhs
 
                 //   0 - (rhs):
-                inst->InstNum = currInstNum++;
-                inst->op = NEG;
-                inst->a = newOp(rhs.first, rhs.second);
-                addInst((INST*) inst);
+                // inst->InstNum = currInstNum++;
+                // inst->op = NEG;
+                // inst->a = newOp(rhs.first, rhs.second);
+                // addInst((INST*) inst);
 
                 //  result + (lhs)
-                inst = newInstruction();
                 inst->InstNum = currInstNum;
-                inst->op = ADDI;
-                inst->a = newOp("-", newInstInt(currInstNum-1));
-                inst->b = newOp("#", lhs.second);
+                inst->op = SUB;
+                inst->a = newOp(lhs.first, lhs.second);
+                inst->b = newOp(rhs.first, rhs.second);
                 // addInst((INST*) inst);
-                appendLL(inst, lADDI);
+                appendLL(inst, lSUB);
 
                 lhs.first = "-";
                 lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
@@ -419,13 +431,16 @@ void relation(struct Opr* target){
 
     bool constLHS = (lhs.first[0] == '#');
     bool constRHS = (rhs.first[0] == '#');
+    std::cout << lhs.first<<","<<rhs.first<<std::endl;
     
 
-    struct Instruction* inst;
-    bool neg = false;
+    struct Instruction *inst, *prevInst;
+    // bool neg = false;
     if(lhs.first[0] == '#'){
         // if two constant: (1 > 2)
         if(rhs.first[0] == '#'){
+            rhs.second = getCT(((InstInt*) rhs.second)->num);
+            lhs.second = getCT(((InstInt*) lhs.second)->num);
             addCommentInst(("Comparing two constant: "
                 + std::to_string(((InstInt*)lhs.second)->num) + ", " + 
                 std::to_string(((InstInt*)rhs.second)->num)
@@ -433,7 +448,7 @@ void relation(struct Opr* target){
             inst = newInstruction();
             inst->op = BRA;
             inst->a = target;
-            int diff = lhs.second - rhs.second;
+            int diff = ((InstInt*)lhs.second)->num - ((InstInt*)rhs.second)->num;
             switch(op){
                 case EQ: // branch when not equal
                     if(diff != 0){
@@ -478,66 +493,31 @@ void relation(struct Opr* target){
             return;
         }
         // else: (exp: 2 < a)
-        else{ 
-            std::pair<std::string, Instruction*> s = lhs;
-            lhs = rhs;
-            rhs = s;
+        // else{ 
+        //     std::pair<std::string, Instruction*> s = lhs;
+        //     lhs = rhs;
+        //     rhs = s;
 
-            neg = true;
-        }
+        //     neg = true;
+        // }
     }
 
+    inst = newInstruction();
     if(rhs.first[0] == '#'){
-        inst = newInstruction();
+        rhs.second = getCT(((InstInt*) rhs.second)->num);
         inst->op = CMPI;
         inst->a = newOp(lhs.first, lhs.second);
         inst->b = newOp("#", rhs.second);
-        inst->InstNum = currInstNum++;
-        addInst((INST*) inst);
-
-        if(neg){
-            inst = newInstruction();
-            inst->op = NEG;
-            inst->a = newOp("-", newInstInt(currInstNum-1));
-            inst->InstNum = currInstNum++;
-            addInst((INST*) inst);
-        }
-
-        inst = newInstruction();
-        switch(op){
-            case EQ: // branch when not equal
-                inst->op = BNE;
-                break;
-            case NE:
-                inst->op = BEQ;
-                break;
-            case GT:
-                inst->op = BLE;
-                break;
-            case GE:
-                inst->op = BLT;
-                break;
-            case LT:
-                inst->op = BGE;
-                break;
-            case LE:
-                inst->op = BGT;
-                break;
-            default:
-                throw std::invalid_argument("Unknow relOp\n");
-        }
-        inst->a = newOp("-", newInstInt(currInstNum-1));
-        inst->b = target;
-        inst->InstNum = currInstNum++;
-        addInst((INST*) inst);
-        return;
     }
-    inst = newInstruction();
-    inst->op = CMP;
-    inst->a = newOp(lhs.first, lhs.second);
-    inst->b = newOp(rhs.first, rhs.second);
+    else{
+        inst->op = CMP;
+        inst->a = newOp(lhs.first, lhs.second);
+        inst->b = newOp(rhs.first, rhs.second);
+    }
     inst->InstNum = currInstNum++;
-    addInst((INST*) inst);
+    // addInst((INST*) inst);
+    appendLL(inst, lCMP);
+    prevInst = inst;
     inst = newInstruction();
     // relation only called when branch is required
     // ****** Branch to ELSE *******
@@ -564,7 +544,8 @@ void relation(struct Opr* target){
         default:
             throw std::invalid_argument("Unknow relOp\n");
     }
-    inst->a = newOp("-", newInstInt(currInstNum-1));
+    // inst->a = newOp("-", newInstInt(currInstNum-1));
+    inst->a = newOp("-", prevInst);
     inst->b = target;
     inst->InstNum = currInstNum++;
     addInst((INST*) inst);
@@ -584,8 +565,16 @@ void assignment(){
         throw std::invalid_argument("Assignment expecting \"<-\" after ident");
     }
     std::pair<std::string, Instruction*> val = expression();
+    Instruction* gVT = getVT(name);
+    if(gVT->TYPE == INT){
+    }
     if(val.first[0] == '#'){ // prob not happening after delaring all const with negative instNum;
-        insertCT(name, ((InstInt*)val.second)->num);
+        insertCT(name, val.second);
+        if(((InstInt*) gVT)->num == -2){
+            addCommentInst("WARNING: Assign to UNDECLARED variable: " + name);
+        }
+        std::cout << "FIRST == #, "<<name << ", "<<((InstInt*) val.second)->num<<std::endl;
+
 
         // addCommentInst("Let " + name + " = #" + 
         //     std::to_string(val.second)
@@ -599,7 +588,7 @@ void assignment(){
     }
 }
 
-int funcCall(){
+Instruction* funcCall(){
     std::cout << "FUNCALL" << std::endl;
     nextChar();
     std::string funcName = ident();
@@ -632,7 +621,7 @@ int funcCall(){
         }
     }
     next();
-    return instNum;
+    return inst;
 }
 
 void ifStatement(){

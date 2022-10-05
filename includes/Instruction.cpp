@@ -88,7 +88,6 @@ void ElimSub(LinkedInst* LL){
 
 void CommonSubElim(){
     for(int i = 0; i < LICOUNT; i++){
-        std::cout << std::to_string(i) << std::endl;
         ElimSub(LinkedInstHead[i]);
     }
 }
@@ -360,10 +359,17 @@ void PrintInst(struct INST* currInst){
             currInst = currInst->next;
             continue;
         }
+        if(inst->op == FUNC){
+            put(stringIndent + std::to_string(inst->InstNum) + " " + inst->a->name);
+        graph += std::to_string(inst->InstNum) + ": "+inst->a->name ;
+            currInst = currInst->next;
+            continue;
+
+        }
         std::string cmd = std::to_string(inst->InstNum) + "\t" + 
                         opText[inst->op] + " ";
         graph += "|"+std::to_string(inst->InstNum)+": "+opText[inst->op] + " ";
-        if(inst->a->name.compare("-") != 0){
+        if(inst->a->name[0] != '-' && inst->a->name[0] != '#'){
             cmd += inst->a->name;
             graph += " " + inst->a->name;
         }

@@ -41,6 +41,8 @@ Instruction* createConst(int val);
 Instruction* getVT(std::string ident);
 Instruction* getPrevVT(std::string ident);
 
+Instruction* getCT(int instNum); // find value of instNum, type cast to Instruction*
+
 // void insertCV(std::string ident, int inst);
 // std::pair<bool, int> getCV(std::string ident);
 
