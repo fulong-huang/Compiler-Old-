@@ -21,19 +21,30 @@ void insertVT(std::string ident, Instruction* inst){
         // if it's a instruction, shoudl be ALWAYS TRUE;
         //      Everything inserted should be variable
         // if(vt.first){ 
+        Instruction* ist = (Instruction*)((InstBlock*) JoinBlock)->head;
+        bool notFound = true;
+        while(ist != NULL){
+            if(ist->op == PHI && ist->a->name.compare(ident) == 0){
+                ist->b->inst = inst;
+                notFound = false;
+            }
+        
+            ist = (Instruction*)ist->next;
+        }
+        if(notFound){
             a = newOp(ident, vt);
             WhileJoin = addPhiInst(WhileJoin, a, b);
             WhileJoin->InstNum = currInstNum;
             // Update Value Table
-            InWhile = false;
-            struct Instruction* intInst = newInstInt(currInstNum);
-            insertVT(ident, intInst);
-            updateInst(a, intInst);
-            updateInst(b, intInst);
+            // InWhile = false;
+            // insertVT(ident, WhileJoin);
+            updateInst(a, WhileJoin);
+            updateInst(b, WhileJoin);
             // updateInst(a, currInstNum);
             // updateInst(b, currInstNum);
             currInstNum++;
-            InWhile = true;
+            // InWhile = true;
+        }
         // }
         // else{ // if pre exist value was a constant
         //     struct Instruction* instruction = newInstruction();
@@ -54,7 +65,7 @@ void insertVT(std::string ident, Instruction* inst){
         //     InWhile = true;
 
         // }
-        return;
+        // return;
     }
     ValueTable[idx][ident] = inst;
     // if(ConstVal[idx].find(ident) != ConstVal[idx].end()){
@@ -135,7 +146,6 @@ Instruction* getPrevVT(std::string ident){
 Instruction* getCT(int instNum){
     for(auto &it:ConstTable){
         if(((InstInt*) it.second)->num == instNum){
-            std::cout << " ========== "<< it.first << " ========== "<< std::endl;
             return newInstInt(it.first);
         }
     }

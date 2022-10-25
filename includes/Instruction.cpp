@@ -132,7 +132,8 @@ void updateBlockInst(struct INST* instruction, Opr* oldOp, Instruction* newInst)
     struct InstBlock* saveBlock;
 
     blockInst = (InstBlock*) instruction;
-    if(blockInst->name[0] == 'I'){
+    inst = (Instruction*) blockInst->head;
+    if(inst->a->name[0] == 'I'){
         // cond if
         updateIndivInst(blockInst->head, oldOp, newInst);
 
@@ -149,7 +150,7 @@ void updateBlockInst(struct INST* instruction, Opr* oldOp, Instruction* newInst)
         updateIndivInst(((InstBlock*) blockInst->next2->next->next)->head, oldOp, newInst);
 
     }
-    else if(blockInst->name[0] == 'J'){
+    else if(inst->a->name[0] == 'J'){
         // join block
         updateIndivInst(blockInst->head, oldOp, newInst);
 
@@ -163,6 +164,10 @@ void updateBlockInst(struct INST* instruction, Opr* oldOp, Instruction* newInst)
         blockInst = (InstBlock*) blockInst->next;
         updateIndivInst(((InstBlock*) blockInst->next2)->head, oldOp, newInst);
     }
+    else{
+        std::cout << " ------- WARNING ------- UNKNOWN BLOCK FOUND IN [updateBlockInst] in [Instruction.cpp]  ------- WARNING ------- "<<blockInst->name << std::endl;
+        sleep(3);
+    }
 }
 
 void updateIndivInst(INST* instruction, Opr* oldOp, Instruction* newInst){
@@ -174,22 +179,28 @@ void updateIndivInst(INST* instruction, Opr* oldOp, Instruction* newInst){
             break;
         }
         inst = (Instruction*) instruction;
-        updateOp(inst->a, oldOp, newInst);
-        updateOp(inst->b, oldOp, newInst);
+        inst->a = updateOp(inst->a, oldOp, newInst);
+        inst->b = updateOp(inst->b, oldOp, newInst);
         instruction = instruction->next;
     }
 }
 
-void updateOp(Opr* thisOp, Opr* targetOp, Instruction* newInst){
+Opr* updateOp(Opr* thisOp, Opr* targetOp, Instruction* newInst){
+    if(thisOp!= NULL)
+    std::cout <<thisOp->name<< ", "<<targetOp->name << std::endl;
+    sleep(0.2);
     if(thisOp != NULL &&
         thisOp->inst == targetOp->inst &&
         thisOp->name.compare(targetOp->name) == 0)
     {
-        thisOp->inst = newInst;
         if(thisOp->name[0] == '#'){
+            std::cout << "NAME CHANGE " << std::endl;
+            sleep(3);
             thisOp->name = thisOp->name.substr(1);
         }
+        return newOp(thisOp->name, newInst);
     }
+    return thisOp;
 }
 
 void PrintInstBlock(struct InstBlock* instBlock){
@@ -361,7 +372,7 @@ void PrintInst(struct INST* currInst){
         }
         if(inst->op == FUNC){
             put(stringIndent + std::to_string(inst->InstNum) + " " + inst->a->name);
-        graph += std::to_string(inst->InstNum) + ": "+inst->a->name ;
+        graph += "|"+std::to_string(inst->InstNum) + ": "+inst->a->name ;
             currInst = currInst->next;
             continue;
 
@@ -393,7 +404,18 @@ void PrintInst(struct INST* currInst){
             // n = inst->b->inst->InstNum;
             n = inst->b->inst->TYPE == INT? ((InstInt*)inst->b->inst)->num : inst->b->inst->InstNum;
             if(inst->b->name != "#" && inst->b->name != ""){
-                if(n == -1){
+                if(inst->op == PHI){
+                    cmd += " " + inst->b->name + "(" + 
+                        std::to_string(n) + ")";
+                    graph += " " + inst->b->name + "("+std::to_string(n)+")";
+                    if(n == -1){
+                        graph += "| \\<WARNING: Variable " + inst->b->name + 
+                            " not initialized in all path" + "\\>";
+                        put(("| <WARNING: Variable " + inst->b->name + 
+                            " not initialized in all path" + ">"));
+                    }
+                }
+                else if(n == -1){
                     cmd += " (" + inst->b->name + ")";
                     graph += " ("+inst->b->name + ")";
                 }

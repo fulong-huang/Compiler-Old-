@@ -95,7 +95,6 @@ std::pair<std::string, Instruction*> factor(){
         int n = number();
         result.first[0] = '#'; // constant
         result.second = createConst(n);
-        std::cout << " ------ " << n << " ------ " << std::endl;
     }
     else if(CURR == '('){       // '(' expression ')'
         next();
@@ -567,14 +566,27 @@ void assignment(){
     std::pair<std::string, Instruction*> val = expression();
     Instruction* gVT = getVT(name);
     if(gVT->TYPE == INT){
+        // std::cout << "CONST _" <<val.first<<"_" << ((InstInt*) val.second)->num << std::endl;
+        // sleep(1);
     }
     if(val.first[0] == '#'){ // prob not happening after delaring all const with negative instNum;
-        insertCT(name, val.second);
         if(((InstInt*) gVT)->num == -2){
             addCommentInst("WARNING: Assign to UNDECLARED variable: " + name);
         }
-        std::cout << "FIRST == #, "<<name << ", "<<((InstInt*) val.second)->num<<std::endl;
-
+        if(InIf || InWhile){
+            
+            Instruction* inst = newInstruction();
+            inst->InstNum = currInstNum++;
+            inst->a = newOp("#", getCT(((InstInt*) val.second)->num));
+            inst->op = CONST;
+            addInst((INST*) inst);
+            insertVT(name, inst);
+            // std::cout << "TRUE " << std::endl;
+            // sleep(3);
+        }
+        else{
+            insertCT(name, val.second);
+        }
 
         // addCommentInst("Let " + name + " = #" + 
         //     std::to_string(val.second)
@@ -582,6 +594,7 @@ void assignment(){
     }
     else{
         insertVT(name, val.second);
+        // std::cout << "---"<< name << ", " << val.second->InstNum <<" ----- " << InWhile << "---" << WhileIf<< std::endl;
         // addCommentInst("Let " + name + " = (" + 
         //     std::to_string(varRef(name).first)+")"
         // );
@@ -595,11 +608,6 @@ Instruction* funcCall(){
     
     // **************************************************
     struct Instruction* inst = newInstruction();
-    int instNum = currInstNum;
-    inst->InstNum = currInstNum++;
-    inst->a = newOp(funcName, newInstInt(-1));
-    inst->op = BRA;
-    addInst((INST*) inst);
     // **************************************************
 
     nextChar();
@@ -608,18 +616,61 @@ Instruction* funcCall(){
     }
     next();
     nextChar();
+
+    std::vector<std::pair<std::__1::string, Instruction *> > oprs;
+
     if(CURR != ')') {
-        expression();
+        oprs.push_back(expression());
         nextChar();
         while(CURR == ','){
             next();
-            expression();
+            oprs.push_back(expression());
             nextChar();
         }
         if(CURR != ')'){
             throw std::invalid_argument("FuncCall expecting \")\" after expression(s)");
         }
     }
+    if(funcName.compare("InputNum") == 0){
+        inst = newInstruction();
+        inst->InstNum = currInstNum++;
+        inst->a = newOp(("read()"), newInstInt(-202));
+        inst->op = FUNC;
+        addInst((INST*) inst);
+    }
+    else if(funcName.compare("OutputNum") == 0){
+        if(oprs.size() != 1){
+            throw std::invalid_argument("Function needs \"1\" argument");
+        }
+        std::string s = "write(";
+        inst = newInstruction();
+        inst->InstNum = currInstNum++;
+        if(oprs[0].first[0] == '#'){
+            s += std::to_string(((InstInt*)oprs[0].second)->num);
+        }
+        else{
+            s += std::to_string(oprs[0].second->InstNum);
+        }
+        inst->a = newOp((s+ ")"), newInstInt(-202));
+        inst->op = FUNC;
+        addInst((INST*) inst);
+    }
+    else if(funcName.compare("OutputNewLine") == 0){
+        inst = newInstruction();
+        inst->InstNum = currInstNum++;
+        inst->a = newOp(("writeNL()"), newInstInt(-202));
+        inst->op = FUNC;
+        addInst((INST*) inst);
+    }
+    else{
+        addCommentInst("Calling Function: " + funcName);
+        int instNum = currInstNum;
+        inst->InstNum = currInstNum++;
+        inst->a = newOp(funcName, newInstInt(-1));
+        inst->op = BRA;
+        addInst((INST*) inst);
+    }
+    
     next();
     return inst;
 }
@@ -652,8 +703,8 @@ void ifStatement(){
     fiBlock->next = (INST*) endBlock;
 
     bool inWhileSave = InWhile;
-    bool whileIfSave = WhileIf;
-    WhileIf = WhileIf || InWhile;
+    bool inIfSave = InIf;
+    InIf = true;
     InWhile = false;
 
     // Save JoinBlock (from outer block)
@@ -874,9 +925,10 @@ void ifStatement(){
     RemoveVTLayer();
 
     InWhile = inWhileSave;
-    WhileIf = whileIfSave;
+    InIf = inIfSave;
     // ========== update current layer after removeal =============
     phiInst = (Instruction*) joinHead->next;
+    JoinBlock = savedJoin;
     while(phiInst != NULL){
         if(phiInst->op != PHI){ 
             phiInst = (Instruction*) phiInst->next;
@@ -884,7 +936,8 @@ void ifStatement(){
         }
         idnt = phiInst->a->name;
 
-        insertVT(idnt, newInstInt(phiInst->InstNum));
+        insertVT(idnt, phiInst);
+        put("insert " + idnt + ", " + std::to_string(phiInst->TYPE == INT));
         // addCommentInst("Let " + idnt + " = (" + 
         //     std::to_string(phiInst->InstNum) + ")"
         // );
@@ -918,7 +971,8 @@ void whileStatement(){
     struct Opr* whileTarget = newOp(labels[0], ((Instruction*) whileBlock->head));
     struct Opr* odTarget = newOp(labels[3], ((Instruction*) endBlock->head));
 
-
+    struct INST* savedJoin = JoinBlock;
+    JoinBlock = (INST*) odBlock;
     odBlock->next = (INST*) whileBlock;
     whileBlock->next = (INST*) doBlock;
     whileBlock->next2 = (INST*) endBlock;
@@ -934,12 +988,14 @@ void whileStatement(){
     // ================== INDICATE WHILE STARTED ===============
     // =========================================================
     bool inWhileSave = InWhile;
+    bool inIfSave = InIf;
 
     struct Instruction* whileConditionSave = WhileCondition;
     struct Instruction* whileDoSave = WhileDo;
     struct Instruction* whileJoinSave = WhileJoin;
 
     InWhile = true;
+    InIf = false;
     WhileCondition = (Instruction*) whileBlock->head;
     WhileDo        = (Instruction*) doBlock->head;
     WhileJoin      = (Instruction*) odBlock->head;
@@ -1000,13 +1056,13 @@ void whileStatement(){
     // }
     RemoveVTLayer();
     // Exit this while loop;
-    InWhile = inWhileSave;
-    WhileCondition = whileConditionSave;
-    WhileDo = whileDoSave;
-    WhileJoin = whileJoinSave;
-
     struct Instruction* phiInst = (Instruction*) odBlock->head->next;
     std::string idt;
+    WhileJoin = whileJoinSave;
+    InWhile = inWhileSave;
+    InIf = inIfSave;
+    WhileCondition = whileConditionSave;
+    WhileDo = whileDoSave;
     while(phiInst != NULL){
         if(phiInst->op != PHI){
             phiInst = (Instruction*) phiInst->next;
@@ -1020,6 +1076,7 @@ void whileStatement(){
 
         phiInst = (Instruction*) phiInst->next;
     }
+    JoinBlock = savedJoin;
 }
 
 void returnStatement(){ // only call when expression is guaranteed
@@ -1096,7 +1153,7 @@ void varDecl(){
 
 void funcDecl(){ 
     std::cout << "FUNCDECL" << std::endl;
-    ident();
+    std::string functionName = ident();
     formalParam(); 
     nextChar();
     if(CURR != ';'){

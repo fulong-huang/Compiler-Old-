@@ -2,6 +2,5 @@
 
 
 void InitFunction(){
-    funCount = 0;
 }
 

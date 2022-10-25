@@ -27,7 +27,7 @@ std::unordered_map<int, Instruction*> ConstTable;
 
 int currConstNum;
 
-bool InWhile, WhileIf;
+bool InWhile, InIf;
 struct Instruction* WhileJoin;
 
 void InitVT();

@@ -107,7 +107,6 @@ enum LIidx{
     lMUL, lMULI,
     lDIV, lDIVI,
     lCMP, lCMPI,
-    lNEG,
 
 
 

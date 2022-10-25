@@ -30,6 +30,6 @@ void PrintInst(struct INST* currInst);
 struct INST* PrintInstBlock(struct INST* instBlock); // return next instruction to run
 
 void updateInst(Opr* oldOp, Instruction* newInst);
-void updateOp(Opr* thisOp, Opr* targetOp, Instruction* newInst);
+Opr* updateOp(Opr* thisOp, Opr* targetOp, Instruction* newInst);
 void updateIndivInst(INST* instruction, Opr* oldOp, Instruction* newInst);
 void updateBlockInst(INST* blockInst, Opr* oldOp, Instruction* newInst);

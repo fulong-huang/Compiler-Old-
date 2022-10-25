@@ -12,7 +12,7 @@ var a, b, c;
 			let b <- b + 1;
 			if c < 0
 			then
-				let c <- c + 1;
+				let c <- b + 1;
 			fi;
 		fi;
 		let a <- a + 1;

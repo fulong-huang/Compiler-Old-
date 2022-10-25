@@ -1,15 +1,27 @@
 +main
 void function thisfunc(fistx, firsty); var a,b,s,d;{
     let y <- 123+456;
-    if 2==3 then
+    let a <- call InputNum();
+    let b <- call InputNum();
+    let c <- call InputNum();
+    if a==b then
         let b <- 3;
         let s <- b+y;
         return;
+    else
+        let s <- 2;
     fi;
     let y <- 23 + 5;
+    let z <- a - b;
 };
 {
+    call OutputNum(2);
     let b <- 2;
     call thisfunc(2+3*2, 8/2, 3+5);
+    let z <- a + b;
+    let z <- a + b;
+	call OutputNum(a);
+	call OutputNum(b);
+	call OutputNum(c);
     
 }.
