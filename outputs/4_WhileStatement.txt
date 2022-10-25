@@ -1,16 +1,66 @@
 	---------- Printing Instructions ----------
 
+	-8	const 10 
+	-7	const 9 
+	-6	const 8 
+	-5	const 7 
+	-4	const 6 
+	-3	const 5 
 	0	const 0 
 	1	const 1 
 MAIN: 
 	  <MAIN>
+	2 read()
+	3 read()
+	4 read()
+	5 read()
+	6 read()
+	7 read()
+	8	add b(3)  c(4)
+	  <CSE: add b(3) c(4)>
+	10	addi b(3)  #1 
+	  <CSE: addi b(3) #(1)>
+	JOIN_WHILE_0: 
+		14 <JOIN_WHILE_0> 
+		19	phi a(10)  a(18)
+		21	phi g(8)  g(20)
+		23	phi b(3)  b(18)
+	WHILE_0: 
+		12 <WHILE_0> 
+		16	cmp a(19)  g(21)
+		17	bge (16)  END_WHILE_0(15)
+	DO_0: 
+		13 <DO_0> 
+		18	add b(23)  c(4)
+		20	addi b(23)  #1 
+		  <CSE: add b(23) c(4)>
+		24	bra WHILE_0(12) 
+END_WHILE_0: 
+	15 <END_WHILE_0> 
+	25	add b(23)  c(4)
+	26	add b(23)  a(25)
+	27	addi b(26)  #1 
+	28 write(25)
+	29 write(26)
+	30 write(4)
+	  <END.>
 	
 
 
 	
 digraph G { 
-BB0 [shape=record, label="<b>BB0 | {\<CONST\>|0: const 0 |1: const 1 |\<MAIN\>
+BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-8: const 10 |-7: const 9 |-6: const 8 |-5: const 7 |-4: const 6 |-3: const 5 |0: const 0 |1: const 1 |\<MAIN\>|2: read()|3: read()|4: read()|5: read()|6: read()|7: read()|8: add  b(3) c(4)|\<CSE: add b(3) c(4)\>|10: addi  b(3) #1|\<CSE: addi b(3) #(1)\>}"];
+JOIN_WHILE_0[shape=record, label="<b>JOIN_WHILE_0| {14: \<JOIN_WHILE_0\>|19: phi  a(10) a(18)|21: phi  g(8) g(20)|23: phi  b(3) b(18)}"];
+WHILE_0[shape=record, label="<b>WHILE_0| {12: \<WHILE_0\>|16: cmp  a(19) g(21)|17: bge (16) END_WHILE_0(15)}"];
+DO_0[shape=record, label="<b>DO_0| {13: \<DO_0\>|18: add  b(23) c(4)|20: addi  b(23) #1|\<CSE: add b(23) c(4)\>|24: bra  WHILE_0(12)}"];
+END_WHILE_0[shape=record, label="<b>END_WHILE_0| {15: \<END_WHILE_0\>|25: add  b(23) c(4)|26: add  b(23) a(25)|27: addi  b(26) #1|28: write(25)|29: write(26)|30: write(4)|\<END.\>}"];
 
+
+BB0:s -> JOIN_WHILE_0:n [label="fall-thorough"];
+JOIN_WHILE_0:s -> WHILE_0:n [label="fall-thorough"];
+WHILE_0:s -> DO_0:n [label="fall-thorough",color=green];
+DO_0:s -> JOIN_WHILE_0:n [label="branch",color=red];
+WHILE_0:s -> END_WHILE_0:n [label="branch",color=blue];
 
 }
 

@@ -1,4 +1,4 @@
-+main
+-main
 var a, b, c, d, e, f, g, h, i, j, k, l,z;
 {
     let a <- call InputNum();
@@ -26,6 +26,7 @@ var a, b, c, d, e, f, g, h, i, j, k, l,z;
 		let b <- b + c;
 	od;
 	let a <- b + c;
+	let b <- b + a;
 	let g <- b + 1;
 
 	call OutputNum(a);

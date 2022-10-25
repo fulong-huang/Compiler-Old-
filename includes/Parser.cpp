@@ -155,8 +155,9 @@ std::pair<std::string, Instruction*> term(){
         constLHS = (lhs.first[0] == '#');
         constRHS = (rhs.first[0] == '#');
         struct Instruction* inst = newInstruction();
-        if(constRHS)
+        if(constRHS){
             rhs.second = getCT(((InstInt*) rhs.second)->num);
+        }
         if(mul){ // ================ MULT =====================
             if(constLHS){
                 lhs.second = getCT(((InstInt*) lhs.second)->num);
@@ -296,8 +297,9 @@ std::pair<std::string, Instruction*> expression(){
         constLHS = (lhs.first[0] == '#');
         constRHS = (rhs.first[0] == '#');
         struct Instruction* inst = newInstruction();
-        if(constRHS)
+        if(constRHS){
             rhs.second = getCT(((InstInt*) rhs.second)->num);
+        }
         if(add){ // ================ ADD =====================
             if(constLHS){
                 lhs.second = getCT(((InstInt*) lhs.second)->num);
@@ -1069,7 +1071,7 @@ void whileStatement(){
             continue;
         }
         idt = phiInst->a->name;
-        insertVT(idt, newInstInt(phiInst->InstNum));
+        insertVT(idt, phiInst);
         // addCommentInst("Let " + idt + " = (" + 
         //     std::to_string(phiInst->InstNum) +")"
         // );

@@ -186,9 +186,6 @@ void updateIndivInst(INST* instruction, Opr* oldOp, Instruction* newInst){
 }
 
 Opr* updateOp(Opr* thisOp, Opr* targetOp, Instruction* newInst){
-    if(thisOp!= NULL)
-    std::cout <<thisOp->name<< ", "<<targetOp->name << std::endl;
-    sleep(0.2);
     if(thisOp != NULL &&
         thisOp->inst == targetOp->inst &&
         thisOp->name.compare(targetOp->name) == 0)
