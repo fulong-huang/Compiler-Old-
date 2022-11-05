@@ -33,10 +33,8 @@ BB5:
 	14	muli b(13)  #4 
 	  <END.>
 	
-
-
-	
 digraph G { 
+
 BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-7: const 4 |-6: const 10 |-5: const 5 |-4: const 3 |-3: const 2 |0: const 0 |1: const 1 |\<MAIN\>|\<WARNING: Use of UNDECLARED variable: g\>}"];
 BB1[shape=record, label="<b>BB1| {2: \<IF_0\>|\<Comparing two constant: 2, 0\>|7: bra  ELSE_0(4)}"];
 BB2[shape=record, label="<b>BB2| {3: \<THEN_0\>|8: const 2 |9: bra  JOIN_IF_0(5)}"];
@@ -52,6 +50,7 @@ BB2:s -> BB4:n [label="branch"];
 BB3:s -> BB4:n [label="fall-through"];
 BB4:s -> BB5:n [label="fall-thorough(out)"];
 
+	{rank=same; BB0;}
 }
 
 

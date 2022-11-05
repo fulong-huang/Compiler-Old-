@@ -11,7 +11,6 @@
 #include "ValueTable.cpp"
 #include "Function.cpp"
 
-bool intNum;
 
 Ops relOp();
 std::string ident();
@@ -41,7 +40,7 @@ void statSequence();
 
 void varDecl();
 void funcDecl();
-void formalParam();
+std::vector<std::string> formalParam();
 void funcBody();
 void computation();
 

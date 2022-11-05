@@ -37,6 +37,7 @@ int main()
                     InitVT();
                     InitHelp();
                     InitGraph();
+                    InitFunction();
                     
                     nextChar();
                     if(CURR == '-') {
@@ -47,12 +48,14 @@ int main()
                     // --- PROGRAM START ---
                         computation();
                         std::cout << "END COMPUTATION" << std::endl;
+                        // Also loop through functions' instruction
                         CommonSubElim();
                         std::cout << "End Common Subexpression Elimination" << std::endl;
                     }
                 }
                 catch(const std::exception &e){
                     std::cout << e.what() << std::endl;
+                    running = false;
                 }
 
                 // expression();
@@ -63,9 +66,18 @@ int main()
                 // }
                 // std::cout <<'~' << std::endl;
                 put( "---------- Printing Instructions ----------\n");
+                std::string tail;
+                for(auto func : FunctionList){
+                    PrintInst((INST*) func.second.first);
+                    tail += func.second.first->name+";";
+                }
+                graph += "\nBB0 [shape=record, label=\"<b>BB0 | {\\<CONST\\>";
+
                 PrintInst(InstHead);
-                put("\n\n");
-                put("\n"+graph+"\n\n"+graphConnection+"\n}\n\n");
+                put("\n"+graph+"\n\n"+graphConnection);
+                put("{rank=same; BB0;"+tail + "}\n}\n\n");
+                // put("{rank=same; BB0;");
+
                 // put("\n\n------------------ Values Start Here ------------------");
                 // put("Value Table size: " + std::to_string(ValueTable.size()));
                 // std::vector<std::pair<std::string, Instruction*> > vt(ValueTable[0].begin(), ValueTable[0].end());

@@ -5,13 +5,12 @@
 MAIN: 
 	  <MAIN>
 	
-
-
-	
 digraph G { 
+
 BB0 [shape=record, label="<b>BB0 | {\<CONST\>|0: const 0 |1: const 1 |\<MAIN\>
 
 
+	{rank=same; BB0;}
 }
 
 

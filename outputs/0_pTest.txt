@@ -63,10 +63,8 @@ END_WHILE_0:
 	40 write(33)
 	  <END.>
 	
-
-
-	
 digraph G { 
+
 BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-3: const 100 |0: const 0 |1: const 1 |\<MAIN\>|2: read()|3: read()|4: read()|5: read()}"];
 JOIN_WHILE_0[shape=record, label="<b>JOIN_WHILE_0| {8: \<JOIN_WHILE_0\>|33: phi  c(4) c(31)|34: phi  b(3) b(32)|36: phi  a(2) a(35)}"];
 WHILE_0[shape=record, label="<b>WHILE_0| {6: \<WHILE_0\>|10: cmpi  a(36) #100|11: bge (10) END_WHILE_0(9)}"];
@@ -102,6 +100,7 @@ BB9:s -> BB10:n [label="fall-thorough(out)"];
 BB10:s -> JOIN_WHILE_0:n [label="branch",color=red];
 WHILE_0:s -> END_WHILE_0:n [label="branch",color=blue];
 
+	{rank=same; BB0;}
 }
 
 

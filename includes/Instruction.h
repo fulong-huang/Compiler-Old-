@@ -3,8 +3,6 @@
 int currInstNum;
 struct INST *InstHead, *InstTail;
 
-
-bool InMain;
 struct INST *JoinBlock;
 
 std::string stringIndent = "";

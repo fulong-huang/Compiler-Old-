@@ -2,7 +2,6 @@
 
 void InitInstruction(){
     currInstNum = 1;
-    InMain = true;
 
     InstBlock* instBlock = newInstBlock("MAIN", currInstNum++);
     ((Instruction*) instBlock->head)->op = COMMENT;
@@ -165,8 +164,7 @@ void updateBlockInst(struct INST* instruction, Opr* oldOp, Instruction* newInst)
         updateIndivInst(((InstBlock*) blockInst->next2)->head, oldOp, newInst);
     }
     else{
-        std::cout << " ------- WARNING ------- UNKNOWN BLOCK FOUND IN [updateBlockInst] in [Instruction.cpp]  ------- WARNING ------- "<<blockInst->name << std::endl;
-        sleep(3);
+        put(" ------- WARNING ------- UNKNOWN BLOCK FOUND IN [updateBlockInst] in [Instruction.cpp]  ------- WARNING ------- " + blockInst->name );
     }
 }
 
@@ -191,8 +189,8 @@ Opr* updateOp(Opr* thisOp, Opr* targetOp, Instruction* newInst){
         thisOp->name.compare(targetOp->name) == 0)
     {
         if(thisOp->name[0] == '#'){
-            std::cout << "NAME CHANGE " << std::endl;
-            sleep(3);
+            // std::cout << "NAME CHANGE " << std::endl;
+            // sleep(3);
             thisOp->name = thisOp->name.substr(1);
         }
         return newOp(thisOp->name, newInst);
@@ -328,12 +326,52 @@ void PrintInstBlock(struct InstBlock* instBlock){
     }
     else if(insthead->a->name[0] == 'M'){ // Main block, only ran once
         stringIndent = "";
+        prevLabel = "BB0";
         addLabel(stringIndent+ instBlock->name);
         PrintInst((INST*) instBlock->head);
 
     }
+    else if(insthead->a->name[0] == 'F'){ // Function block, almost same as main
+        stringIndent = "";
+        prevLabel = instBlock->name;
+        graph += instBlock->name+"[shape=record, label=\"<b>"+instBlock->name+"| {";
+        addLabel(stringIndent+ instBlock->name);
+        PrintInst((INST*) instBlock->head);
+
+    }
+    else if(insthead->a->name[0] == 'C'){ // Call function
+        if(graph[graph.size()-1] != '\n'){
+            graph += "}\"];\n";
+        }
+        graph += instBlock->name+"[shape=record, label=\"<b>"+instBlock->name+"| {";
+        graphConnection += prevLabel+":s -> "+instBlock->name+":n [label=\"fall-thorough\"];\n";
+        prevLabel = instBlock->name;
+        addLabel(stringIndent + instBlock->name);
+        PrintInst((INST*) instBlock->head);
+
+        n1 = (InstBlock*) instBlock->next2;
+        if(graph[graph.size()-1] != '\n'){
+            graph += "}\"];\n";
+        }
+        graph += n1->name+"[shape=record, label=\"<b>"+n1->name+"| {";
+        graphConnection += prevLabel+":s -> "+n1->name+":n [label=\"return\"];\n";
+
+        n2 = (InstBlock*) instBlock->next;
+        graphConnection += prevLabel+":sw -> "+n2->name+":e [label=\"Call Function\", color=orange, weight=0];\n";
+
+        prevLabel = n1->name;
+        addLabel(stringIndent + n1->name);
+        PrintInst(n1->head);
+        if(graph[graph.size()-1] != '\n'){
+            graph += "}\"];\n";
+        }
+    }
     else{
         addLabel("============== UNKNOWN LABEL NAME ==============" + instBlock->name);
+        graph += "|\\< ===== UNKNOWN LABLE NAME ===== \\>";
+        if(graph[graph.size()-1] != '\n'){
+            graph += "}\"];\n";
+        }
     }
 }
 
@@ -411,6 +449,10 @@ void PrintInst(struct INST* currInst){
                         put(("| <WARNING: Variable " + inst->b->name + 
                             " not initialized in all path" + ">"));
                     }
+                }
+                else if(inst->op == MOVE){
+                    cmd += " (" + std::to_string(n) + ")";
+                    graph += " (" + std::to_string(n) + ")";
                 }
                 else if(n == -1){
                     cmd += " (" + inst->b->name + ")";

@@ -107,7 +107,7 @@ std::pair<std::string, Instruction*> factor(){
         if(nextIs("call")){     // function Call
             skipNext(4);       // must eat call before funCall();
      // ------------- change result -------------
-            result.first = "FunCall";
+            result.first = "~FunCall";
             result.second = funcCall();
         }
         else{                   // varRef
@@ -214,13 +214,22 @@ std::pair<std::string, Instruction*> term(){
         }
         else{    // ================ DIV =====================
             if(constLHS){
+                lhs.second = getCT(((InstInt*) lhs.second)->num);
                 if(constRHS){
-                    lhs.second = getCT(((InstInt*) lhs.second)->num);
-                    lhs.second = newInstInt(((InstInt*)lhs.second)->num / ((InstInt*)rhs.second)->num);
+
+                    ((InstInt*)lhs.second)->num = ((InstInt*)lhs.second)->num / ((InstInt*)rhs.second)->num;
                     nextChar();
-                
-                    mul = (CURR == '*');    
+                    lhs.second = createConst(((InstInt*)lhs.second)->num);
+                    mul = (CURR == '*');
                     continue;
+
+
+                    // lhs.second = getCT(((InstInt*) lhs.second)->num);
+                    // lhs.second = newInstInt(((InstInt*)lhs.second)->num / ((InstInt*)rhs.second)->num);
+                    // nextChar();
+                
+                    // mul = (CURR == '*');    
+                    // continue;
                 }
                 // const lhs
                 //  (lhs)/(rhs) ==       (1/(rhs))   *   (lhs)
@@ -607,9 +616,8 @@ Instruction* funcCall(){
     std::cout << "FUNCALL" << std::endl;
     nextChar();
     std::string funcName = ident();
-    
     // **************************************************
-    struct Instruction* inst = newInstruction();
+    struct Instruction* inst;
     // **************************************************
 
     nextChar();
@@ -619,6 +627,7 @@ Instruction* funcCall(){
     next();
     nextChar();
 
+    // create new block
     std::vector<std::pair<std::__1::string, Instruction *> > oprs;
 
     if(CURR != ')') {
@@ -665,12 +674,51 @@ Instruction* funcCall(){
         addInst((INST*) inst);
     }
     else{
-        addCommentInst("Calling Function: " + funcName);
+        std::vector<int> foprs;
+        InstBlock* funcBlock;
+        auto gfp = getFunctionParam(funcName);
+        funcBlock = gfp.first;
+        foprs = gfp.second;
+        if(oprs.size() != foprs.size()){
+            throw std::invalid_argument("FuncCall contains too many arguments. Expect "+
+                std::to_string(foprs.size()) + " got " +
+                std::to_string(oprs.size()));
+        }
+
+        struct InstBlock* CallBlock = newInstBlock("Call " + funcName, currInstNum++);
+        struct InstBlock* returnBlock = newInstBlock("Return " + funcName, currInstNum++);
+        CallBlock->next = (INST*) funcBlock;
+        CallBlock->next2 = (INST*) returnBlock;
+        CallBlock->name = getBlock();
+        addInst( (INST*) CallBlock);
+        InstTail = CallBlock->head;
+
+        // Moing all parameters         AKA initialize
+        for(int i = 0; i < oprs.size(); i++){
+            inst = newInstruction();
+            inst->InstNum = currInstNum++;
+            inst->a = newOp(oprs[i].first, oprs[i].second);
+            inst->b = newOp("-", newInstInt(foprs[i]));
+            inst->op = MOVE;
+            addInst((INST*) inst);
+        }
+        inst = newInstruction();
         int instNum = currInstNum;
         inst->InstNum = currInstNum++;
         inst->a = newOp(funcName, newInstInt(-1));
         inst->op = BRA;
         addInst((INST*) inst);
+
+        returnBlock->name = getBlock();
+        InstTail = returnBlock->head;
+        Opr* returnOp = ((Instruction* )funcBlock->head)->b;
+        if(returnOp != NULL){
+            inst = newInstruction();
+            inst->op = RETURN;
+            inst->InstNum = currInstNum++;
+            inst->a = returnOp;
+            addInst((INST*) inst);
+        }
     }
     
     next();
@@ -1083,7 +1131,11 @@ void whileStatement(){
 
 void returnStatement(){ // only call when expression is guaranteed
     std::cout << "RETURN STATEMENT" << std::endl;
-    expression();
+    std::pair<std::string, Instruction*> expr = expression();
+    funcHeadInst->b = newOp(expr.first, expr.second);
+    // std::cout << "Return *" <<expr.first<< "*" << expr.second->InstNum<<"*"<< std::endl;
+    // sleep(3);
+
 }
 
 void statement(){
@@ -1140,6 +1192,7 @@ void varDecl(){
     std::cout << "VARDECL" << std::endl;
     nextChar(); // unnecessary since ident() have it in first line.
     declareVar(ident());
+
     nextChar();
     while(CURR == ','){
         next();
@@ -1156,7 +1209,17 @@ void varDecl(){
 void funcDecl(){ 
     std::cout << "FUNCDECL" << std::endl;
     std::string functionName = ident();
-    formalParam(); 
+    std::vector<std::string> params = formalParam(); 
+
+    std::vector<std::unordered_map<std::string, Instruction*> > savedVT = ValueTable;
+    std::vector<std::unordered_map<std::string, Instruction*> > newVT;
+    ValueTable = newVT;
+    InsertVTLayer();
+
+    INST* savedInstTail = InstTail;
+    InstTail = declareFunction(functionName, getBlock(), params);
+    ((Instruction*) InstTail)->b = newOp("return", NULL);
+    funcHeadInst = (Instruction*) InstTail;
     nextChar();
     if(CURR != ';'){
         throw std::invalid_argument("FuncDecl expecting \";\" after formalParam");
@@ -1168,10 +1231,13 @@ void funcDecl(){
         throw std::invalid_argument("FuncDecl expecting \";\" after funcBody");
     }
     next();
+    InstTail = savedInstTail;
+    ValueTable = savedVT;
 }
 
-void formalParam(){
+std::vector<std::string> formalParam(){
     std::cout << "FORMAL PARAM" << std::endl;
+    std::vector<std::string> params;
     nextChar();
     if(CURR != '('){
         throw std::invalid_argument("formalParam expecting \"(\" before ident");
@@ -1179,17 +1245,17 @@ void formalParam(){
     next();
     nextChar();
     if(CURR != ')'){
-        ident();
+        params.push_back(ident());
         nextChar();
         while(CURR == ','){
             next();
-            ident();
+            params.push_back(ident());
             nextChar();
         }
     }
     nextChar();
     next();
-
+    return params;
 }
 
 void funcBody(){

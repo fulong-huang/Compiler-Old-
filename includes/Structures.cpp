@@ -10,9 +10,9 @@ static const std::string opText[] = {
     "ldw","ldx","pop","stw","stx","psh",
     // [32] FOR BEQ
     "beq","bne","blt","bge","ble","bgt","bsr","jsr","ret","rdd","wrd","wrh","wrl", 
-    "bra", "neg", "phi", "const", "label", "comment",
+    "bra", "neg", "phi", "const", "move", "label", "comment", "return",
     
-    "ifloop", "whileloop", 
+    "ifloop", "whileloop",
     };
 
 
@@ -91,10 +91,12 @@ enum Mnemonic{
 
     PHI,
     CONST,
+    MOVE,
 
 
     LABEL,
     COMMENT,
+    RETURN,
     NLL,
     FUNC,
     // IFLOOP,
@@ -204,3 +206,8 @@ struct LinkedInst* newLinkedInst(){
     result->inst->a = newOp("new LinkedInst", newInstInt(-1));
     return result;
 }
+
+
+struct FuncContent{
+    
+};
