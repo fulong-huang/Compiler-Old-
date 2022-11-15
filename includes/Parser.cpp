@@ -653,16 +653,11 @@ Instruction* funcCall(){
         if(oprs.size() != 1){
             throw std::invalid_argument("Function needs \"1\" argument");
         }
-        std::string s = "write(";
+        std::string s = "write";
         inst = newInstruction();
         inst->InstNum = currInstNum++;
-        if(oprs[0].first[0] == '#'){
-            s += std::to_string(((InstInt*)oprs[0].second)->num);
-        }
-        else{
-            s += std::to_string(oprs[0].second->InstNum);
-        }
-        inst->a = newOp((s+ ")"), newInstInt(-202));
+        inst->a = newOp((s), newInstInt(-202));
+        inst->b = newOp("-", oprs[0].second);
         inst->op = FUNC;
         addInst((INST*) inst);
     }
@@ -987,7 +982,7 @@ void ifStatement(){
         idnt = phiInst->a->name;
 
         insertVT(idnt, phiInst);
-        put("insert " + idnt + ", " + std::to_string(phiInst->TYPE == INT));
+        // put("insert " + idnt + ", " + std::to_string(phiInst->TYPE == INT));
         // addCommentInst("Let " + idnt + " = (" + 
         //     std::to_string(phiInst->InstNum) + ")"
         // );
@@ -1018,7 +1013,7 @@ void whileStatement(){
     struct InstBlock* odBlock = newInstBlock(labels[2], currInstNum++);
     struct InstBlock* endBlock = newInstBlock(labels[3], currInstNum++);
 
-    struct Opr* whileTarget = newOp(labels[0], ((Instruction*) whileBlock->head));
+    struct Opr* whileTarget = newOp(labels[2], ((Instruction*) odBlock->head));
     struct Opr* odTarget = newOp(labels[3], ((Instruction*) endBlock->head));
 
     struct INST* savedJoin = JoinBlock;
@@ -1029,6 +1024,7 @@ void whileStatement(){
     doBlock->next = (INST*) whileBlock;
 
     // Join block should be infront of everything.
+    odBlock->name = getBlock();
     addInst( (INST*) odBlock);
     // struct Instruction* joinHead = (Instruction*) odBlock->head;
     // struct Instruction* joinTail = joinHead;
@@ -1053,6 +1049,7 @@ void whileStatement(){
 
     // Jump into while block  <Check condition>
     InstTail = whileBlock->head;
+    whileBlock->name = getBlock();
 
     relation(odTarget);
     nextChar();
@@ -1066,6 +1063,7 @@ void whileStatement(){
     InsertVTLayer();
 
     // Jump into do block
+    doBlock->name = getBlock();
     InstTail = doBlock->head;
 
     // Move to correct Linked Instruction
@@ -1097,6 +1095,7 @@ void whileStatement(){
     }
 
     // Jump into od block
+    endBlock->name = getBlock();
     InstTail = endBlock->head;
     // ******************* Sub Value Table *******************
     // ******************* Insert PHI FUnction *******************
@@ -1113,6 +1112,7 @@ void whileStatement(){
     InIf = inIfSave;
     WhileCondition = whileConditionSave;
     WhileDo = whileDoSave;
+    JoinBlock = savedJoin;
     while(phiInst != NULL){
         if(phiInst->op != PHI){
             phiInst = (Instruction*) phiInst->next;
@@ -1126,7 +1126,6 @@ void whileStatement(){
 
         phiInst = (Instruction*) phiInst->next;
     }
-    JoinBlock = savedJoin;
 }
 
 void returnStatement(){ // only call when expression is guaranteed

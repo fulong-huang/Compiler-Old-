@@ -1,104 +1,40 @@
-	insert c, 0
-	insert c, 0
-	insert b, 0
-	---------- Printing Instructions ----------
-
-	-3	const 100 
-	0	const 0 
-	1	const 1 
-MAIN: 
-	  <MAIN>
-	2 read()
-	3 read()
-	4 read()
-	5 read()
-	JOIN_WHILE_0: 
-		8 <JOIN_WHILE_0> 
-		33	phi c(4)  c(31)
-		34	phi b(3)  b(32)
-		36	phi a(2)  a(35)
-	WHILE_0: 
-		6 <WHILE_0> 
-		10	cmpi a(36)  #100 
-		11	bge (10)  END_WHILE_0(9)
-	DO_0: 
-		7 <DO_0> 
-		BB1: 
-			12 <IF_0> 
-			17	cmpi b(34)  #0 
-			18	bge (17)  ELSE_0(14)
-		BB2: 
-			13 <THEN_0> 
-			19	addi b(34)  #1 
-			BB3: 
-				20 <IF_1> 
-				25	cmpi c(33)  #0 
-				26	bge (25)  ELSE_1(22)
-			BB4: 
-				21 <THEN_1> 
-				27	addi b(19)  #1 
-				28	bra JOIN_IF_1(23) 
-			BB5: 
-				22 <ELSE_1> 
-			BB6: 
-				23 <JOIN_IF_1> 
-				29	phi c(27)  c(33)
-		BB7: 
-			24 <END_IF_1> 
-			30	bra JOIN_IF_0(15) 
-		BB8: 
-			14 <ELSE_0> 
-		BB9: 
-			15 <JOIN_IF_0> 
-			31	phi c(29)  c(33)
-			32	phi b(19)  b(34)
-	BB10: 
-		16 <END_IF_0> 
-		35	addi a(36)  #1 
-		37	bra WHILE_0(6) 
-END_WHILE_0: 
-	9 <END_WHILE_0> 
-	38 write(36)
-	39 write(34)
-	40 write(33)
-	  <END.>
 	
 digraph G { 
 
 BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-3: const 100 |0: const 0 |1: const 1 |\<MAIN\>|2: read()|3: read()|4: read()|5: read()}"];
-JOIN_WHILE_0[shape=record, label="<b>JOIN_WHILE_0| {8: \<JOIN_WHILE_0\>|33: phi  c(4) c(31)|34: phi  b(3) b(32)|36: phi  a(2) a(35)}"];
-WHILE_0[shape=record, label="<b>WHILE_0| {6: \<WHILE_0\>|10: cmpi  a(36) #100|11: bge (10) END_WHILE_0(9)}"];
-DO_0[shape=record, label="<b>DO_0| {7: \<DO_0\>}"];
-BB1[shape=record, label="<b>BB1| {12: \<IF_0\>|17: cmpi  b(34) #0|18: bge (17) ELSE_0(14)}"];
-BB2[shape=record, label="<b>BB2| {13: \<THEN_0\>|19: addi  b(34) #1}"];
-BB3[shape=record, label="<b>BB3| {20: \<IF_1\>|25: cmpi  c(33) #0|26: bge (25) ELSE_1(22)}"];
-BB4[shape=record, label="<b>BB4| {21: \<THEN_1\>|27: addi  b(19) #1|28: bra  JOIN_IF_1(23)}"];
-BB5[shape=record, label="<b>BB5| {22: \<ELSE_1\>}"];
-BB6[shape=record, label="<b>BB6| {23: \<JOIN_IF_1\>|29: phi  c(27) c(33)}"];
-BB7[shape=record, label="<b>BB7| {24: \<END_IF_1\>|30: bra  JOIN_IF_0(15)}"];
-BB8[shape=record, label="<b>BB8| {14: \<ELSE_0\>}"];
-BB9[shape=record, label="<b>BB9| {15: \<JOIN_IF_0\>|31: phi  c(29) c(33)|32: phi  b(19) b(34)}"];
-BB10[shape=record, label="<b>BB10| {16: \<END_IF_0\>|35: addi  a(36) #1|37: bra  WHILE_0(6)}"];
-END_WHILE_0[shape=record, label="<b>END_WHILE_0| {9: \<END_WHILE_0\>|38: write(36)|39: write(34)|40: write(33)|\<END.\>}"];
+BB1[shape=record, label="<b>BB1| {8: \<JOIN_WHILE_0\>|33: phi  c(4) c(31)|34: phi  b(3) b(32)|36: phi  a(2) a(35)}"];
+BB2[shape=record, label="<b>BB2| {6: \<WHILE_0\>|10: cmpi  a(36) #100|11: bge (10) END_WHILE_0(9)}"];
+BB3[shape=record, label="<b>BB3| {7: \<DO_0\>}"];
+BB4[shape=record, label="<b>BB4| {12: \<IF_0\>|17: cmpi  b(34) #0|18: bge (17) ELSE_0(14)}"];
+BB5[shape=record, label="<b>BB5| {13: \<THEN_0\>|19: addi  b(34) #1}"];
+BB6[shape=record, label="<b>BB6| {20: \<IF_1\>|25: cmpi  c(33) #0|26: bge (25) ELSE_1(22)}"];
+BB7[shape=record, label="<b>BB7| {21: \<THEN_1\>|27: addi  b(19) #1|28: bra  JOIN_IF_1(23)}"];
+BB8[shape=record, label="<b>BB8| {22: \<ELSE_1\>}"];
+BB9[shape=record, label="<b>BB9| {23: \<JOIN_IF_1\>|29: phi  c(27) c(33)}"];
+BB10[shape=record, label="<b>BB10| {24: \<END_IF_1\>|30: bra  JOIN_IF_0(15)}"];
+BB11[shape=record, label="<b>BB11| {14: \<ELSE_0\>}"];
+BB12[shape=record, label="<b>BB12| {15: \<JOIN_IF_0\>|31: phi  c(29) c(33)|32: phi  b(19) b(34)}"];
+BB13[shape=record, label="<b>BB13| {16: \<END_IF_0\>|35: addi  a(36) #1|37: bra  JOIN_WHILE_0(8)}"];
+BB14[shape=record, label="<b>BB14| {9: \<END_WHILE_0\>|38: write 36|39: write 34|40: write 33|\<END.\>}"];
 
 
-BB0:s -> JOIN_WHILE_0:n [label="fall-thorough"];
-JOIN_WHILE_0:s -> WHILE_0:n [label="fall-thorough"];
-WHILE_0:s -> DO_0:n [label="fall-thorough",color=green];
-DO_0:s -> BB1:n [label="fall-through(cond)"];
-BB1:s -> BB2:n [label="fall-through"];
-BB1:s -> BB8:n [label="branch"];
-BB2:s -> BB3:n [label="fall-through(cond)"];
-BB3:s -> BB4:n [label="fall-through"];
-BB3:s -> BB5:n [label="branch"];
-BB4:s -> BB6:n [label="branch"];
-BB5:s -> BB6:n [label="fall-through"];
-BB6:s -> BB7:n [label="fall-thorough(out)"];
+BB0:s -> BB1:n [label="fall-thorough"];
+BB1:s -> BB2:n [label="fall-thorough"];
+BB2:s -> BB3:n [label="fall-thorough",color=green];
+BB3:s -> BB4:n [label="fall-through(cond)"];
+BB4:s -> BB5:n [label="fall-through"];
+BB4:s -> BB11:n [label="branch"];
+BB5:s -> BB6:n [label="fall-through(cond)"];
+BB6:s -> BB7:n [label="fall-through"];
+BB6:s -> BB8:n [label="branch"];
 BB7:s -> BB9:n [label="branch"];
 BB8:s -> BB9:n [label="fall-through"];
 BB9:s -> BB10:n [label="fall-thorough(out)"];
-BB10:s -> JOIN_WHILE_0:n [label="branch",color=red];
-WHILE_0:s -> END_WHILE_0:n [label="branch",color=blue];
+BB10:s -> BB12:n [label="branch"];
+BB11:s -> BB12:n [label="fall-through"];
+BB12:s -> BB13:n [label="fall-thorough(out)"];
+BB13:s -> BB1:n [label="branch",color=red];
+BB2:s -> BB14:n [label="branch",color=blue];
 
 	{rank=same; BB0;}
 }

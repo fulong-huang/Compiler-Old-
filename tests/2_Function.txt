@@ -28,8 +28,7 @@ function thisfunc(fistx, firsty); var a,b,s,d;{
 	call OutputNum(a);
 	call OutputNum(b);
 	call OutputNum(c);
-    call thisfunc(2+3*2, 8/2);
-    call thisfunc(2+3*2, 8/2);
+    let a <- call thisfunc(a*2, b);
+    call thisfunc(z, a);
 
-    
 }.

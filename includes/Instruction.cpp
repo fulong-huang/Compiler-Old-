@@ -40,9 +40,10 @@ void elim(LinkedInst* LL, Instruction* inst){
     }
     
     if(LL->inst->a->inst->TYPE == inst->a->inst->TYPE &&
-        LL->inst->b->inst->TYPE == inst->b->inst->TYPE &&
-        LL->inst->a->name.compare(inst->a->name) == 0 &&
-        LL->inst->b->name.compare(inst->b->name) == 0)
+        LL->inst->b->inst->TYPE == inst->b->inst->TYPE //&&
+        // LL->inst->a->name.compare(inst->a->name) == 0 &&
+        // LL->inst->b->name.compare(inst->b->name) == 0
+        )
     {        
         int lla, llb, ia, ib;
         if(LL->inst->a->inst->TYPE == INT){
@@ -65,9 +66,10 @@ void elim(LinkedInst* LL, Instruction* inst){
         if(ia == lla && ib == llb){
             LL->inst->a->name = "CSE: "+ opText[inst->op] + " " +
                             LL->inst->a->name+"("+std::to_string(ia)+") "+
-                            LL->inst->b->name+"("+std::to_string(ib)+")";
+                            LL->inst->b->name+"("+std::to_string(ib)+")" ;
             LL->inst->op = COMMENT;
             LL->inst->InstNum = inst->InstNum;
+            eliminating = true;
         }
         // ((InstInt*)LL->inst->a->inst)->num  = inst->InstNum;
     }
@@ -210,7 +212,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
         graph += instBlock->name+"[shape=record, label=\"<b>"+instBlock->name+"| {";
         graphConnection += prevLabel+":s -> "+instBlock->name+":n [label=\"fall-through(cond)\"];\n";
         prevLabel = instBlock->name;
-        addLabel(stringIndent + instBlock->name);
+        // addLabel(stringIndent + instBlock->name);
         PrintInst((INST*) instBlock->head);
 
         n1 = (InstBlock*) instBlock->next;
@@ -224,7 +226,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
         graphConnection += prevLabel+":s -> "+n1->name+":n [label=\"fall-through\"];\n";
         graphConnection += prevLabel+":s -> "+n2->name+":n [label=\"branch\"];\n";
         prevLabel = n1->name;
-        addLabel(stringIndent + n1->name);
+        // addLabel(stringIndent + n1->name);
         PrintInst(n1->head);
 
         // connect to join block before prevLabel overided by next PrintInst
@@ -239,7 +241,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
         }
         graph += n2->name+"[shape=record, label=\"<b>"+n2->name+"| {";
         prevLabel = n2->name;
-        addLabel(stringIndent + n2->name);
+        // addLabel(stringIndent + n2->name);
         PrintInst(n2->head);
 
         // join block part 2
@@ -249,7 +251,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
         graph += n1->name+"[shape=record, label=\"<b>"+n1->name+"| {";
         graphConnection += prevLabel+":s -> "+n1->name+":n [label=\"fall-through\"];\n";
         prevLabel = n1->name;
-        addLabel(stringIndent + n1->name);
+        // addLabel(stringIndent + n1->name);
         PrintInst(n1->head);
 
         // returned to upper level
@@ -261,7 +263,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
         graph += n1->name+"[shape=record, label=\"<b>"+n1->name+"| {"; 
         graphConnection += prevLabel+":s -> "+n1->name+":n [label=\"fall-thorough(out)\"];\n";
         prevLabel = n1->name;
-        addLabel(stringIndent + n1->name);
+        // addLabel(stringIndent + n1->name);
         PrintInst(n1->head);
         if(graph[graph.size()-1] != '\n'){
             graph += "}\"];\n";
@@ -276,7 +278,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
         graphConnection += prevLabel+":s -> "+instBlock->name+":n [label=\"fall-thorough\"];\n";
         prevLabel = instBlock->name;
         std::string joinName = instBlock->name;
-        addLabel(stringIndent + instBlock->name);
+        // addLabel(stringIndent + instBlock->name);
         // print join block
         PrintInst((INST*) instBlock->head);
 
@@ -288,7 +290,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
         graph += n1->name+"[shape=record, label=\"<b>"+n1->name+"| {";
         graphConnection += prevLabel+":s -> "+n1->name+":n [label=\"fall-thorough\"];\n";
         prevLabel = n1->name;
-        addLabel(stringIndent + n1->name);
+        // addLabel(stringIndent + n1->name);
         PrintInst(n1->head);
 
         std::string whileName = n1->name;
@@ -302,7 +304,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
         // while connect to do
         graphConnection += whileName+":s -> "+n1->name+":n [label=\"fall-thorough\",color=green];\n";
         prevLabel = n1->name;
-        addLabel(stringIndent + n1->name);
+        // addLabel(stringIndent + n1->name);
         PrintInst(n1->head);
         // do connect to while
         //  Must be after printinst for the latest block to connect back to while
@@ -317,7 +319,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
         // while to end
         graphConnection += whileName+":s -> "+n2->name+":n [label=\"branch\",color=blue];\n";
         prevLabel = n2->name;
-        addLabel(stringIndent + n2->name);
+        // addLabel(stringIndent + n2->name);
         PrintInst(n2->head);
 
         if(graph[graph.size()-1] != '\n'){
@@ -327,7 +329,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
     else if(insthead->a->name[0] == 'M'){ // Main block, only ran once
         stringIndent = "";
         prevLabel = "BB0";
-        addLabel(stringIndent+ instBlock->name);
+        // addLabel(stringIndent+ instBlock->name);
         PrintInst((INST*) instBlock->head);
 
     }
@@ -335,7 +337,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
         stringIndent = "";
         prevLabel = instBlock->name;
         graph += instBlock->name+"[shape=record, label=\"<b>"+instBlock->name+"| {";
-        addLabel(stringIndent+ instBlock->name);
+        // addLabel(stringIndent+ instBlock->name);
         PrintInst((INST*) instBlock->head);
 
     }
@@ -346,7 +348,7 @@ void PrintInstBlock(struct InstBlock* instBlock){
         graph += instBlock->name+"[shape=record, label=\"<b>"+instBlock->name+"| {";
         graphConnection += prevLabel+":s -> "+instBlock->name+":n [label=\"fall-thorough\"];\n";
         prevLabel = instBlock->name;
-        addLabel(stringIndent + instBlock->name);
+        // addLabel(stringIndent + instBlock->name);
         PrintInst((INST*) instBlock->head);
 
         n1 = (InstBlock*) instBlock->next2;
@@ -360,14 +362,14 @@ void PrintInstBlock(struct InstBlock* instBlock){
         graphConnection += prevLabel+":sw -> "+n2->name+":e [label=\"Call Function\", color=orange, weight=0];\n";
 
         prevLabel = n1->name;
-        addLabel(stringIndent + n1->name);
+        // addLabel(stringIndent + n1->name);
         PrintInst(n1->head);
         if(graph[graph.size()-1] != '\n'){
             graph += "}\"];\n";
         }
     }
     else{
-        addLabel("============== UNKNOWN LABEL NAME ==============" + instBlock->name);
+        // addLabel("============== UNKNOWN LABEL NAME ==============" + instBlock->name);
         graph += "|\\< ===== UNKNOWN LABLE NAME ===== \\>";
         if(graph[graph.size()-1] != '\n'){
             graph += "}\"];\n";
@@ -389,25 +391,29 @@ void PrintInst(struct INST* currInst){
             continue;
         }
         if(inst->op == LABEL){
-            addLabel(stringIndent + inst->a->name);
+            // addLabel(stringIndent + inst->a->name);
             currInst = currInst->next;
             continue;
         }
         if(inst->op == COMMENT){
-            put(stringIndent + "  <" + inst->a->name + ">");
+            // put(stringIndent + "  <" + inst->a->name + ">");
         graph += "|\\<"+inst->a->name + "\\>";
             currInst = currInst->next;
             continue;
         }
         if(inst->op == NLL){
-            put(stringIndent + std::to_string(inst->InstNum) + " <" + inst->a->name + "> ");
+            // put(stringIndent + std::to_string(inst->InstNum) + " <" + inst->a->name + "> ");
         graph += std::to_string(inst->InstNum) + ": \\<"+inst->a->name + "\\>";
             currInst = currInst->next;
             continue;
         }
         if(inst->op == FUNC){
-            put(stringIndent + std::to_string(inst->InstNum) + " " + inst->a->name);
+            // put(stringIndent + std::to_string(inst->InstNum) + " " + inst->a->name);
         graph += "|"+std::to_string(inst->InstNum) + ": "+inst->a->name ;
+            if(inst->b != NULL){
+                n = inst->b->inst->TYPE == INT? ((InstInt*)inst->b->inst)->num : inst->b->inst->InstNum;
+                graph += " " + std::to_string(n);
+            }
             currInst = currInst->next;
             continue;
 
@@ -446,8 +452,8 @@ void PrintInst(struct INST* currInst){
                     if(n == -1){
                         graph += "| \\<WARNING: Variable " + inst->b->name + 
                             " not initialized in all path" + "\\>";
-                        put(("| <WARNING: Variable " + inst->b->name + 
-                            " not initialized in all path" + ">"));
+                        // put(("| <WARNING: Variable " + inst->b->name + 
+                        //     " not initialized in all path" + ">"));
                     }
                 }
                 else if(inst->op == MOVE){
@@ -475,7 +481,7 @@ void PrintInst(struct INST* currInst){
                 // }
             }
         }
-        put(stringIndent + cmd);
+        // put(stringIndent + cmd);
 
         currInst = currInst->next;
     }

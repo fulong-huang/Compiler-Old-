@@ -1,4 +1,4 @@
-+main
+main
 var a, b, d, e;
 {
     let a <- call InputNum();

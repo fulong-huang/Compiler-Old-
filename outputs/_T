@@ -1,0 +1,14 @@
+	
+digraph G { 
+
+BB0 [shape=record, label="<b>BB0 | {\<CONST\>|0: const 0 |1: const 1 |\<MAIN\>|2: read()|3: read()|4: read()|5: mul  a(2) b(3)|6: write 5|\<CSE: mul y(2) b(3)\>|8: write 5|9: write 2|10: write 3|11: write 4|\<END.\>}"];
+
+
+
+	{rank=same; BB0;}
+}
+
+
+	
+
+

@@ -13,6 +13,8 @@ struct LinkedInst* LinkedInstHead[LICOUNT];
 
 struct LinkedInst* LinkedInstruction[LICOUNT];
 
+bool eliminating;
+
 
 void InitInstruction();
 

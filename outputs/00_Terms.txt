@@ -1,14 +1,20 @@
-	---------- Printing Instructions ----------
-
-				0	const 0 
-				1	const 1 
-MAIN: 
-	  <MAIN>
 	
 digraph G { 
 
-BB0 [shape=record, label="<b>BB0 | {\<CONST\>|0: const 0 |1: const 1 |\<MAIN\>
+BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-11: const 5 |-10: const 2 |-9: const 10 |-8: const -10 |-7: const 52 |-6: const 651 |-5: const 41 |-4: const 31 |-3: const 21 |0: const 0 |1: const 1 |\<MAIN\>|2: read()|3: read()|4: read()|\<WARNING: Assign to UNDECLARED variable: f\>|5: muli  b(3) #651|6: addi  b(3) #52|7: divi  b(3) #1|8: subi  b(3) #-10|9: add  b(3) c(4)|10: sub  c(4) b(3)|11: addi  b(3) #31|12: subi  b(3) #31|\<CSE: addi b(3) #(31)\>|14: sub (-4) b(3)|15: addi  b(3) #10|16: subi  b(3) #10|\<CSE: addi b(3) #(10)\>|18: sub (-9) b(3)}"];
+BB1[shape=record, label="<b>BB1| {19: \<IF_0\>|\<Comparing two constant: 1, 2\>|24: bra  ELSE_0(21)}"];
+BB2[shape=record, label="<b>BB2| {20: \<THEN_0\>|25: bra  JOIN_IF_0(22)}"];
+BB3[shape=record, label="<b>BB3| {21: \<ELSE_0\>}"];
+BB4[shape=record, label="<b>BB4| {22: \<JOIN_IF_0\>|26: phi  f(3) f(-5)}"];
+BB5[shape=record, label="<b>BB5| {23: \<END_IF_0\>|27: mul  b(3) c(4)|28: div  b(3) c(4)|29: muli  b(3) #31|30: divi  b(3) #31|\<CSE: muli b(3) #(31)\>|32: div (31) b(3)|33: muli  b(3) #1|\<CSE: divi b(3) #(1)\>|35: muli  b(3) #5|36: div (5) b(3)|\<END.\>}"];
 
+
+BB0:s -> BB1:n [label="fall-through(cond)"];
+BB1:s -> BB2:n [label="fall-through"];
+BB1:s -> BB3:n [label="branch"];
+BB2:s -> BB4:n [label="branch"];
+BB3:s -> BB4:n [label="fall-through"];
+BB4:s -> BB5:n [label="fall-thorough(out)"];
 
 	{rank=same; BB0;}
 }

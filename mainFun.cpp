@@ -49,7 +49,11 @@ int main()
                         computation();
                         std::cout << "END COMPUTATION" << std::endl;
                         // Also loop through functions' instruction
-                        CommonSubElim();
+                        eliminating = true;
+                        while(eliminating){
+                            eliminating = false;
+                            CommonSubElim();
+                        }
                         std::cout << "End Common Subexpression Elimination" << std::endl;
                     }
                 }
@@ -65,7 +69,7 @@ int main()
                 //     next();
                 // }
                 // std::cout <<'~' << std::endl;
-                put( "---------- Printing Instructions ----------\n");
+                // put( "---------- Printing Instructions ----------\n");
                 std::string tail;
                 for(auto func : FunctionList){
                     PrintInst((INST*) func.second.first);
@@ -74,6 +78,9 @@ int main()
                 graph += "\nBB0 [shape=record, label=\"<b>BB0 | {\\<CONST\\>";
 
                 PrintInst(InstHead);
+                if(graph[graph.size()-1] != '\n'){
+                    graph += "}\"];\n";
+                }
                 put("\n"+graph+"\n\n"+graphConnection);
                 put("{rank=same; BB0;"+tail + "}\n}\n\n");
                 // put("{rank=same; BB0;");

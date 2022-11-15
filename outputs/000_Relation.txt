@@ -1,14 +1,97 @@
-	---------- Printing Instructions ----------
-
-	0	const 0 
-	1	const 1 
-MAIN: 
-	  <MAIN>
 	
 digraph G { 
 
-BB0 [shape=record, label="<b>BB0 | {\<CONST\>|0: const 0 |1: const 1 |\<MAIN\>
+BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-12: const 5 |-11: const 90 |-10: const 4 |-9: const 2 |-8: const 11 |-7: const 3 |-6: const 8 |-5: const 41 |-4: const 31 |-3: const 21 |0: const 0 |1: const 1 |\<MAIN\>|2: read()|3: read()|4: read()}"];
+BB1[shape=record, label="<b>BB1| {5: \<IF_0\>|\<Comparing two constant: 11, 4\>|10: bra  ELSE_0(7)}"];
+BB2[shape=record, label="<b>BB2| {6: \<THEN_0\>|11: const 1 |12: bra  JOIN_IF_0(8)}"];
+BB3[shape=record, label="<b>BB3| {7: \<ELSE_0\>}"];
+BB4[shape=record, label="<b>BB4| {8: \<JOIN_IF_0\>|13: phi  g(11) g(-1)| \<WARNING: Variable g not initialized in all path\>}"];
+BB5[shape=record, label="<b>BB5| {9: \<END_IF_0\>}"];
+BB6[shape=record, label="<b>BB6| {14: \<IF_1\>|\<Comparing two constant: 1, 21\>|19: bra  ELSE_1(16)}"];
+BB7[shape=record, label="<b>BB7| {15: \<THEN_1\>|20: const 90 |21: bra  JOIN_IF_1(17)}"];
+BB8[shape=record, label="<b>BB8| {16: \<ELSE_1\>}"];
+BB9[shape=record, label="<b>BB9| {17: \<JOIN_IF_1\>|22: phi  g(20) g(13)}"];
+BB10[shape=record, label="<b>BB10| {18: \<END_IF_1\>}"];
+BB11[shape=record, label="<b>BB11| {23: \<IF_2\>|\<Comparing two constant: 21, 1\>|28: bra  ELSE_2(25)}"];
+BB12[shape=record, label="<b>BB12| {24: \<THEN_2\>|29: const 5 |30: bra  JOIN_IF_2(26)}"];
+BB13[shape=record, label="<b>BB13| {25: \<ELSE_2\>}"];
+BB14[shape=record, label="<b>BB14| {26: \<JOIN_IF_2\>|31: phi  g(29) g(22)}"];
+BB15[shape=record, label="<b>BB15| {27: \<END_IF_2\>}"];
+BB16[shape=record, label="<b>BB16| {32: \<IF_3\>|37: cmp (1) a(2)|38: blt (37) ELSE_3(34)}"];
+BB17[shape=record, label="<b>BB17| {33: \<THEN_3\>|39: const 1 |40: bra  JOIN_IF_3(35)}"];
+BB18[shape=record, label="<b>BB18| {34: \<ELSE_3\>}"];
+BB19[shape=record, label="<b>BB19| {35: \<JOIN_IF_3\>|41: phi  g(39) g(31)}"];
+BB20[shape=record, label="<b>BB20| {36: \<END_IF_3\>}"];
+BB21[shape=record, label="<b>BB21| {42: \<IF_4\>|47: cmpi  a(2) #1|48: bne (47) ELSE_4(44)}"];
+BB22[shape=record, label="<b>BB22| {43: \<THEN_4\>|49: const 1 |50: bra  JOIN_IF_4(45)}"];
+BB23[shape=record, label="<b>BB23| {44: \<ELSE_4\>}"];
+BB24[shape=record, label="<b>BB24| {45: \<JOIN_IF_4\>|51: phi  g(49) g(41)}"];
+BB25[shape=record, label="<b>BB25| {46: \<END_IF_4\>}"];
+BB26[shape=record, label="<b>BB26| {52: \<IF_5\>|57: cmp (-3) a(2)|58: beq (57) ELSE_5(54)}"];
+BB27[shape=record, label="<b>BB27| {53: \<THEN_5\>|59: const 1 |60: bra  JOIN_IF_5(55)}"];
+BB28[shape=record, label="<b>BB28| {54: \<ELSE_5\>}"];
+BB29[shape=record, label="<b>BB29| {55: \<JOIN_IF_5\>|61: phi  g(59) g(51)}"];
+BB30[shape=record, label="<b>BB30| {56: \<END_IF_5\>}"];
+BB31[shape=record, label="<b>BB31| {62: \<IF_6\>|67: cmpi  a(2) #21|68: bge (67) ELSE_6(64)}"];
+BB32[shape=record, label="<b>BB32| {63: \<THEN_6\>|69: const 1 |70: bra  JOIN_IF_6(65)}"];
+BB33[shape=record, label="<b>BB33| {64: \<ELSE_6\>}"];
+BB34[shape=record, label="<b>BB34| {65: \<JOIN_IF_6\>|71: phi  g(69) g(61)}"];
+BB35[shape=record, label="<b>BB35| {66: \<END_IF_6\>}"];
+BB36[shape=record, label="<b>BB36| {72: \<IF_7\>|\<Comparing two constant: 21, 31\>}"];
+BB37[shape=record, label="<b>BB37| {73: \<THEN_7\>|77: const 1 |78: bra  JOIN_IF_7(75)}"];
+BB38[shape=record, label="<b>BB38| {74: \<ELSE_7\>}"];
+BB39[shape=record, label="<b>BB39| {75: \<JOIN_IF_7\>|79: phi  g(77) g(71)}"];
+BB40[shape=record, label="<b>BB40| {76: \<END_IF_7\>|\<END.\>}"];
 
+
+BB0:s -> BB1:n [label="fall-through(cond)"];
+BB1:s -> BB2:n [label="fall-through"];
+BB1:s -> BB3:n [label="branch"];
+BB2:s -> BB4:n [label="branch"];
+BB3:s -> BB4:n [label="fall-through"];
+BB4:s -> BB5:n [label="fall-thorough(out)"];
+BB5:s -> BB6:n [label="fall-through(cond)"];
+BB6:s -> BB7:n [label="fall-through"];
+BB6:s -> BB8:n [label="branch"];
+BB7:s -> BB9:n [label="branch"];
+BB8:s -> BB9:n [label="fall-through"];
+BB9:s -> BB10:n [label="fall-thorough(out)"];
+BB10:s -> BB11:n [label="fall-through(cond)"];
+BB11:s -> BB12:n [label="fall-through"];
+BB11:s -> BB13:n [label="branch"];
+BB12:s -> BB14:n [label="branch"];
+BB13:s -> BB14:n [label="fall-through"];
+BB14:s -> BB15:n [label="fall-thorough(out)"];
+BB15:s -> BB16:n [label="fall-through(cond)"];
+BB16:s -> BB17:n [label="fall-through"];
+BB16:s -> BB18:n [label="branch"];
+BB17:s -> BB19:n [label="branch"];
+BB18:s -> BB19:n [label="fall-through"];
+BB19:s -> BB20:n [label="fall-thorough(out)"];
+BB20:s -> BB21:n [label="fall-through(cond)"];
+BB21:s -> BB22:n [label="fall-through"];
+BB21:s -> BB23:n [label="branch"];
+BB22:s -> BB24:n [label="branch"];
+BB23:s -> BB24:n [label="fall-through"];
+BB24:s -> BB25:n [label="fall-thorough(out)"];
+BB25:s -> BB26:n [label="fall-through(cond)"];
+BB26:s -> BB27:n [label="fall-through"];
+BB26:s -> BB28:n [label="branch"];
+BB27:s -> BB29:n [label="branch"];
+BB28:s -> BB29:n [label="fall-through"];
+BB29:s -> BB30:n [label="fall-thorough(out)"];
+BB30:s -> BB31:n [label="fall-through(cond)"];
+BB31:s -> BB32:n [label="fall-through"];
+BB31:s -> BB33:n [label="branch"];
+BB32:s -> BB34:n [label="branch"];
+BB33:s -> BB34:n [label="fall-through"];
+BB34:s -> BB35:n [label="fall-thorough(out)"];
+BB35:s -> BB36:n [label="fall-through(cond)"];
+BB36:s -> BB37:n [label="fall-through"];
+BB36:s -> BB38:n [label="branch"];
+BB37:s -> BB39:n [label="branch"];
+BB38:s -> BB39:n [label="fall-through"];
+BB39:s -> BB40:n [label="fall-thorough(out)"];
 
 	{rank=same; BB0;}
 }
