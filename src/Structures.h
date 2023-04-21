@@ -2,6 +2,8 @@
 #include <string>
 #include <iostream>
 
+#ifndef OPTEXT_H
+#define OPTEXT_H
 static const std::string opText[] = {
     // [0] for ADD
     "add","sub","mul","div","mod","cmp","or","and","bic","xor","lsh","ash","chk",
@@ -10,11 +12,11 @@ static const std::string opText[] = {
     "ldw","ldx","pop","stw","stx","psh",
     // [32] FOR BEQ
     "beq","bne","blt","bge","ble","bgt","bsr","jsr","ret","rdd","wrd","wrh","wrl", 
-    "bra", "neg", "phi", "const", "move", "label", "comment", "return",
+    "bra", "neg", "phi", "const", "move", "label", "comment", "return", "store",
     
     "ifloop", "whileloop",
     };
-
+#endif
 
 enum InstType{
     // Single instruction
@@ -97,6 +99,8 @@ enum Mnemonic{
     LABEL,
     COMMENT,
     RETURN,
+    STORE,
+
     NLL,
     FUNC,
     // IFLOOP,
@@ -122,6 +126,8 @@ struct INST
 {
     InstType TYPE;
     INST* next;
+
+    ~INST();
 };
 struct Opr;
 // Single instruction
@@ -133,6 +139,8 @@ struct Instruction
     Mnemonic op;
     Opr* a;
     Opr* b;
+
+    ~Instruction();
 };
 
 // Block of instruction
@@ -143,12 +151,15 @@ struct InstBlock
     INST* next2; // Branch
     INST* head; // first inst in block;
     std::string name;
+
+    ~InstBlock();
 };
 
 struct InstInt
 {
     InstType TYPE;
     int num;
+    // store replaced InstInt to delete?
 };
 
 
@@ -157,57 +168,20 @@ struct LinkedInst{
     struct Instruction* inst;
     struct LinkedInst* next;
     struct LinkedInst* next2;
+
+    ~LinkedInst();
 };
 
 struct Opr{
     std::string name;
     Instruction* inst;
+
+    ~Opr();
 };
 
-struct Instruction* newInstInt(int n){
-    InstInt* inst = new struct InstInt();
-    inst->TYPE = INT;
-    inst->num = n;
-    return (Instruction*) inst;
-}
-struct Opr* newOp(std::string name, Instruction* inst){
-    struct Opr* result = new struct Opr();
-    result->name = name;
-    result->inst = inst;
-    return result;
-}
+struct Instruction* newInstInt(int n);
+struct Opr* newOp(std::string name, Instruction* inst);
 
-struct Instruction* newInstruction(){
-    Instruction* inst = new struct Instruction();
-    inst->TYPE = SINGLE;
-    inst->next = NULL;
-    inst->InstNum = -1;
-    inst->op = NLL;
-    return inst;
-}
-
-struct InstBlock* newInstBlock(std::string blockName, int n){
-    InstBlock* inst = new struct InstBlock();
-    inst->TYPE = BLOCK;
-    inst->next = NULL;
-    inst->next2 = NULL;
-    inst->head = (INST*) newInstruction();
-    ((Instruction*)inst->head)->InstNum = n;
-    ((Instruction*)inst->head)->a = newOp(blockName, newInstInt(-1));
-    inst->name = blockName;
-    return inst;
-}
-
-
-struct LinkedInst* newLinkedInst(){
-    LinkedInst* result = new struct LinkedInst();
-    result->inst = newInstruction();
-    result->inst->op = COMMENT;
-    result->inst->a = newOp("new LinkedInst", newInstInt(-1));
-    return result;
-}
-
-
-struct FuncContent{
-    
-};
+struct Instruction* newInstruction();
+struct InstBlock* newInstBlock(std::string blockName, int n);
+struct LinkedInst* newLinkedInst();

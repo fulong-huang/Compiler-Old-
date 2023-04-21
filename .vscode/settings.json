@@ -71,6 +71,7 @@
         "compare": "cpp",
         "concepts": "cpp",
         "variant": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "__verbose_abort": "cpp"
     }
 }

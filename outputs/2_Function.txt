@@ -1,19 +1,19 @@
 	
 digraph G { 
-BB1[shape=record, label="<b>BB1| {2: \<Function thisfunc\>|5: addi  fistx(3) #456|6: read()|7: read()|8: read()}"];
-BB2[shape=record, label="<b>BB2| {9: \<IF_0\>|14: cmp  a(6) b(7)|15: bne (14) ELSE_0(11)}"];
-BB3[shape=record, label="<b>BB3| {10: \<THEN_0\>|16: const 3 |17: add  b(16) y(5)|18: bra  JOIN_IF_0(12)}"];
-BB4[shape=record, label="<b>BB4| {11: \<ELSE_0\>|19: const 2 }"];
-BB5[shape=record, label="<b>BB5| {12: \<JOIN_IF_0\>|20: phi  s(17) s(19)|21: phi  b(16) b(7)}"];
-BB6[shape=record, label="<b>BB6| {13: \<END_IF_0\>|22: sub  b(21) a(6)}"];
+BB1[shape=record, label="<b>BB1| {2: \<Function thisFunc\>|6: write y(5)|7: addi  x(4) #456|8: write y(7)|9: read()|10: read()|11: read()}"];
+BB2[shape=record, label="<b>BB2| {12: \<IF_0\>|17: cmp  a(9) b(10)|18: bne (17) ELSE_0(14)}"];
+BB3[shape=record, label="<b>BB3| {13: \<THEN_0\>|19: add  b(10) y(7)|20: bra  JOIN_IF_0(15)}"];
+BB4[shape=record, label="<b>BB4| {14: \<ELSE_0\>|21: addi  x(4) #2}"];
+BB5[shape=record, label="<b>BB5| {15: \<JOIN_IF_0\>|22: phi  c(19) c(21)|23: phi  b(19) b(10)|24: phi  c(21) c(11)}"];
+BB6[shape=record, label="<b>BB6| {16: \<END_IF_0\>|25: sub  b(23) a(9)|26: ret (3)}"];
 
-BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-11: const 4 |-10: const 8 |-9: const 6 |-8: const 28 |-7: const 5 |-6: const 23 |-5: const 2 |-4: const 3 |-3: const 456 |0: const 0 |1: const 1 |\<MAIN\>|23: write -5|24: read()}"];
-BB7[shape=record, label="<b>BB7| {25: \<Call thisfunc\>|27: move (-10) (3)|28: move (-11) (4)|29: bra  thisfunc}"];
-BB8[shape=record, label="<b>BB8| {26: \<Return thisfunc\>|30: return  z(22)|31: addi  b(30) #0|\<CSE: addi b(30) #(0)\>|33: add  z(31) b(30)|\<CSE: add a(31) b(30)\>|35: write 31|36: write 30|37: write 33|38: muli  a(31) #2}"];
-BB9[shape=record, label="<b>BB9| {39: \<Call thisfunc\>|41: move (38) (3)|42: move  b(30) (4)|43: bra  thisfunc}"];
-BB10[shape=record, label="<b>BB10| {40: \<Return thisfunc\>|44: return  z(22)}"];
-BB11[shape=record, label="<b>BB11| {45: \<Call thisfunc\>|47: move  z(31) (3)|48: move  a(44) (4)|49: bra  thisfunc}"];
-BB12[shape=record, label="<b>BB12| {46: \<Return thisfunc\>|50: return  z(22)|\<END.\>}"];
+BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-5: const 15 |-4: const 2 |-3: const 456 |0: const 0 |1: const 1 |\<MAIN\>|\<WARNING: Use of UNDECLARED variable: z\>|27: write #z(0)|\<WARNING: Use of UNINITIALIZED variable: a\>|30: store  Return(29) (3)}"];
+BB7[shape=record, label="<b>BB7| {28: \<Call thisFunc\>|31: move (0) (3)|32: move (1) (4)|33: bra  thisFunc}"];
+BB8[shape=record, label="<b>BB8| {29: \<Return thisFunc\>|34: return  z(25)|35: muli  a(34) #2|\<CSE: muli a(34) #(2)\>}"];
+BB9[shape=record, label="<b>BB9| {39: \<JOIN_WHILE_0\>|45: phi  b(35) b(44)|46: phi  a(34) a(44)}"];
+BB10[shape=record, label="<b>BB10| {37: \<WHILE_0\>|41: cmpi  a(46) #0|42: ble (41) END_WHILE_0(40)}"];
+BB11[shape=record, label="<b>BB11| {38: \<DO_0\>|43: mul  b(45) c(35)|44: add  a(46) (43)|47: bra  JOIN_WHILE_0(39)}"];
+BB12[shape=record, label="<b>BB12| {40: \<END_WHILE_0\>|48: write a(46)|\<END.\>}"];
 
 
 BB1:s -> BB2:n [label="fall-through(cond)"];
@@ -26,11 +26,10 @@ BB0:s -> BB7:n [label="fall-thorough"];
 BB7:s -> BB8:n [label="return"];
 BB7:sw -> BB1:e [label="Call Function", color=orange, weight=0];
 BB8:s -> BB9:n [label="fall-thorough"];
-BB9:s -> BB10:n [label="return"];
-BB9:sw -> BB1:e [label="Call Function", color=orange, weight=0];
-BB10:s -> BB11:n [label="fall-thorough"];
-BB11:s -> BB12:n [label="return"];
-BB11:sw -> BB1:e [label="Call Function", color=orange, weight=0];
+BB9:s -> BB10:n [label="fall-thorough"];
+BB10:s -> BB11:n [label="fall-thorough",color=green];
+BB11:s -> BB9:n [label="branch",color=red];
+BB10:s -> BB12:n [label="branch",color=blue];
 
 	{rank=same; BB0;BB1;}
 }

@@ -4,7 +4,7 @@
 Ops relOp(){
     nextChar();
     Ops op;
-    switch(CURR){
+    switch(getCurr()){
         case '=':
             op = EQ;
             skipNext(2); // must be "=="
@@ -15,7 +15,7 @@ Ops relOp(){
             break;
         case '<':
             next();
-            if(CURR == '='){
+            if(getCurr() == '='){
                 op = LE;
                 next();
             }
@@ -25,7 +25,7 @@ Ops relOp(){
             break;
         case '>':
             next();
-            if(CURR == '='){
+            if(getCurr() == '='){
                 op = GE;
                 next();
             }
@@ -46,11 +46,11 @@ std::string ident(){
     if(!isChar()){
         throw std::invalid_argument("ident need to start with a-z or A-Z");
     }
-    while(isChar() || isdigit(CURR)){
-        ident.push_back(CURR);
+    while(isChar() || isdigit(getCurr())){
+        ident.push_back(getCurr());
         next();
     }
-    if(!isSpace(CURR)){
+    if(!isSpace(getCurr())){
         throw std::invalid_argument("Ident unknown token found");
     }
     return ident;
@@ -59,20 +59,21 @@ std::string ident(){
 int number(){
     // std::cout << "NUMBER" << std::endl;
     nextChar();
-    if(!isdigit(CURR)){
+    if(!isdigit(getCurr())){
         throw std::invalid_argument("Number need to start with 0-9");
     }
     // intNum = true;
-    int val = CURR - '0';
+    int val = getCurr() - '0';
     // int factor = 10;
     next();
-    while(isdigit(CURR)){
+    while(isdigit(getCurr())){
         val *= 10;
-        val += CURR - '0';
+        val += getCurr() - '0';
         next();
     }
-    if(!isSpace(CURR) && !(CURR == '+' || CURR == '-' ||
-                            CURR == '*' || CURR == '/')){
+    char c = getCurr();
+    if(!isSpace(c) && !(c == '+' || c == '-' ||
+                            c == '*' || c == '/')){
         throw std::invalid_argument("Number unknown token found");
     }
     return val;
@@ -91,15 +92,15 @@ std::pair<std::string, Instruction*> factor(){
 
     std::pair<std::string, Instruction*> result;
     nextChar();
-    if(isdigit(CURR)){          // number
+    if(isdigit(getCurr())){          // number
         int n = number();
         result.first[0] = '#'; // constant
         result.second = createConst(n);
     }
-    else if(CURR == '('){       // '(' expression ')'
+    else if(getCurr() == '('){       // '(' expression ')'
         next();
         result = expression();       // ------------- change result -------------
-        if(CURR != ')'){
+        if(getCurr() != ')'){
             throw std::invalid_argument("Factor expecting token ')' after expression");
         }
     }
@@ -148,8 +149,8 @@ std::pair<std::string, Instruction*> term(){
     std::pair<std::string, Instruction*> rhs;
     bool constLHS, constRHS, mul;
     nextChar();
-    mul = (CURR == '*');
-    while( mul || CURR == '/'){
+    mul = (getCurr() == '*');
+    while( mul || getCurr() == '/'){
         next();
         rhs = factor();
         constLHS = (lhs.first[0] == '#');
@@ -165,24 +166,25 @@ std::pair<std::string, Instruction*> term(){
                     ((InstInt*)lhs.second)->num = ((InstInt*)lhs.second)->num * ((InstInt*)rhs.second)->num;
                     nextChar();
                     lhs.second = createConst(((InstInt*)lhs.second)->num);
-                    mul = (CURR == '*');
+                    mul = (getCurr() == '*');
                     continue;
                 }
-                inst->InstNum = currInstNum;
+                inst->InstNum = getCurrInstNum();
                 inst->op = MULI;
                 inst->a = newOp(rhs.first, rhs.second);
                 inst->b = newOp("#", newInstInt(((InstInt*)lhs.second)->num));
                 // addInst((INST*) inst);
                 appendLL(inst, lMULI);
                 lhs.first = "-";
-                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
+                lhs.second = inst;
+                incCurrInstNum();// newInstInt(currInstNum++);
 
-                mul = (CURR == '*');    
+                mul = (getCurr() == '*');    
                 nextChar();
                 continue;
             }
             else if(constRHS){
-                inst->InstNum = currInstNum;
+                inst->InstNum = getCurrInstNum();
                 inst->op = MULI;
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp("#", newInstInt(((InstInt*)rhs.second)->num));
@@ -190,14 +192,15 @@ std::pair<std::string, Instruction*> term(){
                 // addInst((INST*) inst);
                 appendLL(inst, lMULI);
                 lhs.first = "-";
-                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
+                lhs.second = inst;
+                incCurrInstNum();// newInstInt(currInstNum++);
                 nextChar();
                 
-                mul = (CURR == '*');    
+                mul = (getCurr() == '*');    
                 continue;
             }
             else{
-                inst->InstNum = currInstNum;
+                inst->InstNum = getCurrInstNum();
                 inst->op = MUL;
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp(rhs.first, rhs.second);
@@ -205,10 +208,11 @@ std::pair<std::string, Instruction*> term(){
                 // addInst((INST*) inst);
                 appendLL(inst, lMUL);
                 lhs.first = "-";
-                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
+                lhs.second = inst;
+                incCurrInstNum();// newInstInt(currInstNum++);
                 nextChar();
                 
-                mul = (CURR == '*');    
+                mul = (getCurr() == '*');    
                 continue;
             }
         }
@@ -220,7 +224,7 @@ std::pair<std::string, Instruction*> term(){
                     ((InstInt*)lhs.second)->num = ((InstInt*)lhs.second)->num / ((InstInt*)rhs.second)->num;
                     nextChar();
                     lhs.second = createConst(((InstInt*)lhs.second)->num);
-                    mul = (CURR == '*');
+                    mul = (getCurr() == '*');
                     continue;
 
 
@@ -242,7 +246,7 @@ std::pair<std::string, Instruction*> term(){
                 // addInst((INST*) inst);
 
                 //  result * (lhs)
-                inst->InstNum = currInstNum;
+                inst->InstNum = getCurrInstNum();
                 inst->op = DIV;
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp(rhs.first, rhs.second);
@@ -250,14 +254,14 @@ std::pair<std::string, Instruction*> term(){
                 appendLL(inst, lDIV);
 
                 lhs.first = "-";
-                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
+                lhs.second = inst;incCurrInstNum();// newInstInt(currInstNum++);
                 nextChar();
                 
-                mul = (CURR == '*');    
+                mul = (getCurr() == '*');    
                 continue;
             }
             else if(constRHS){
-                inst->InstNum = currInstNum;
+                inst->InstNum = getCurrInstNum();
                 inst->op = DIVI;
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp("#", rhs.second);
@@ -265,14 +269,14 @@ std::pair<std::string, Instruction*> term(){
                 appendLL(inst, lDIVI);
 
                 lhs.first = "-";
-                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
+                lhs.second = inst;incCurrInstNum();// newInstInt(currInstNum++);
                 nextChar();
                 
-                mul = (CURR == '*');    
+                mul = (getCurr() == '*');    
                 continue;
             }
             else{
-                inst->InstNum = currInstNum;
+                inst->InstNum = getCurrInstNum();
                 inst->op = DIV;
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp(rhs.first, rhs.second);
@@ -280,10 +284,10 @@ std::pair<std::string, Instruction*> term(){
                 // addInst((INST*) inst);
                 appendLL(inst, lDIV);
                 lhs.first = "-";
-                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
+                lhs.second = inst;incCurrInstNum();// newInstInt(currInstNum++);
                 nextChar();
                 
-                mul = (CURR == '*');    
+                mul = (getCurr() == '*');    
                 continue;  // some continue wasn't necessary
             }
         }
@@ -299,8 +303,8 @@ std::pair<std::string, Instruction*> expression(){
     std::pair<std::string, Instruction*> rhs;
     bool constLHS, constRHS, add;
     nextChar();
-    add = (CURR == '+');
-    while(add || CURR == '-'){
+    add = (getCurr() == '+');
+    while(add || getCurr() == '-'){
         next();
         rhs = term();
         constLHS = (lhs.first[0] == '#');
@@ -316,48 +320,48 @@ std::pair<std::string, Instruction*> expression(){
                     ((InstInt*)lhs.second)->num = ((InstInt*)lhs.second)->num + ((InstInt*)rhs.second)->num;
                     nextChar();
                     lhs.second = createConst(((InstInt*)lhs.second)->num);
-                    add = (CURR == '+');
+                    add = (getCurr() == '+');
                     continue;
                 }
-                inst->InstNum = currInstNum;
+                inst->InstNum = getCurrInstNum();
                 inst->op = ADDI;
                 inst->a = newOp(rhs.first, rhs.second);
                 inst->b = newOp("#", lhs.second);
                 // addInst((INST*) inst);
                 appendLL(inst, lADDI);
                 lhs.first = "-";
-                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
+                lhs.second = inst;incCurrInstNum();// newInstInt(currInstNum++);
                 nextChar();
                     
-                add = (CURR == '+');
+                add = (getCurr() == '+');
                 continue;
             }
             else if(constRHS){
-                inst->InstNum = currInstNum;
+                inst->InstNum = getCurrInstNum();
                 inst->op = ADDI;
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp("#", rhs.second);
                 // addInst((INST*) inst);
                 appendLL(inst, lADDI);
                 lhs.first = "-";
-                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
+                lhs.second = inst;incCurrInstNum();// newInstInt(currInstNum++);
                 nextChar();
                     
-                add = (CURR == '+');
+                add = (getCurr() == '+');
                 continue;
             }
             else{
-                inst->InstNum = currInstNum;
+                inst->InstNum = getCurrInstNum();
                 inst->op = ADD;
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp(rhs.first, rhs.second);
                 appendLL(inst, lADD);
                 // addInst((INST*) inst);
                 lhs.first = "-";
-                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
+                lhs.second = inst;incCurrInstNum();// newInstInt(currInstNum++);
                 nextChar();
                     
-                add = (CURR == '+');
+                add = (getCurr() == '+');
                 continue;
             }
         }
@@ -370,7 +374,7 @@ std::pair<std::string, Instruction*> expression(){
                     lhs.second = createConst(((InstInt*)lhs.second)->num);
                     nextChar();
                     
-                    add = (CURR == '+');
+                    add = (getCurr() == '+');
                     continue;
                 }
                 // const lhs
@@ -383,7 +387,7 @@ std::pair<std::string, Instruction*> expression(){
                 // addInst((INST*) inst);
 
                 //  result + (lhs)
-                inst->InstNum = currInstNum;
+                inst->InstNum = getCurrInstNum();
                 inst->op = SUB;
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp(rhs.first, rhs.second);
@@ -391,38 +395,38 @@ std::pair<std::string, Instruction*> expression(){
                 appendLL(inst, lSUB);
 
                 lhs.first = "-";
-                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
+                lhs.second = inst;incCurrInstNum();// newInstInt(currInstNum++);
                 nextChar();
                     
-                add = (CURR == '+');
+                add = (getCurr() == '+');
                 continue;
             }
             else if(constRHS){
-                inst->InstNum = currInstNum;
+                inst->InstNum = getCurrInstNum();
                 inst->op = SUBI;
                 inst->a = newOp(lhs.first, lhs.second);
                 inst->b = newOp("#", rhs.second);
                 // addInst((INST*) inst);
                 appendLL(inst, lSUBI);
                 lhs.first = "-";
-                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
+                lhs.second = inst;incCurrInstNum();// newInstInt(currInstNum++);
                 nextChar();
                     
-                add = (CURR == '+');
+                add = (getCurr() == '+');
                 continue;
             }
             else{
-                inst->InstNum = currInstNum;
+                inst->InstNum = getCurrInstNum();
                 inst->op = SUB;
                 inst->a = newOp(rhs.first, rhs.second);
                 inst->b = newOp(lhs.first, lhs.second);
                 // addInst((INST*) inst);
                 appendLL(inst, lSUB);
                 lhs.first = "-";
-                lhs.second = inst;currInstNum++;// newInstInt(currInstNum++);
+                lhs.second = inst;incCurrInstNum();// newInstInt(currInstNum++);
                 nextChar();
                     
-                add = (CURR == '+');
+                add = (getCurr() == '+');
                 continue;
             }
         }
@@ -462,37 +466,37 @@ void relation(struct Opr* target){
             switch(op){
                 case EQ: // branch when not equal
                     if(diff != 0){
-                        inst->InstNum = currInstNum++;
+                        inst->InstNum = incCurrInstNum();
                         addInst((INST*) inst);
                     }
                     break;
                 case NE:
                     if(diff == 0){
-                        inst->InstNum = currInstNum++;
+                        inst->InstNum = incCurrInstNum();
                         addInst((INST*) inst);
                     }
                     break;
                 case GT:
                     if(diff <= 0){
-                        inst->InstNum = currInstNum++;
+                        inst->InstNum = incCurrInstNum();
                         addInst((INST*) inst);
                     }
                     break;
                 case GE:
                     if(diff < 0){
-                        inst->InstNum = currInstNum++;
+                        inst->InstNum = incCurrInstNum();
                         addInst((INST*) inst);
                     }
                     break;
                 case LT:
                     if(diff >= 0){
-                        inst->InstNum = currInstNum++;
+                        inst->InstNum = incCurrInstNum();
                         addInst((INST*) inst);
                     }
                     break;
                 case LE:
                     if(diff > 0){
-                        inst->InstNum = currInstNum++;
+                        inst->InstNum = incCurrInstNum();
                         addInst((INST*) inst);
                     }
                     break;
@@ -524,7 +528,7 @@ void relation(struct Opr* target){
         inst->a = newOp(lhs.first, lhs.second);
         inst->b = newOp(rhs.first, rhs.second);
     }
-    inst->InstNum = currInstNum++;
+    inst->InstNum = incCurrInstNum();
     // addInst((INST*) inst);
     appendLL(inst, lCMP);
     prevInst = inst;
@@ -557,7 +561,7 @@ void relation(struct Opr* target){
     // inst->a = newOp("-", newInstInt(currInstNum-1));
     inst->a = newOp("-", prevInst);
     inst->b = target;
-    inst->InstNum = currInstNum++;
+    inst->InstNum = incCurrInstNum();
     addInst((INST*) inst);
 
 }
@@ -584,10 +588,10 @@ void assignment(){
         if(((InstInt*) gVT)->num == -2){
             addCommentInst("WARNING: Assign to UNDECLARED variable: " + name);
         }
-        if(InIf || InWhile){
+        if(getInIf() || getInWhile()){
             
             Instruction* inst = newInstruction();
-            inst->InstNum = currInstNum++;
+            inst->InstNum = incCurrInstNum();
             inst->a = newOp("#", getCT(((InstInt*) val.second)->num));
             inst->op = CONST;
             addInst((INST*) inst);
@@ -621,7 +625,7 @@ Instruction* funcCall(){
     // **************************************************
 
     nextChar();
-    if(CURR != '('){
+    if(getCurr() != '('){
         throw std::invalid_argument("FuncCall expecting \"(\" after ident");
     }
     next();
@@ -630,21 +634,21 @@ Instruction* funcCall(){
     // create new block
     std::vector<std::pair<std::__1::string, Instruction *> > oprs;
 
-    if(CURR != ')') {
+    if(getCurr() != ')') {
         oprs.push_back(expression());
         nextChar();
-        while(CURR == ','){
+        while(getCurr() == ','){
             next();
             oprs.push_back(expression());
             nextChar();
         }
-        if(CURR != ')'){
+        if(getCurr() != ')'){
             throw std::invalid_argument("FuncCall expecting \")\" after expression(s)");
         }
     }
     if(funcName.compare("InputNum") == 0){
         inst = newInstruction();
-        inst->InstNum = currInstNum++;
+        inst->InstNum = incCurrInstNum();
         inst->a = newOp(("read()"), newInstInt(-202));
         inst->op = FUNC;
         addInst((INST*) inst);
@@ -655,15 +659,15 @@ Instruction* funcCall(){
         }
         std::string s = "write";
         inst = newInstruction();
-        inst->InstNum = currInstNum++;
+        inst->InstNum = incCurrInstNum();
         inst->a = newOp((s), newInstInt(-202));
-        inst->b = newOp("-", oprs[0].second);
+        inst->b = newOp(oprs[0].first, oprs[0].second);
         inst->op = FUNC;
         addInst((INST*) inst);
     }
     else if(funcName.compare("OutputNewLine") == 0){
         inst = newInstruction();
-        inst->InstNum = currInstNum++;
+        inst->InstNum = incCurrInstNum();
         inst->a = newOp(("writeNL()"), newInstInt(-202));
         inst->op = FUNC;
         addInst((INST*) inst);
@@ -674,43 +678,51 @@ Instruction* funcCall(){
         auto gfp = getFunctionParam(funcName);
         funcBlock = gfp.first;
         foprs = gfp.second;
-        if(oprs.size() != foprs.size()){
+        if(oprs.size() != foprs.size()-1){
             throw std::invalid_argument("FuncCall contains too many arguments. Expect "+
                 std::to_string(foprs.size()) + " got " +
                 std::to_string(oprs.size()));
         }
 
-        struct InstBlock* CallBlock = newInstBlock("Call " + funcName, currInstNum++);
-        struct InstBlock* returnBlock = newInstBlock("Return " + funcName, currInstNum++);
+        struct InstBlock* CallBlock = newInstBlock("Call " + funcName, incCurrInstNum());
+        struct InstBlock* returnBlock = newInstBlock("Return " + funcName, incCurrInstNum());
         CallBlock->next = (INST*) funcBlock;
         CallBlock->next2 = (INST*) returnBlock;
+
+        inst = newInstruction();
+        inst->b = newOp("-", newInstInt(foprs[0]));
+        inst->a = newOp("Return", (Instruction*) returnBlock->head);
+        inst->op = STORE;
+        inst->InstNum = incCurrInstNum();
+        addInst((INST*) inst);
+
         CallBlock->name = getBlock();
         addInst( (INST*) CallBlock);
-        InstTail = CallBlock->head;
+        setInstTail(CallBlock->head);
 
         // Moing all parameters         AKA initialize
         for(int i = 0; i < oprs.size(); i++){
             inst = newInstruction();
-            inst->InstNum = currInstNum++;
+            inst->InstNum = incCurrInstNum();
             inst->a = newOp(oprs[i].first, oprs[i].second);
             inst->b = newOp("-", newInstInt(foprs[i]));
             inst->op = MOVE;
             addInst((INST*) inst);
         }
         inst = newInstruction();
-        int instNum = currInstNum;
-        inst->InstNum = currInstNum++;
+        int instNum = getCurrInstNum();
+        inst->InstNum = incCurrInstNum();
         inst->a = newOp(funcName, newInstInt(-1));
         inst->op = BRA;
         addInst((INST*) inst);
 
         returnBlock->name = getBlock();
-        InstTail = returnBlock->head;
+        setInstTail(returnBlock->head);
         Opr* returnOp = ((Instruction* )funcBlock->head)->b;
         if(returnOp != NULL){
             inst = newInstruction();
             inst->op = RETURN;
-            inst->InstNum = currInstNum++;
+            inst->InstNum = incCurrInstNum();
             inst->a = returnOp;
             addInst((INST*) inst);
         }
@@ -723,16 +735,16 @@ Instruction* funcCall(){
 void ifStatement(){
     std::cout << "IF" << std::endl;
 
-    std::string* labels = getIf();
+    std::vector<std::string> labels = getIf();
     // LinkedInst 
     struct LinkedInst *LLsave[LICOUNT], *LLnew[LICOUNT], *LL[LICOUNT];
 
     // Init instruction blocks;
-    struct InstBlock* ifBlock = newInstBlock(labels[0], currInstNum++);
-    struct InstBlock* thenBlock = newInstBlock(labels[1], currInstNum++);
-    struct InstBlock* elseBlock = newInstBlock(labels[2], currInstNum++);
-    struct InstBlock* fiBlock = newInstBlock(labels[3], currInstNum++);
-    struct InstBlock* endBlock = newInstBlock(labels[4], currInstNum++);
+    struct InstBlock* ifBlock = newInstBlock(labels[0], incCurrInstNum());
+    struct InstBlock* thenBlock = newInstBlock(labels[1], incCurrInstNum());
+    struct InstBlock* elseBlock = newInstBlock(labels[2], incCurrInstNum());
+    struct InstBlock* fiBlock = newInstBlock(labels[3], incCurrInstNum());
+    struct InstBlock* endBlock = newInstBlock(labels[4], incCurrInstNum());
     // Pointers to join block
     struct Instruction* joinHead = (Instruction*) fiBlock->head;
     struct Instruction* joinTail = joinHead;
@@ -747,20 +759,20 @@ void ifStatement(){
     elseBlock->next = (INST*) fiBlock; 
     fiBlock->next = (INST*) endBlock;
 
-    bool inWhileSave = InWhile;
-    bool inIfSave = InIf;
-    InIf = true;
-    InWhile = false;
+    bool inWhileSave = getInWhile();
+    bool inIfSave = getInIf();
+    setInIf( true);
+    setInWhile(false);
 
     // Save JoinBlock (from outer block)
     //  Replace JoinBlock with current joinBlock (fiBlock).
-    struct INST* savedJoin = JoinBlock;
-    JoinBlock = (INST*) fiBlock;
+    struct INST* savedJoin = getJoinBlock();
+    setJoinBlock((INST*) fiBlock);
 
     // Jump into if block <Check condition>
     ifBlock->name = getBlock();
     addInst( (INST*) ifBlock);
-    InstTail = ifBlock->head;
+    setInstTail(ifBlock->head);
 
     nextChar();
     relation(elseTarget); 
@@ -778,16 +790,16 @@ void ifStatement(){
     // Work on new Linked Inst for "Then" and "Else" block
     // Wrap back to LL when finish if statement;
     for(int i = 0; i < LICOUNT; i++){
-        LL[i] = LinkedInstruction[i];
-        LinkedInstruction[i]->next2 = newLinkedInst();
-        LLsave[i] = LinkedInstruction[i]->next2;
+        LL[i] = getLI(i);
+        getLI(i)->next2 = newLinkedInst();
+        LLsave[i] = getLI(i)->next2;
 
         LLsave[i]->next = newLinkedInst();
-        LinkedInstruction[i] = LLsave[i]->next;
+        setLI(i, LLsave[i]->next);
     }
 
     thenBlock->name = getBlock();
-    InstTail = thenBlock->head;
+    setInstTail(thenBlock->head);
 
     // ******************* Sub Value Table *******************
     InsertVTLayer();
@@ -801,12 +813,13 @@ void ifStatement(){
     struct Instruction* inst = newInstruction();
     inst->op = BRA;
     inst->a = fiTarget;
-    inst->InstNum = currInstNum++;
+    inst->InstNum = incCurrInstNum();
     addInst((INST*) inst);
 
     // ******************* Insert PHI FUnction *******************
     // ******************* Sub Value Table *******************
-    for(std::pair<std::string, Instruction*> i : ValueTable[ValueTable.size()-1]){
+    std::vector<std::unordered_map<std::string, Instruction*> > vt = getValueTable();
+    for(std::pair<std::string, Instruction*> i : vt[vt.size()-1]){
         joinTail = addPhiInst(joinTail, newOp(i.first, i.second), NULL);
     }
     // ******************* Sub Const Val *******************
@@ -834,7 +847,7 @@ void ifStatement(){
 
     // Jump into else block
     elseBlock->name = getBlock();
-    InstTail = elseBlock->head;
+    setInstTail(elseBlock->head);
     if(nextIs("else")){ // ELSE   ELSE   ELSE   ELSE   ELSE   ELSE   ELSE   ELSE   ELSE   
         // eat "else"
         skipNext(4);
@@ -842,7 +855,7 @@ void ifStatement(){
         //  change current Linked Instruction to be where else is.
         for(int i = 0; i < LICOUNT; i++){
             LLsave[i]->next2 = newLinkedInst();
-            LinkedInstruction[i] = LLsave[i]->next2;
+            setLI(i, LLsave[i]->next2);
         }
         statSequence();
     }
@@ -851,13 +864,14 @@ void ifStatement(){
     // return current Linked Instruction to next of end of "if" block, before "then" block
     for(int i = 0; i < LICOUNT; i++){
         LL[i]->next = newLinkedInst();
-        LinkedInstruction[i] = LL[i]->next;
+        setLI(i, LL[i]->next);
     }
 
 
     // ******************* Update Phi Function *******************
     struct Instruction* phiInst = (Instruction*) joinHead->next;
-    int idx = ValueTable.size()-1;
+    vt = getValueTable();
+    int idx = vt.size()-1;
     std::string idnt;
     Instruction* getVTSave;
     while(phiInst != NULL){     // Fill out existing Instruction
@@ -866,9 +880,9 @@ void ifStatement(){
             continue;
         }
         idnt = phiInst->a->name;
-        if(ValueTable[idx].find(idnt) != ValueTable[idx].end()){
-            phiInst->b = newOp(idnt, ValueTable[idx][idnt]);
-            ValueTable[idx].erase(idnt);
+        if(vt[idx].find(idnt) != vt[idx].end()){
+            phiInst->b = newOp(idnt, vt[idx][idnt]);
+            vt[idx].erase(idnt);
         }
         // else if(ConstVal[idx].find(idnt) != ConstVal[idx].end()){
         //     inst = newInstruction();
@@ -899,11 +913,12 @@ void ifStatement(){
                 
             // }
         }
-        phiInst->InstNum = currInstNum++;
+        phiInst->InstNum = incCurrInstNum();
         phiInst = (Instruction*) phiInst->next;
     }
     // ******************* Sub Value Table *******************
-    for(std::pair<std::string, Instruction*> i : ValueTable[ValueTable.size()-1]){
+     vt = getValueTable();
+    for(std::pair<std::string, Instruction*> i : vt[vt.size()-1]){
         getVTSave = getPrevVT(i.first);
         // if(getVTSave >= 0){
             joinTail = addPhiInst(joinTail, newOp(i.first, i.second), newOp(i.first, getVTSave));
@@ -919,7 +934,7 @@ void ifStatement(){
         //     joinTail = addPhiInst(joinTail, newOp(i.first, i.second), newOp(i.first, currInstNum++));
             
         // }
-        joinTail->InstNum = currInstNum++;
+        joinTail->InstNum = incCurrInstNum();
     }
     // ******************* Sub Const Val *******************
     // for(std::pair<std::string, int> i: ConstVal[ConstVal.size()-1]){
@@ -965,15 +980,15 @@ void ifStatement(){
     // Jump into fi block
     fiBlock->name = getBlock();
     endBlock->name = getBlock();
-    InstTail = (INST*) endBlock->head;
+    setInstTail((INST*) endBlock->head);
     // ******************* Sub Value Table *******************
     RemoveVTLayer();
 
-    InWhile = inWhileSave;
-    InIf = inIfSave;
+    setInWhile(inWhileSave);
+    setInIf(inIfSave);
     // ========== update current layer after removeal =============
     phiInst = (Instruction*) joinHead->next;
-    JoinBlock = savedJoin;
+    setJoinBlock(savedJoin);
     while(phiInst != NULL){
         if(phiInst->op != PHI){ 
             phiInst = (Instruction*) phiInst->next;
@@ -1002,22 +1017,22 @@ start new instruction for block inside while,
 *******************************************************/
 void whileStatement(){
     std::cout << "WHILE" << std::endl;
-    std::string* labels = getWhile();
+    std::vector<std::string> labels = getWhile();
     
     // Linked Instruction;
     LinkedInst* LL[LICOUNT];
 
     // Init instruction blocks;
-    struct InstBlock* whileBlock = newInstBlock(labels[0], currInstNum++);
-    struct InstBlock* doBlock = newInstBlock(labels[1], currInstNum++);
-    struct InstBlock* odBlock = newInstBlock(labels[2], currInstNum++);
-    struct InstBlock* endBlock = newInstBlock(labels[3], currInstNum++);
+    struct InstBlock* whileBlock = newInstBlock(labels[0], incCurrInstNum());
+    struct InstBlock* doBlock = newInstBlock(labels[1], incCurrInstNum());
+    struct InstBlock* odBlock = newInstBlock(labels[2], incCurrInstNum());
+    struct InstBlock* endBlock = newInstBlock(labels[3], incCurrInstNum());
 
     struct Opr* whileTarget = newOp(labels[2], ((Instruction*) odBlock->head));
     struct Opr* odTarget = newOp(labels[3], ((Instruction*) endBlock->head));
 
-    struct INST* savedJoin = JoinBlock;
-    JoinBlock = (INST*) odBlock;
+    struct INST* savedJoin = getJoinBlock();
+    setJoinBlock( (INST*) odBlock);
     odBlock->next = (INST*) whileBlock;
     whileBlock->next = (INST*) doBlock;
     whileBlock->next2 = (INST*) endBlock;
@@ -1033,22 +1048,22 @@ void whileStatement(){
     // =========================================================
     // ================== INDICATE WHILE STARTED ===============
     // =========================================================
-    bool inWhileSave = InWhile;
-    bool inIfSave = InIf;
+    bool inWhileSave = getInWhile();
+    bool inIfSave = getInIf();
 
-    struct Instruction* whileConditionSave = WhileCondition;
-    struct Instruction* whileDoSave = WhileDo;
-    struct Instruction* whileJoinSave = WhileJoin;
+    struct Instruction* whileConditionSave = getWHileCondiction();
+    struct Instruction* whileDoSave = getWhileDo();
+    struct Instruction* whileJoinSave = getWhileJoin();
 
-    InWhile = true;
-    InIf = false;
-    WhileCondition = (Instruction*) whileBlock->head;
-    WhileDo        = (Instruction*) doBlock->head;
-    WhileJoin      = (Instruction*) odBlock->head;
+    setInWhile( true);
+    setInIf(false);
+    setWhileCondiction((Instruction*) whileBlock->head);
+    setWhileDo( (Instruction*) doBlock->head);
+    setWhileJoin((Instruction*) odBlock->head);
 
 
     // Jump into while block  <Check condition>
-    InstTail = whileBlock->head;
+    setInstTail( whileBlock->head);
     whileBlock->name = getBlock();
 
     relation(odTarget);
@@ -1064,13 +1079,13 @@ void whileStatement(){
 
     // Jump into do block
     doBlock->name = getBlock();
-    InstTail = doBlock->head;
+    setInstTail( doBlock->head);
 
     // Move to correct Linked Instruction
     for(int i = 0; i < LICOUNT; i++){
-        LL[i] = LinkedInstruction[i];
-        LinkedInstruction[i]->next2 = newLinkedInst();
-        LinkedInstruction[i] = LinkedInstruction[i]->next2;
+        LL[i] = getLI(i);
+        getLI(i)->next2 = newLinkedInst();
+        setLI(i, getLI(i)->next2);
     }
 
     statSequence();
@@ -1085,18 +1100,18 @@ void whileStatement(){
     struct Instruction* inst = newInstruction();
     inst->op = BRA;
     inst->a = whileTarget;
-    inst->InstNum = currInstNum++;
+    inst->InstNum = incCurrInstNum();
     addInst((INST*) inst);
 
 
     for(int i = 0; i < LICOUNT; i++){
         // LL[i]->next = newLinkedInst();
-        LinkedInstruction[i] = LL[i];
+        setLI(i, LL[i]);
     }
 
     // Jump into od block
     endBlock->name = getBlock();
-    InstTail = endBlock->head;
+    setInstTail(endBlock->head);
     // ******************* Sub Value Table *******************
     // ******************* Insert PHI FUnction *******************
     // for(std::pair<std::string, int> i : ValueTable[ValueTable.size()-1]){
@@ -1107,12 +1122,12 @@ void whileStatement(){
     // Exit this while loop;
     struct Instruction* phiInst = (Instruction*) odBlock->head->next;
     std::string idt;
-    WhileJoin = whileJoinSave;
-    InWhile = inWhileSave;
-    InIf = inIfSave;
-    WhileCondition = whileConditionSave;
-    WhileDo = whileDoSave;
-    JoinBlock = savedJoin;
+    setWhileJoin(whileJoinSave);
+    setInWhile(inWhileSave);
+    setInIf(inIfSave);
+    setWhileCondiction( whileConditionSave);
+    setWhileDo( whileDoSave);
+    setJoinBlock( savedJoin);
     while(phiInst != NULL){
         if(phiInst->op != PHI){
             phiInst = (Instruction*) phiInst->next;
@@ -1131,7 +1146,7 @@ void whileStatement(){
 void returnStatement(){ // only call when expression is guaranteed
     std::cout << "RETURN STATEMENT" << std::endl;
     std::pair<std::string, Instruction*> expr = expression();
-    funcHeadInst->b = newOp(expr.first, expr.second);
+    getFuncHeadInst()->b = newOp(expr.first, expr.second);
     // std::cout << "Return *" <<expr.first<< "*" << expr.second->InstNum<<"*"<< std::endl;
     // sleep(3);
 
@@ -1161,7 +1176,7 @@ void statement(){
         nextChar();
         // statement only called by statSequence,
         //  statement end with ';' or end with statSequence.
-        if(CURR != ';' && !endStatSequence()){
+        if(getCurr() != ';' && !endStatSequence()){
             returnStatement();
         }
     }
@@ -1175,7 +1190,7 @@ void statSequence(){
     std::cout << "STATSEQUENCE" << std::endl;
     statement();
     nextChar();
-    while(CURR == ';'){
+    while(getCurr() == ';'){
         next();
         nextChar();
         if(endStatSequence()){
@@ -1193,13 +1208,13 @@ void varDecl(){
     declareVar(ident());
 
     nextChar();
-    while(CURR == ','){
+    while(getCurr() == ','){
         next();
         declareVar(ident());
         nextChar();
     }
     nextChar();
-    if(CURR != ';'){
+    if(getCurr() != ';'){
         throw std::invalid_argument("VarDecl expecting \";\" after indent(s)");
     }
     next();
@@ -1210,43 +1225,49 @@ void funcDecl(){
     std::string functionName = ident();
     std::vector<std::string> params = formalParam(); 
 
-    std::vector<std::unordered_map<std::string, Instruction*> > savedVT = ValueTable;
+    std::vector<std::unordered_map<std::string, Instruction*> > savedVT = getValueTable();
     std::vector<std::unordered_map<std::string, Instruction*> > newVT;
-    ValueTable = newVT;
+    setValueTable(newVT);
     InsertVTLayer();
 
-    INST* savedInstTail = InstTail;
-    InstTail = declareFunction(functionName, getBlock(), params);
-    ((Instruction*) InstTail)->b = newOp("return", NULL);
-    funcHeadInst = (Instruction*) InstTail;
+    INST* savedInstTail = getInstTail();
+    std::pair<INST*, int> declFunReturn = declareFunction(functionName, getBlock(), params);
+    setInstTail(declFunReturn.first);
+    ((Instruction*) getInstTail())->b = newOp("return", NULL);
+    setFuncHeadInst( (Instruction*) getInstTail());
     nextChar();
-    if(CURR != ';'){
+    if(getCurr() != ';'){
         throw std::invalid_argument("FuncDecl expecting \";\" after formalParam");
     }
     next();
     funcBody();
     nextChar();
-    if(CURR != ';'){
+    if(getCurr() != ';'){
         throw std::invalid_argument("FuncDecl expecting \";\" after funcBody");
     }
     next();
-    InstTail = savedInstTail;
-    ValueTable = savedVT;
+    Instruction* inst = newInstruction();
+    inst->InstNum = incCurrInstNum();
+    inst->a = newOp("-", newInstInt(declFunReturn.second));
+    inst->op = RET;
+    addInst((INST*) inst);
+    setInstTail( savedInstTail);
+    setValueTable(savedVT);
 }
 
 std::vector<std::string> formalParam(){
     std::cout << "FORMAL PARAM" << std::endl;
     std::vector<std::string> params;
     nextChar();
-    if(CURR != '('){
+    if(getCurr() != '('){
         throw std::invalid_argument("formalParam expecting \"(\" before ident");
     }
     next();
     nextChar();
-    if(CURR != ')'){
+    if(getCurr() != ')'){
         params.push_back(ident());
         nextChar();
-        while(CURR == ','){
+        while(getCurr() == ','){
             next();
             params.push_back(ident());
             nextChar();
@@ -1266,15 +1287,15 @@ void funcBody(){
         nextChar();
     }
     // nextChar();
-    if(CURR != '{'){
+    if(getCurr() != '{'){
         throw std::invalid_argument("FuncBody expecting \"{\" before statSequence");
     }
     next();
     nextChar();
-    if(CURR != '}'){
+    if(getCurr() != '}'){
         statSequence();
     }
-    if(CURR != '}'){
+    if(getCurr() != '}'){
         throw std::invalid_argument("FuncBody expecting \"}\" after statSequence");
     }
     next();
@@ -1284,14 +1305,14 @@ void computation(){
     std::cout << "COMPUTATION" << std::endl;
     nextChar();
 
-    if(CURR == -1) return;
+    if(getCurr() == -1) return;
     std::string s = ident();
     if(s.compare("main") != 0){
         throw std::invalid_argument("Computation expecting \"main\" at the top of the file");
     }
     
     nextChar();
-    while(CURR != '{'){
+    while(getCurr() != '{'){
         if(nextIs("var")){
             skipNext(3);
             varDecl();
@@ -1320,16 +1341,21 @@ void computation(){
     next(); // eat '{'
     statSequence();
     nextChar();
-    if(CURR != '}'){
-        std::cout << CURR << std::endl;
+    if(getCurr() != '}'){
+        std::cout << getCurr() << std::endl;
         throw std::invalid_argument("Computation expecting \"}\" to end statSequence");
     }
     next(); // eat '}'
     nextChar();
-    if(CURR != '.'){
+    if(getCurr() != '.'){
         throw std::invalid_argument("Computation expecting \".\" to end computation");
     }
     next(); // eat '.', which is end of computation;
+    Instruction* inst = newInstruction();
+    inst->InstNum = incCurrInstNum();
+    inst->a = newOp("#", newInstInt(0));
+    inst->op = RET;
+    // addInst((INST*) inst);
     addCommentInst("END.");
 }
 

@@ -1,14 +1,8 @@
-#ifndef HANDLEREADFILE_H
-#define HANDLEREADFILE_H
+#pragma once
 
 #include <string>
 #include <iostream>
 #include <fstream>
-
-std::ifstream ifile;
-std::string line;
-int IDX;
-char CURR;
 
 int openReadFile(std::string fileName);
 void closeReadFile();
@@ -21,9 +15,5 @@ bool isSpace(char c);
 bool nextIs(std::string s);
 
 
-bool endStatSequence(){
-    nextChar();
-    return (CURR == '}' || nextIs("od") || nextIs("fi") || nextIs("else"));
-}
-
-#endif
+bool endStatSequence();
+char getCurr();

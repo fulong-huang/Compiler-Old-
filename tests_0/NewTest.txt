@@ -1,0 +1,12 @@
+main var a,b,c;{
+  let a<- 2;
+  let c<- call InputNum();
+  let b<- a+2;
+  while a<3 do
+  while a<3 do
+    let a<-a+c;
+  od;
+    let a<-a+c;
+  od;
+}.
+

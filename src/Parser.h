@@ -1,15 +1,16 @@
+#pragma once
 #include <iostream>
 #include <string>
 
-#include "HandleFiles/HandleReadFile.cpp"
-#include "HandleFiles/HandleWriteFile.cpp"
-#include "DrawGraph.cpp"
-#include "Structures.cpp"
+#include "HandleFiles/HandleReadFile.h"
+#include "HandleFiles/HandleWriteFile.h"
+#include "DrawGraph.h"
+#include "Function.h"
+#include "HELP.h"
+#include "Instruction.h" 
+#include "Structures.h"
 // #include "InstValue.cpp"
-#include "HELP.cpp"
-#include "Instruction.cpp" 
-#include "ValueTable.cpp"
-#include "Function.cpp"
+#include "ValueTable.h"
 
 
 Ops relOp();

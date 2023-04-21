@@ -1,8 +1,8 @@
+#pragma once
 #include <iostream>
 #include <string>
 #include <fstream>
 
-std::ofstream ofile;
 int openWriteFile(std::string fileName);
 void closeWriteFile(std::string name);
 

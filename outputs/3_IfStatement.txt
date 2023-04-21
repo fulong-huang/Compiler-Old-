@@ -1,31 +1,29 @@
 	
 digraph G { 
 
-BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-9: const 2 |-8: const 10 |-7: const 9 |-6: const 8 |-5: const 7 |-4: const 6 |-3: const 5 |0: const 0 |1: const 1 |\<MAIN\>|2: read()|3: read()|4: read()|5: read()|6: read()|7: read()|8: add  e(6) d(5)|\<CSE: add e(6) d(5)\>}"];
-BB1[shape=record, label="<b>BB1| {10: \<IF_0\>|\<Comparing two constant: 1, 2\>}"];
-BB2[shape=record, label="<b>BB2| {11: \<THEN_0\>|\<CSE: add e(6) d(5)\>|16: addi  a(2) #1|\<CSE: addi a(2) #(1)\>}"];
-BB3[shape=record, label="<b>BB3| {18: \<IF_1\>|23: cmp  a(2) b(16)|24: bge (23) ELSE_1(20)}"];
-BB4[shape=record, label="<b>BB4| {19: \<THEN_1\>|\<CSE: add e(6) d(5)\>|\<CSE: addi a(2) #(1)\>|\<CSE: addi a(2) #(1)\>|28: addi  a(2) #5|\<CSE: addi a(2) #(5)\>|30: bra  JOIN_IF_1(21)}"];
-BB5[shape=record, label="<b>BB5| {20: \<ELSE_1\>|\<CSE: add e(6) d(5)\>|\<CSE: addi a(2) #(1)\>|\<CSE: addi a(2) #(1)\>|34: addi  a(2) #2|\<CSE: addi a(2) #(2)\>}"];
-BB6[shape=record, label="<b>BB6| {21: \<JOIN_IF_1\>|36: phi  b(28) b(34)|37: phi  c(28) c(34)}"];
-BB7[shape=record, label="<b>BB7| {22: \<END_IF_1\>|38: bra  JOIN_IF_0(13)}"];
-BB8[shape=record, label="<b>BB8| {12: \<ELSE_0\>|\<CSE: add e(6) d(5)\>|\<CSE: add e(6) d(5)\>|41: addi  a(2) #1|\<CSE: addi a(2) #(1)\>|43: addi  a(2) #2|\<CSE: addi a(2) #(2)\>}"];
-BB9[shape=record, label="<b>BB9| {13: \<JOIN_IF_0\>|45: phi  c(37) c(43)|46: phi  b(36) b(43)}"];
-BB10[shape=record, label="<b>BB10| {14: \<END_IF_0\>|\<CSE: add e(6) d(5)\>|48: addi  a(2) #1|\<CSE: addi a(2) #(1)\>|50: addi  a(2) #2|\<CSE: addi a(2) #(2)\>|52: add  f(8) c(50)|53: write 52|54: write 50|55: write 50|\<END.\>}"];
+BB0 [shape=record, label="<b>BB0 | {\<CONST\>|-5: const 5 |-4: const 3 |-3: const 2 |0: const 0 |1: const 1 |\<MAIN\>|2: read()|3: read()|4: add  a(2) b(3)}"];
+BB1[shape=record, label="<b>BB1| {5: \<IF_0\>|\<Comparing two constant: 2, 5\>}"];
+BB2[shape=record, label="<b>BB2| {6: \<THEN_0\>|\<CSE: add a(2) b(3)\>}"];
+BB3[shape=record, label="<b>BB3| {13: \<JOIN_WHILE_0\>|18: phi  a(4) a(17)}"];
+BB4[shape=record, label="<b>BB4| {11: \<WHILE_0\>|15: cmp  a(18) b(3)|16: bge (15) END_WHILE_0(14)}"];
+BB5[shape=record, label="<b>BB5| {12: \<DO_0\>|17: addi  a(18) #1|19: bra  JOIN_WHILE_0(13)}"];
+BB6[shape=record, label="<b>BB6| {14: \<END_WHILE_0\>|20: bra  JOIN_IF_0(8)}"];
+BB7[shape=record, label="<b>BB7| {7: \<ELSE_0\>|21: addi  a(2) #3}"];
+BB8[shape=record, label="<b>BB8| {8: \<JOIN_IF_0\>|22: phi  a(18) a(2)|23: phi  c(21) c(-3)}"];
+BB9[shape=record, label="<b>BB9| {9: \<END_IF_0\>|\<END.\>}"];
 
 
 BB0:s -> BB1:n [label="fall-through(cond)"];
 BB1:s -> BB2:n [label="fall-through"];
-BB1:s -> BB8:n [label="branch"];
-BB2:s -> BB3:n [label="fall-through(cond)"];
-BB3:s -> BB4:n [label="fall-through"];
-BB3:s -> BB5:n [label="branch"];
-BB4:s -> BB6:n [label="branch"];
-BB5:s -> BB6:n [label="fall-through"];
-BB6:s -> BB7:n [label="fall-thorough(out)"];
-BB7:s -> BB9:n [label="branch"];
-BB8:s -> BB9:n [label="fall-through"];
-BB9:s -> BB10:n [label="fall-thorough(out)"];
+BB1:s -> BB7:n [label="branch"];
+BB2:s -> BB3:n [label="fall-thorough"];
+BB3:s -> BB4:n [label="fall-thorough"];
+BB4:s -> BB5:n [label="fall-thorough",color=green];
+BB5:s -> BB3:n [label="branch",color=red];
+BB4:s -> BB6:n [label="branch",color=blue];
+BB6:s -> BB8:n [label="branch"];
+BB7:s -> BB8:n [label="fall-through"];
+BB8:s -> BB9:n [label="fall-thorough(out)"];
 
 	{rank=same; BB0;}
 }

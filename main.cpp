@@ -5,9 +5,9 @@
 #include <unistd.h>
 #include <vector>
 
-#include "includes/HandleFiles/HandleReadFile.cpp"
-#include "includes/HandleFiles/HandleWriteFile.cpp"
-#include "includes/Parser.cpp"
+#include "src/HandleFiles/HandleReadFile.h"
+#include "src/HandleFiles/HandleWriteFile.h"
+#include "src/Parser.h"
 int main()
 {
     char thisPath[256];
@@ -40,18 +40,18 @@ int main()
                     InitFunction();
                     
                     nextChar();
-                    if(CURR == '-') {
+                    if(getCurr() == '-') {
                         next();
                         running = false;
                     }
-                    if(CURR != '+'){
+                    if(getCurr() != '+'){
                     // --- PROGRAM START ---
                         computation();
                         std::cout << "END COMPUTATION" << std::endl;
                         // Also loop through functions' instruction
-                        eliminating = true;
-                        while(eliminating){
-                            eliminating = false;
+                        setEliminating(true);
+                        while(getEliminating()){
+                            setEliminating(false);
                             CommonSubElim();
                         }
                         std::cout << "End Common Subexpression Elimination" << std::endl;
@@ -71,17 +71,18 @@ int main()
                 // std::cout <<'~' << std::endl;
                 // put( "---------- Printing Instructions ----------\n");
                 std::string tail;
-                for(auto func : FunctionList){
+                for(auto func : getFunList()){
                     PrintInst((INST*) func.second.first);
                     tail += func.second.first->name+";";
                 }
-                graph += "\nBB0 [shape=record, label=\"<b>BB0 | {\\<CONST\\>";
+                addToGraph("\nBB0 [shape=record, label=\"<b>BB0 | {\\<CONST\\>");
 
-                PrintInst(InstHead);
-                if(graph[graph.size()-1] != '\n'){
-                    graph += "}\"];\n";
+                PrintInst(getInstHead());
+                std::string g = getGraph();
+                if(g[g.size()-1] != '\n'){
+                    addToGraph("}\"];\n");
                 }
-                put("\n"+graph+"\n\n"+graphConnection);
+                put("\n"+getGraph()+"\n\n"+getGraphConnection());
                 put("{rank=same; BB0;"+tail + "}\n}\n\n");
                 // put("{rank=same; BB0;");
 
@@ -105,6 +106,13 @@ int main()
                 closeWriteFile(ent->d_name);
                 closeReadFile();
             }
+            
+            // *** FREE STUFFS ***
+            DestroyInstruction();
+            DestroyVT(); 
+            // InitHelp();
+            // InitGraph();
+            DestroyFunction();
 
 
         }

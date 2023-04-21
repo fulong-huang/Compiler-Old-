@@ -1,5 +1,47 @@
 #include "ValueTable.h"
 
+/**
+ * Save the instruction number of the value givin name stored.
+ * ValueTable[ VarName ] = InstNumber of newest version 
+ */
+
+// ValueTable:      <ident, instNumber>
+//  var x, y; (inst 25) x = Call func(); (inst 26) y = Call func();
+// x and y will be stored in ValueTable, ValueTable = {[x:25], [y:26]}
+//  var z; z = x+y;                      ValueTable = {[x:25], [y:26], [z:27]}      1 instruction created
+std::vector<std::unordered_map<std::string, Instruction*> > ValueTable;
+
+// ConstVal:        <ident, storedValue>
+//  var x, y; x = 5; y = 3;
+// x and y will be stored in ConstVal, ConstVal = {[x:5], [y:3]}
+//  var z; z = x+y;                    ConstVal = {[x:5], [y:3], [z:8]}             0 instruction created
+// std::vector<std::unordered_map<std::string, int> > ConstVal; // store instNum of constant;
+
+
+std::unordered_map<int, Instruction*> ConstTable;
+
+int currConstNum;
+
+bool InWhile, InIf;
+struct Instruction* WhileJoin;
+
+// *********** FUNCITONS ***********//
+
+struct Instruction* getWhileJoin(){return WhileJoin;}
+void setWhileJoin(struct Instruction* newWhileJoin){WhileJoin = newWhileJoin;}
+
+void setValueTable(std::vector<std::unordered_map<std::string, Instruction*> > newVT){
+    ValueTable = newVT;
+}
+std::vector<std::unordered_map<std::string, Instruction*> > getValueTable(){
+    return ValueTable;
+}
+
+bool getInWhile(){ return InWhile; }
+bool getInIf(){ return InIf;}
+void setInWhile(bool b){InWhile = b;}
+void setInIf(bool b){InIf = b;}
+
 
 void declareVar(std::string ident){
     struct Instruction* intInst = newInstInt(-1);
@@ -21,7 +63,7 @@ void insertVT(std::string ident, Instruction* inst){
         // if it's a instruction, shoudl be ALWAYS TRUE;
         //      Everything inserted should be variable
         // if(vt.first){ 
-        Instruction* ist = (Instruction*)((InstBlock*) JoinBlock)->head;
+        Instruction* ist = (Instruction*)((InstBlock*) getJoinBlock())->head;
         bool notFound = true;
         while(ist != NULL){
             if(ist->op == PHI && ist->a->name.compare(ident) == 0){
@@ -34,7 +76,7 @@ void insertVT(std::string ident, Instruction* inst){
         if(notFound){
             a = newOp(ident, vt);
             WhileJoin = addPhiInst(WhileJoin, a, b);
-            WhileJoin->InstNum = currInstNum;
+            WhileJoin->InstNum = getCurrInstNum();
             // Update Value Table
             // InWhile = false;
             // insertVT(ident, WhileJoin);
@@ -42,7 +84,7 @@ void insertVT(std::string ident, Instruction* inst){
             updateInst(b, WhileJoin);
             // updateInst(a, currInstNum);
             // updateInst(b, currInstNum);
-            currInstNum++;
+            incCurrInstNum();
             // InWhile = true;
         }
         // }
@@ -96,8 +138,8 @@ Instruction* createConst(int val){
     inst->InstNum = currConstNum;
     inst->a = newOp("#", newInstInt(val));
     inst->op = CONST;
-    inst->next = InstHead;
-    InstHead = (INST*) inst;
+    inst->next = getInstHead();
+    setInstHead((INST*) inst);
     currConstNum--;
     return intInst;
 }
@@ -221,12 +263,24 @@ void InitVT(){
     ConstTable.clear();
     InsertVTLayer();
     InWhile = false;
-    WhileCondition = NULL;
-    WhileDo = NULL;
+    InitializeInstruction();
     WhileJoin = NULL;
     currConstNum = 1;
     createConst(1);
     createConst(0);
     currConstNum = -3;
     
+}
+void DestroyVT(){
+    for(int i = 0; i < ValueTable.size(); i++){
+        for(auto kv : ValueTable[i]){
+            if(kv.second != NULL){
+                delete kv.second;
+            }
+        }
+    }
+    for(auto kv : ConstTable){
+        if(kv.second != NULL) delete kv.second;
+    }
+    if(WhileJoin != NULL) delete WhileJoin;
 }

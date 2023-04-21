@@ -1,34 +1,30 @@
-main  var a,b,s,d;
-function thisfunc(fistx, firsty); var a,b,s,d;{
-    let y <- fistx+456;
+main  var a,b,c,d;
+function thisFunc(x, y); var a,b,c,d,z;{
+    call OutputNum(y);
+    let y <- x + 456;
+    call OutputNum(y);
     let a <- call InputNum();
     let b <- call InputNum();
     let c <- call InputNum();
-    if a==b then
-        let b <- 3;
-        let s <- b+y;
-        return;
+    if a == b then
+        let c <- b + y;
+        let b <- c;
     else
-        let s <- 2;
+        let c <- x + 2;
     fi;
-    let y <- 23 + 5;
     let z <- a - b;
     return z;
 };
 {
-    let a <- 0;
-    call OutputNum(2);
-    let b <- 2;
-    let b <- call InputNum();
-    let b <- call thisfunc(2+3*2, 8/2);
-
-
-    let z <- a + b;
-    let z <- a + b;
-	call OutputNum(a);
-	call OutputNum(b);
-	call OutputNum(c);
-    let a <- call thisfunc(a*2, b);
-    call thisfunc(z, a);
-
+    call OutputNum(z);
+    let b <- a * 15;
+    let c <- b + 1;
+    let a <- call thisFunc(b, c);
+    let b <- a * 2;
+    let c <- a * 2;
+    while a > 0 do
+        let b <- a + b * c;
+        let a <- b;
+    od;
+    call OutputNum(a);
 }.

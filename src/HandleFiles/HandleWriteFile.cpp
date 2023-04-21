@@ -1,6 +1,6 @@
-#pragma once
 #include "HandleWriteFile.h"
 
+std::ofstream ofile;
 
 int openWriteFile(std::string fileName){
     int RETURN_VAL = 0;

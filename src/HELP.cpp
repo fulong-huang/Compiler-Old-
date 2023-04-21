@@ -1,6 +1,4 @@
-#pragma once
-#include <iostream>
-#include <string>
+#include "HELP.h"
 
 int ifNum, doNum, mainNum, blockNum;
 
@@ -10,8 +8,8 @@ bool VTcmp(std::pair<std::string, Instruction*> a, std::pair<std::string, Instru
 bool CTcmp(std::pair<int, int> a, std::pair<int, int> b) 
 { return a.second < b.second; }
 
-std::string* getIf(){
-    std::string* result = new std::string[5];
+std::vector<std::string> getIf(){
+    std::vector<std::string> result(5);
     result[0] = "IF_" + std::to_string(ifNum);
     result[1] = "THEN_" + std::to_string(ifNum);
     result[2] = "ELSE_" + std::to_string(ifNum);
@@ -20,8 +18,8 @@ std::string* getIf(){
     ifNum++;
     return result;
 }
-std::string* getWhile(){
-    std::string* result = new std::string[4];
+std::vector<std::string> getWhile(){
+    std::vector<std::string> result(4);
     result[0] = "WHILE_" + std::to_string(doNum);
     result[1] = "DO_" + std::to_string(doNum);
     result[2] = "JOIN_WHILE_" + std::to_string(doNum);

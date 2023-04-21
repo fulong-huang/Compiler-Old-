@@ -1,5 +1,14 @@
-#pragma once
 #include "HandleReadFile.h"
+
+
+std::ifstream ifile;
+std::string line;
+int IDX;
+char CURR;
+
+char getCurr(){
+    return CURR;
+}
 
 int openReadFile(std::string fileName){
     int RETURN_VAL = 0;
@@ -95,4 +104,7 @@ bool nextIs(std::string s){
     return false;
 }
 
-
+bool endStatSequence(){
+    nextChar();
+    return (CURR == '}' || nextIs("od") || nextIs("fi") || nextIs("else"));
+}
