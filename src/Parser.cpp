@@ -1318,9 +1318,8 @@ void funcDecl(){
     inst->op = RET;
     addInst((INST*) inst);
     setInstTail( savedInstTail);
-    PrintTable(); //**********
+    DeleteCurrVT(); //**********
     setValueTable(savedVT);
-    DestroyTable(newVT);
     // PrintTable(); //**********
 }
 

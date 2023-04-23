@@ -303,34 +303,21 @@ void InitVT(){
     currConstNum = -3;
     
 }
-void DestroyTable(std::vector<std::unordered_map<std::string, Instruction*> > table){
-    // std::cout << "destroy Table: " << std::endl;
-    // std::cin.ignore();
-    for(int i = 0; i < table.size(); i++){
-        for(auto kv : table[i]){
-            if(kv.second != nullptr){
-                if(kv.second->TYPE == INT){
-                    delete (InstInt*) kv.second;
-                }
-                // else
-                //     delete kv.second;
-            }
-        }
-    }
-}
+
 void DestroyVT(){
     std::cout << "DESTROY VT 1" << std::endl;
-    for(int i = 0; i < ValueTable.size(); i++){
-        for(auto kv : ValueTable[i]){
-            if(kv.second != nullptr){
-                if(kv.second->TYPE == INT){
-                    delete (InstInt*) kv.second;
-                }
-                // else
-                //     delete kv.second;
-            }
-        }
-    }
+    DeleteCurrVT();
+    // for(int i = 0; i < ValueTable.size(); i++){
+    //     for(auto kv : ValueTable[i]){
+    //         if(kv.second != nullptr){
+    //             if(kv.second->TYPE == INT){
+    //                 delete (InstInt*) kv.second;
+    //             }
+    //             // else
+    //             //     delete kv.second;
+    //         }
+    //     }
+    // }
     std::cout << "DESTROY VT 2" << std::endl;
     for(auto kv : ConstTable){
         if(kv.second != nullptr){
@@ -342,13 +329,10 @@ void DestroyVT(){
     // if(WhileJoin != NULL) delete WhileJoin;
 }
 
-void PrintTable(){
-    std::cout << "Printing table with size: "<< ValueTable.size() << std::endl;
+void DeleteCurrVT(){
     for(int i = 0; i < ValueTable.size(); i++){
         for(auto kv : ValueTable[i]){
-            std::cout << "ELEMENT: " << kv.first << std::endl;
             if(kv.second != nullptr){
-                std::cout << "IS NOT NULL" << std::endl;
                 if(kv.second->TYPE == INT){
                     delete (InstInt*) kv.second;
                 }
@@ -357,8 +341,6 @@ void PrintTable(){
             }
         }
     }
-    std::cout << "PRINTED TABLE" << std::endl;
-    std::cin.ignore();
 }
 
 

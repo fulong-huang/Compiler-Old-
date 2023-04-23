@@ -122,6 +122,8 @@ enum LIidx{
 /*
     Type cast instruction and instBlock into INST
 */
+struct Opr;
+
 struct INST
 {
     InstType TYPE;
@@ -129,7 +131,6 @@ struct INST
 
     ~INST();
 };
-struct Opr;
 // Single instruction
 struct Instruction
 {
