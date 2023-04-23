@@ -54,8 +54,8 @@ void insertVT(std::string ident, Instruction* inst){
         // During while need to update phi fuction whenever variable is used.
         //  However, it will not be done during while,
         //  it need to update with phi function of "if loop"
-        struct Opr* a;
-        struct Opr* b = newOp(ident, inst);
+        struct std::shared_ptr<Opr> a;
+        struct std::shared_ptr<Opr> b = newOp(ident, inst);
 
         // ============== Update all instructions ================
         // update phi function;
@@ -109,6 +109,9 @@ void insertVT(std::string ident, Instruction* inst){
         // }
         // return;
     }
+    if(ValueTable[idx].find(ident) != ValueTable[idx].end() && ValueTable[idx][ident]->TYPE == INT){
+        delete (InstInt*) ValueTable[idx][ident];
+    }
     ValueTable[idx][ident] = inst;
     // if(ConstVal[idx].find(ident) != ConstVal[idx].end()){
     //     ConstVal[idx].erase(ident);
@@ -124,13 +127,20 @@ void insertCT(std::string ident, int val){
     }
 }
 void insertCT(std::string ident, Instruction* inst){
-    // createConst(((InstInt*)inst)->num);
-    insertVT(ident, inst);
+    if(inst->TYPE == INT){
+        insertCT(ident, ((InstInt*)inst)->num);
+    }
+    else{
+        insertVT(ident, inst);
+    }
 }
 
 // save constant into ConstTable
 Instruction* createConst(int val){
-    if(ConstTable.find(val) != ConstTable.end()) return ConstTable[val];
+
+    if(ConstTable.find(val) != ConstTable.end()){
+        return newInstInt(((InstInt*)ConstTable[val])->num);
+    }
 
     struct Instruction* intInst = newInstInt(currConstNum);
     ConstTable[val] = intInst;
@@ -141,7 +151,9 @@ Instruction* createConst(int val){
     inst->next = getInstHead();
     setInstHead((INST*) inst);
     currConstNum--;
-    return intInst;
+
+
+    return newInstInt(((InstInt*)ConstTable[val])->num);
 }
 
 
@@ -150,6 +162,9 @@ Instruction* getVT(std::string ident){
     // find variable
     for(int i = lastIdx; i >= 0; i--){
         if(ValueTable[i].find(ident) != ValueTable[i].end()){
+            if(ValueTable[i][ident]->TYPE == INT){
+                return newInstInt(((InstInt*)ValueTable[i][ident])->num);
+            }
             return ValueTable[i][ident];
         }
     }
@@ -171,6 +186,9 @@ Instruction* getPrevVT(std::string ident){
     int lastIdx = ValueTable.size()-2;
     for(int i = lastIdx; i >= 0; i--){
         if(ValueTable[i].find(ident) != ValueTable[i].end()){
+            if(ValueTable[i][ident]->TYPE == INT){
+                return newInstInt(((InstInt*)ValueTable[i][ident])->num);
+            }
             return ValueTable[i][ident];
         }
     }
@@ -245,7 +263,12 @@ void InsertVTLayer(){
     // ConstVal.push_back(std::unordered_map<std::string, int>());
 }
 void RemoveVTLayer(){
-    // int idx = ValueTable.size()-1;
+    int idx = ValueTable.size()-1;
+    for(auto kv : ValueTable[idx]){
+        if(kv.second->TYPE == INT){
+            delete (InstInt*) kv.second;
+        }
+    }
     // ValueTable.erase(ValueTable.begin()+idx);
     // ConstVal.erase(ConstVal.begin()+idx);
     ValueTable.pop_back();
@@ -253,6 +276,11 @@ void RemoveVTLayer(){
 }
 void ClearLastLayer(){
     int idx = ValueTable.size()-1;
+    for(auto kv : ValueTable[idx]){
+        if(kv.second->TYPE == INT){
+            delete (InstInt*) kv.second;
+        }
+    }
     ValueTable[idx].clear();
     // ConstVal[idx].clear();
 }
@@ -266,21 +294,71 @@ void InitVT(){
     InitializeInstruction();
     WhileJoin = NULL;
     currConstNum = 1;
-    createConst(1);
-    createConst(0);
+
+    Instruction* i;
+    i = createConst(1);
+    delete (InstInt*) i;
+    i = createConst(0);
+    delete (InstInt*) i;
     currConstNum = -3;
     
 }
-void DestroyVT(){
-    for(int i = 0; i < ValueTable.size(); i++){
-        for(auto kv : ValueTable[i]){
-            if(kv.second != NULL){
-                delete kv.second;
+void DestroyTable(std::vector<std::unordered_map<std::string, Instruction*> > table){
+    // std::cout << "destroy Table: " << std::endl;
+    // std::cin.ignore();
+    for(int i = 0; i < table.size(); i++){
+        for(auto kv : table[i]){
+            if(kv.second != nullptr){
+                if(kv.second->TYPE == INT){
+                    delete (InstInt*) kv.second;
+                }
+                // else
+                //     delete kv.second;
             }
         }
     }
-    for(auto kv : ConstTable){
-        if(kv.second != NULL) delete kv.second;
-    }
-    if(WhileJoin != NULL) delete WhileJoin;
 }
+void DestroyVT(){
+    std::cout << "DESTROY VT 1" << std::endl;
+    for(int i = 0; i < ValueTable.size(); i++){
+        for(auto kv : ValueTable[i]){
+            if(kv.second != nullptr){
+                if(kv.second->TYPE == INT){
+                    delete (InstInt*) kv.second;
+                }
+                // else
+                //     delete kv.second;
+            }
+        }
+    }
+    std::cout << "DESTROY VT 2" << std::endl;
+    for(auto kv : ConstTable){
+        if(kv.second != nullptr){
+            if(kv.second->TYPE == INT){ // should aywas be true
+                delete (InstInt*) kv.second;
+            }
+        }
+    }
+    // if(WhileJoin != NULL) delete WhileJoin;
+}
+
+void PrintTable(){
+    std::cout << "Printing table with size: "<< ValueTable.size() << std::endl;
+    for(int i = 0; i < ValueTable.size(); i++){
+        for(auto kv : ValueTable[i]){
+            std::cout << "ELEMENT: " << kv.first << std::endl;
+            if(kv.second != nullptr){
+                std::cout << "IS NOT NULL" << std::endl;
+                if(kv.second->TYPE == INT){
+                    delete (InstInt*) kv.second;
+                }
+                // else
+                //     delete kv.second;
+            }
+        }
+    }
+    std::cout << "PRINTED TABLE" << std::endl;
+    std::cin.ignore();
+}
+
+

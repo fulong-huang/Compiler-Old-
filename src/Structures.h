@@ -137,8 +137,8 @@ struct Instruction
     INST* next;
     int InstNum;
     Mnemonic op;
-    Opr* a;
-    Opr* b;
+    std::shared_ptr<Opr> a;
+    std::shared_ptr<Opr> b;
 
     ~Instruction();
 };
@@ -159,7 +159,9 @@ struct InstInt
 {
     InstType TYPE;
     int num;
-    // store replaced InstInt to delete?
+
+    ~InstInt();
+
 };
 
 
@@ -177,10 +179,11 @@ struct Opr{
     Instruction* inst;
 
     ~Opr();
+
 };
 
 struct Instruction* newInstInt(int n);
-struct Opr* newOp(std::string name, Instruction* inst);
+struct std::shared_ptr<Opr> newOp(std::string name, Instruction* inst);
 
 struct Instruction* newInstruction();
 struct InstBlock* newInstBlock(std::string blockName, int n);

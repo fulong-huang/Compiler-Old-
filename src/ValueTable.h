@@ -43,3 +43,8 @@ void setValueTable(std::vector<std::unordered_map<std::string, Instruction*> > n
 struct Instruction* getWhileJoin();
 void setWhileJoin(struct Instruction* newWhileJoin);
 
+void DestroyTable(std::vector<std::unordered_map<std::string, Instruction*> > table);
+
+
+void PrintTable();
+

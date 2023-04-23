@@ -7,7 +7,7 @@ Instruction* funcHeadInst;
 // Name of function : list of int for instruction numbers
 //      During function declare, instNum += num_of_params,
 //      thus reserved space to move instruction into those number
-std::unordered_map<std::string, std::pair<InstBlock*, std::vector<int> > > FunctionList;
+std::unordered_map<std::string, std::pair<InstBlock*, std::vector<Instruction*> > > FunctionList;
 
 
 
@@ -15,7 +15,7 @@ std::unordered_map<std::string, std::pair<InstBlock*, std::vector<int> > > Funct
 Instruction* getFuncHeadInst(){ return funcHeadInst; }
 void setFuncHeadInst(Instruction* newFuncHeadInst){ funcHeadInst = newFuncHeadInst;}
 
-std::unordered_map<std::string, std::pair<InstBlock*, std::vector<int> > > getFunList(){
+std::unordered_map<std::string, std::pair<InstBlock*, std::vector<Instruction*> > > getFunList(){
     return FunctionList;
 };
 
@@ -29,32 +29,40 @@ std::pair<INST*, int> declareFunction(std::string funcName, std::string blockNam
     Instruction* inst;
 
         inst = newInstruction();
-        inst->InstNum = getCurrInstNum();
-        FunctionList[funcName].second.push_back(incCurrInstNum());
+        inst->InstNum = incCurrInstNum();
+        FunctionList[funcName].second.push_back(inst);
 
     for(std::string s : params){
         inst = newInstruction();
-        inst->InstNum = getCurrInstNum();
+        inst->InstNum = incCurrInstNum();
         insertVT(s, inst);
-        FunctionList[funcName].second.push_back(incCurrInstNum());
+        FunctionList[funcName].second.push_back(inst);
     }
     return std::pair<INST*, int>(funcBlock->head, returnNum);
 }
 
-std::pair<InstBlock*, std::vector<int> > getFunctionParam(std::string funcName){
+std::pair<InstBlock*, std::vector<Instruction*> > getFunctionParam(std::string funcName){
     return FunctionList[funcName];
 }
 
 
 
 void InitFunction(){
+    funcHeadInst = NULL;
     FunctionList.clear();
 }
 void DestroyFunction(){
     for(auto kv : FunctionList){
-        if(kv.second.first != NULL){
-            delete kv.second.first;
+        // std::cout << kv.second.first->name << std::endl;
+        // std::cin.ignore();
+        if(kv.second.first != nullptr){
+            delete (InstBlock*) kv.second.first;
+        }
+        for(int i = 0; i < kv.second.second.size(); i++){
+            delete kv.second.second[i];
         }
     }
+    // if(funcHeadInst != NULL)
+    //     delete funcHeadInst;
 }
 

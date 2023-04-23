@@ -5,8 +5,8 @@ struct Instruction* newInstInt(int n){
     inst->num = n;
     return (Instruction*) inst;
 }
-struct Opr* newOp(std::string name, Instruction* inst){
-    struct Opr* result = new struct Opr();
+std::shared_ptr<Opr> newOp(std::string name, Instruction* inst){
+    std::shared_ptr<Opr> result = std::make_shared<Opr>();
     result->name = name;
     result->inst = inst;
     return result;
@@ -37,68 +37,111 @@ struct InstBlock* newInstBlock(std::string blockName, int n){
 struct LinkedInst* newLinkedInst(){
     LinkedInst* result = new struct LinkedInst();
     result->inst = newInstruction();
+    result->inst->TYPE = BLOCK; // Indicate I have not been used, thus can be destroyed
+    // result->inst = nullptr;
     result->inst->op = COMMENT;
     result->inst->a = newOp("new LinkedInst", newInstInt(-1));
     return result;
 }
 
 INST::~INST(){
-    if(TYPE == INT) { 
-        delete (InstInt*)(this);
-    }
-    else if(TYPE == SINGLE){
-        delete (Instruction*)(this);
-    }
-    else{
-        delete (InstBlock*)(this);
-    }
-
-    // delete next
-    if(next == NULL) return;
-    delete next;
+    // std::cout << " !!!!!!!!! DESTROYING INST !!!!!!!!! " << std::endl;
+    // std::cin.ignore();
 }
 
 Instruction::~Instruction(){
-    if(TYPE == SINGLE){
-        if(a != NULL) delete a;
-        if(b != NULL) delete b;
-    }
-    else if(TYPE == INT) { 
-        delete (InstInt*)(this);
-    }
-    else{
-        delete (InstBlock*)(next);
-    }
+    std::cout << "Attemp Instruction" << std::endl;
+    INST* temp = next;
+    next = nullptr;
+    if(temp != nullptr){
+        switch(temp->TYPE){
+            case INT:
+                delete (InstInt*)temp;
+                break;
+            case SINGLE:
+                delete (Instruction*)temp;
+                break;
+            case BLOCK: // Do crazy stuff
+                Instruction* instHead = (Instruction*)((InstBlock*)temp)->head;
+                std::cout << "_+_+_+_+_+_+_+_+_+_+_+_+_+_" << instHead->a->name << std::endl;
+                if(instHead->a->name[0] == 'I'){ // If statement
+                    delete (InstBlock*)temp->next->next->next;
+                    delete (InstBlock*) temp->next->next;
+                    delete (InstBlock*) temp->next;
+                    delete (InstBlock*) ((InstBlock*)temp)->next2;
+                }
+                else if(instHead->a->name[0] == 'C'){
+                    // function only split once, next to the function itself, and next 2 to what's next
+                    delete (InstBlock*) ((InstBlock*)temp)->next2;
+                }
+                else if(instHead->a->name[0] == 'J'){
+                    std::cout << ((Instruction*)((InstBlock*)(temp->next))->head)->a->name << std::endl;
+                    std::cout << ((Instruction*)((InstBlock*)(temp->next->next))->head)->a->name << std::endl;
+                    std::cout << ((Instruction*)((InstBlock*)(((InstBlock*)temp->next)->next2))->head)->a->name << std::endl;
+                    delete (InstBlock*) temp->next->next;
+                    delete (InstBlock*) ((InstBlock*)temp->next)->next2;
+                    delete (InstBlock*) temp->next;
+                }
 
-    // delete next
-    if(next != NULL) delete next;
+                delete (InstBlock*)temp;
+                break;
+        }
+    }
+    std::cout << "Finished Instruction" << std::endl;
 
 }
 
 InstBlock::~InstBlock(){
-    if(TYPE == BLOCK) { 
-        if(next2 != NULL) delete next2;
-        if(head != NULL) delete head;
-    }
-    else if(TYPE == SINGLE){
-        delete (Instruction*)(this);
-    }
-    else{
-        delete (InstInt*)(next);
-    }
+    // std::cout << "Attemp InstBlock: " << name << std::endl;
+    // std::cin.ignore();
+    INST *temp, *temp1, *temp2;
 
-    // delete next
-    if(next != NULL) delete next;
+
+    temp = head;
+    // temp1 = next;
+    // temp2 = next2;
+    head = nullptr;
+    next = nullptr;
+    next2 = nullptr;
+    if(temp != nullptr){
+        switch(temp->TYPE){
+            case INT:
+                delete (InstInt*)temp;
+                break;
+            case SINGLE:
+                delete (Instruction*)temp;
+                break;
+            case BLOCK:
+                delete (InstBlock*)temp;
+                break;
+        }
+    }
+    std::cout << "Finished InstBlock" << std::endl;
 
 }
 
 LinkedInst::~LinkedInst(){
-    if(inst != NULL) delete inst;
-    if(next != NULL) delete next;
-    if(next2 != NULL) delete next2;
+    std::cout << "delete LinkedInst"<< std::endl;
+    if(inst != NULL && inst->TYPE == BLOCK){ // Type == BLOCK only mean it is not used, thus should be destroyed
+        delete inst;
+    }
+    if(next != nullptr){
+        delete next;
+        next = nullptr;
+    }
+    if(next2 != nullptr){ 
+        delete next2;
+        next2 = nullptr;
+    }
+    std::cout << "Finished LinkedInst"<< std::endl;
 }
 
 Opr::~Opr(){
-    if(inst != NULL) delete inst;
+    std::cout << "OPR" << std::endl;
+    if(inst != NULL && inst->TYPE == INT) delete (InstInt*)inst;
+    std::cout << "Finished OPR" << std::endl;
 }
 
+InstInt::~InstInt(){
+    std::cout << "Calling Inst Int" << std::endl;
+}

@@ -19,6 +19,61 @@ void InitializeInstruction(){
     WhileCondition = NULL;
     WhileDo = NULL;
 }
+
+void DestroyInstruction(){
+    // std::cout << "START" << std::endl;
+    if(InstHead != nullptr){
+    std::cout << "********** Destroying Instruction Head **********" << std::endl;
+        switch(InstHead->TYPE){
+            case INT:
+                delete (InstInt*)InstHead;
+                break;
+            case SINGLE:
+                delete (Instruction*)InstHead;
+                break;
+            case BLOCK:
+                delete (InstBlock*)InstHead;
+                break;
+        }
+    std::cout << "********** Instruction Head Destroyed **********" << std::endl;
+    }
+    
+    // std::cout << "START 1" << std::endl;
+    // if(InstTail != NULL){
+    //     switch(InstTail->TYPE){
+    //         case INT:
+    //             delete (InstInt*)InstTail;
+    //             break;
+    //         case SINGLE:
+    //             delete (Instruction*)InstTail;
+    //             break;
+    //         case BLOCK:
+    //             delete (InstBlock*)InstTail;
+    //             break;
+    //     }
+    // }
+    // if(JoinBlock != NULL){
+    //     switch(JoinBlock->TYPE){
+    //         case INT:
+    //             delete (InstInt*)JoinBlock;
+    //             break;
+    //         case SINGLE:
+    //             delete (Instruction*)JoinBlock;
+    //             break;
+    //         case BLOCK:
+    //             delete (InstBlock*)JoinBlock;
+    //             break;
+    //     }
+    // }
+    // if(WhileCondition != NULL) delete WhileCondition;
+    // if(WhileDo != NULL) delete WhileDo;
+    
+    std::cout << "********* Destroying LinkedInst Head **********" << std::endl;
+    for(int i = 0; i < LICOUNT; i++){
+        if(LinkedInstHead[i] != nullptr) delete LinkedInstHead[i];
+    }
+    std::cout << "********* LinkedInst Head Destoryed **********" << std::endl;
+}
 struct INST* getJoinBlock(){ return JoinBlock; }
 void setJoinBlock(INST* newJoinBlock){JoinBlock = newJoinBlock;}
 
@@ -74,14 +129,6 @@ void InitInstruction(){
     }
 }
 
-void DestroyInstruction(){
-    if(InstHead != NULL) delete InstHead;
-    if(InstTail != NULL) delete InstTail;
-    for(int i = 0; i < LICOUNT; i++){
-        if(LinkedInstruction[i] != NULL) delete LinkedInstruction[i];
-    }
-}
-
 
 void addInst(struct INST* inst){
     InstTail->next = inst;
@@ -96,6 +143,7 @@ void appendLL(Instruction* inst, LIidx n){
     addInst((INST*) inst);
     LinkedInstruction[n]->next = newLinkedInst();
     LinkedInstruction[n] = LinkedInstruction[n]->next;
+    delete LinkedInstruction[n]->inst;
     LinkedInstruction[n]->inst = inst;
 }
 
@@ -163,7 +211,7 @@ void CommonSubElim(){
 }
 
 
-struct Instruction* addPhiInst(struct Instruction* inst, struct Opr* a, struct Opr* b){
+struct Instruction* addPhiInst(struct Instruction* inst, std::shared_ptr<Opr> a, std::shared_ptr<Opr> b){
     struct Instruction* instruction = newInstruction();
     instruction->op = PHI;
     instruction->a = a;
@@ -189,14 +237,14 @@ void addCommentInst(std::string comt){
     addInst((INST*) inst);
 }
 
-void updateInst(Opr* oldOp, Instruction* newInst){ // use when while loop create an update
+void updateInst(std::shared_ptr<Opr> oldOp, Instruction* newInst){ // use when while loop create an update
     // 1. constant value were referenced or assigned
     // 2. value have different instruction number.
     updateIndivInst((INST*) WhileCondition, oldOp, newInst);
     updateIndivInst((INST*) WhileDo, oldOp, newInst);
 }
 
-void updateBlockInst(struct INST* instruction, Opr* oldOp, Instruction* newInst){
+void updateBlockInst(struct INST* instruction, std::shared_ptr<Opr> oldOp, Instruction* newInst){
     struct Instruction* inst;
     struct InstBlock* blockInst;
     struct InstBlock* saveBlock;
@@ -239,8 +287,8 @@ void updateBlockInst(struct INST* instruction, Opr* oldOp, Instruction* newInst)
     }
 }
 
-void updateIndivInst(INST* instruction, Opr* oldOp, Instruction* newInst){
-    struct Opr* op;
+void updateIndivInst(INST* instruction, std::shared_ptr<Opr> oldOp, Instruction* newInst){
+    std::shared_ptr<Opr*> op;
     struct Instruction* inst;
     while(instruction != NULL){
         if(instruction->TYPE == BLOCK){
@@ -254,7 +302,7 @@ void updateIndivInst(INST* instruction, Opr* oldOp, Instruction* newInst){
     }
 }
 
-Opr* updateOp(Opr* thisOp, Opr* targetOp, Instruction* newInst){
+std::shared_ptr<Opr> updateOp(std::shared_ptr<Opr> thisOp, std::shared_ptr<Opr> targetOp, Instruction* newInst){
     if(thisOp != NULL &&
         thisOp->inst == targetOp->inst &&
         thisOp->name.compare(targetOp->name) == 0)

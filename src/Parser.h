@@ -22,7 +22,7 @@ Instruction* varRef(std::string ident);
 std::pair<std::string, Instruction*> factor();
 std::pair<std::string, Instruction*> term();
 std::pair<std::string, Instruction*> expression();
-void relation(struct Opr* target);
+void relation(std::shared_ptr<Opr> target);
 
 void assignment();
 

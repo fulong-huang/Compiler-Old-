@@ -21,14 +21,14 @@ INST* getInstTail();
 struct LinkedInst* getLI(int idx);
 void setLI(int idx, LinkedInst* newLI);
 
-struct Instruction* addPhiInst(struct Instruction* inst, struct Opr* a, struct Opr* b);
+struct Instruction* addPhiInst(struct Instruction* inst, std::shared_ptr<Opr> a, std::shared_ptr<Opr> b);
 void PrintInst(struct INST* currInst);
-struct INST* PrintInstBlock(struct INST* instBlock); // return next instruction to run
+void PrintInstBlock(struct INST* instBlock); 
 
-void updateInst(Opr* oldOp, Instruction* newInst);
-Opr* updateOp(Opr* thisOp, Opr* targetOp, Instruction* newInst);
-void updateIndivInst(INST* instruction, Opr* oldOp, Instruction* newInst);
-void updateBlockInst(INST* blockInst, Opr* oldOp, Instruction* newInst);
+void updateInst(std::shared_ptr<Opr> oldOp, Instruction* newInst);
+std::shared_ptr<Opr> updateOp(std::shared_ptr<Opr> thisOp, std::shared_ptr<Opr> targetOp, Instruction* newInst);
+void updateIndivInst(INST* instruction, std::shared_ptr<Opr> oldOp, Instruction* newInst);
+void updateBlockInst(INST* blockInst, std::shared_ptr<Opr> oldOp, Instruction* newInst);
 
 void appendLL(Instruction* inst, LIidx n);
 

@@ -108,11 +108,15 @@ int main()
             }
             
             // *** FREE STUFFS ***
+            std::cout << "Freeing Stuff: << "<< std::endl;
             DestroyInstruction();
+            std::cout << "Freeing Stuff 2: ========= << "<< std::endl;
             DestroyVT(); 
+            std::cout << "Freeing Stuff 3: ========= << "<< std::endl;
             // InitHelp();
             // InitGraph();
             DestroyFunction();
+            std::cout << "Freeing Stuff 4: ========= << "<< std::endl;
 
 
         }
