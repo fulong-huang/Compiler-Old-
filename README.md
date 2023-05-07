@@ -18,13 +18,11 @@ Here is video demonstration of an example: **https://youtu.be/nKmsC9gf2Bg**
 &emsp;&emsp;Run the command: 
 <br/>
 ```
-./out
+    ./out
 ```
-<br/>
-&emsp;&emsp;If the command does not work, try the following commands:
-<br/>
+<br/>If above command does not work, try the following commands:
 ```
-./make
-./out
+    ./make
+    ./out
 ```
 
